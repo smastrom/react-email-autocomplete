@@ -1,70 +1,23 @@
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr } from './utils';
 
-type Maybe<T> = T | undefined;
-
-type Attributes = {
-	id?: string;
-	placeholder?: string;
-};
-
-type CustomClasses = {
-	wrapperClassName?: string;
-	inputClassName?: string;
-	dropdownClassName?: string;
-	suggestionClassName?: string;
-	usernameClassName?: string;
-	domainClassName?: string;
-};
-
-type Props = {
-	value: Maybe<string>;
-	onChange: (value: string) => void;
-	baseList: string[];
-	domainList?: string[];
-	defaultValue?: string;
-	animation?: string;
-	classNames?: CustomClasses;
-	scrollIntoView?: boolean;
-	closeOnScroll?: boolean;
-};
-
-type Events = {
-	onFocus?: React.FocusEventHandler<HTMLInputElement>;
-	onBlur?: React.FocusEventHandler<HTMLInputElement>;
-	onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
-	onInput?: React.FormEventHandler<HTMLInputElement>;
-};
-
-type SelectionIndex = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-
-function cleanValue(value: string) {
-	return value.replace(/\s+/g, '').toLowerCase();
-}
-
-function isValidArr(maybeArr: unknown) {
-	return Array.isArray(maybeArr) && maybeArr.length > 0;
-}
-
-function isInvalid(value: unknown) {
-	return typeof value !== 'string';
-}
-
-function getUniqueId() {
-	return (Math.random() + 1).toString(36).substring(7);
-}
+import type { Attributes, Props, Events, CustomClasses, SelectionIndex } from './types';
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
 		{
-			id,
-			value: externalValue,
-			defaultValue,
-			onChange,
+			onChange: updateValue,
 			placeholder,
 			baseList,
 			domainList = [],
 			animation,
 			scrollIntoView = true,
+			maxSuggestions = 6,
+			startAfter = 2,
+			nextElement,
+			id,
+			value: externalValue,
+			defaultValue,
 			classNames,
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
@@ -80,6 +33,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		/* Refs */
 
 		const wrapperRef = useRef<HTMLDivElement | null>(null);
+		const spanRef = useRef<HTMLSpanElement | null>(null);
 		const inputRef = useRef<HTMLInputElement | null>(null);
 		const liRefs = useRef<(HTMLLIElement | null)[] | []>([]);
 
@@ -98,15 +52,15 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		/* Data Helpers */
 
 		const absoluteValue = isInvalid(externalValue) ? '' : cleanValue(externalValue as string);
-		const splitVal = absoluteValue.split('@');
+		const absoluteMax = getHonestValue(maxSuggestions, 8, 6);
+		const absoluteStart = getHonestValue(startAfter, 8, 2);
 
+		const splitVal = absoluteValue.split('@');
 		const username = splitVal[0];
-		const hasUsername = username.length >= 1;
+		const hasUsername = username.length >= absoluteStart;
 		const hasAt = hasUsername && absoluteValue.indexOf('@') !== -1;
 		const domain = splitVal[1];
 		const hasDomain = hasAt && domain.length >= 1;
-
-		const maxSuggestions = baseList.length;
 
 		/* UI Helpers */
 
@@ -128,7 +82,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						const copyDomains = [...internalDomainList];
 						const newDomains = copyDomains
 							.filter((userDomain) => userDomain.startsWith(domain))
-							.slice(0, maxSuggestions);
+							.slice(0, absoluteMax);
 
 						if (newDomains.length > 0) {
 							setInternalDomains(newDomains);
@@ -148,9 +102,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			hasUsername,
 			hasAt,
 			shouldRefine,
-			internalDomainList,
 			baseList,
-			maxSuggestions,
+			absoluteMax,
+			internalDomainList,
 		]);
 
 		/* UI Effects */
@@ -183,8 +137,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		function handleScrollIntoView() {
 			const isNotDesktop = window.matchMedia('(max-width: 910px)').matches;
 			setTimeout(() => {
-				if (isNotDesktop && wrapperRef.current) {
-					wrapperRef.current.scrollIntoView({
+				if (isNotDesktop && spanRef.current) {
+					spanRef.current.scrollIntoView({
 						behavior: 'smooth',
 						block: 'start',
 						inline: 'nearest',
@@ -194,7 +148,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleInternalChange(event: React.ChangeEvent<HTMLInputElement>) {
-			onChange(cleanValue(event.target.value));
+			updateValue(cleanValue(event.target.value));
 		}
 
 		function handleInputKeyboard(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -213,6 +167,17 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						return (selectionIndex.current = 0);
 				}
 			}
+		}
+
+		function handleReFocus() {
+			setCursor();
+			if (typeof nextElement === 'string') {
+				document.getElementById(nextElement)?.focus();
+			} else {
+				inputRef?.current?.focus();
+			}
+			isSelected.current = true;
+			setIsOpen(false);
 		}
 
 		function handleListKeyboard(event: React.KeyboardEvent<HTMLLIElement>) {
@@ -235,12 +200,13 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						const newValue = cleanValue(
 							(liRefs.current[selectionIndex.current] as HTMLLIElement).textContent as string
 						);
-						return onChange(cleanValue(newValue));
+						updateValue(cleanValue(newValue));
+						return handleReFocus();
 					}
 
 					case 'ArrowDown':
 						event.preventDefault();
-						if (selectionIndex.current < maxSuggestions - 1) {
+						if (selectionIndex.current < absoluteMax - 1) {
 							selectionIndex.current += 1;
 
 							if (selectionIndex.current > 0) {
@@ -264,30 +230,14 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 		}
 
-		function handleReFocus() {
-			if (inputRef.current !== null) {
-				inputRef.current.focus();
-			}
-		}
-
 		function handleSuggestionClick(event: React.MouseEvent<HTMLLIElement>) {
 			event.preventDefault();
 			event.stopPropagation();
-			{
-				onChange(cleanValue((event.currentTarget as Node).textContent as string));
-				handleReFocus();
-				isSelected.current = true;
-				setIsOpen(false);
-			}
+			updateValue(cleanValue((event.currentTarget as Node).textContent as string));
+			handleReFocus();
 		}
 
 		/* Events */
-
-		function myFocus() {
-			if (scrollIntoView) {
-				handleScrollIntoView();
-			}
-		}
 
 		function getEvents() {
 			const events: Partial<Events> = {};
@@ -300,7 +250,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			};
 
 			events.onFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-				myFocus();
+				if (scrollIntoView) {
+					handleScrollIntoView();
+				}
 				if (typeof userOnFocus === 'function') {
 					userOnFocus(event);
 				}
@@ -351,15 +303,26 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* Prevent rendering */
 
-		if (!baseList || typeof onChange !== 'function') {
+		if (!baseList || typeof updateValue !== 'function') {
 			console.error(
-				"[react-email-suggestions] - Nothing's returned from rendering. Please provide a baseList and an onChange handler."
+				"[react-email-suggestions] - Nothing's returned from rendering. Please provide a baseList and an updateValue handler."
 			);
 			return null;
 		}
 
 		return (
 			<div ref={wrapperRef} {...getClasses('wrapperClassName')}>
+				{scrollIntoView && (
+					<span
+						ref={spanRef}
+						aria-hidden="true"
+						className="react-ems-hidden"
+						style={{
+							top: '-1em',
+						}}
+					/>
+				)}
+
 				<input
 					ref={(thisInput) => {
 						inputRef.current = thisInput;

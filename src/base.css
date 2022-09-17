@@ -34,16 +34,12 @@
 	animation: dropdownAnim 300ms ease-out;
 }
 
-@keyframes out {
-	0% {
-		opacity: 1;
-	}
-
-	100% {
-		opacity: 0;
-	}
-}
-
-.dropdownOut {
-	animation: out 300ms ease-out;
+.react-ems-hidden {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
 }

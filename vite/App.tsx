@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Email } from '../src/Email';
 import domainList from '../src/domains.json';
 
@@ -15,11 +15,11 @@ function App() {
 	console.log(email);
 	console.log(extRef.current);
 
-	function handleFocus(event) {
+	function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
 		console.log('External focus!');
 	}
 
-	function handleBlur(event) {
+	function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
 		console.log('External blur!');
 	}
 
@@ -42,9 +42,10 @@ function App() {
 				onBlur={handleBlur}
 				ref={extRef}
 				placeholder="Ciao"
-				animation="dropdownAnim 300ms ease-out"
+				// animation="dropdownAnim 300ms ease-out"
 				classNames={{
 					wrapperClassName: 'react-ems customClass',
+					dropdownClassName: 'dropdownIn',
 				}}
 				value={email}
 				onChange={(value) => setEmail(value)}
