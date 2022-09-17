@@ -15,9 +15,31 @@ function App() {
 	console.log(email);
 	console.log(extRef.current);
 
+	function handleFocus(event) {
+		console.log('External focus!');
+	}
+
+	function handleBlur(event) {
+		console.log('External blur!');
+	}
+
 	return (
 		<div className="App">
+			<div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 20 }}>
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+			</div>
 			<Email
+				onFocus={handleFocus}
+				onBlur={handleBlur}
 				ref={extRef}
 				placeholder="Ciao"
 				animation="dropdownAnim 300ms ease-out"
@@ -29,6 +51,18 @@ function App() {
 				baseList={baseList}
 				domainList={domainList}
 			/>
+			<div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 20 }}>
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+				<input type="text" />
+			</div>
 		</div>
 	);
 }
