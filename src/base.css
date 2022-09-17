@@ -1,0 +1,49 @@
+.react-ems {
+	position: relative;
+}
+
+.react-ems > input,
+.react-ems > ul,
+.react-ems > ul > li {
+	font-size: inherit;
+	text-align: inherit;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.react-ems > input {
+	position: relative;
+}
+
+.react-ems > ul {
+	margin: 5px 0 0 0;
+	position: absolute;
+	list-style-type: none;
+	padding: 0;
+	z-index: 999;
+}
+
+.react-ems > ul > li {
+	cursor: pointer;
+	user-select: none;
+	overflow: hidden;
+	text-align: inherit;
+}
+
+.dropdownIn {
+	animation: dropdownAnim 300ms ease-out;
+}
+
+@keyframes out {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.dropdownOut {
+	animation: out 300ms ease-out;
+}

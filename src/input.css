@@ -1,0 +1,76 @@
+@keyframes dropdownAnim {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}
+
+label {
+	font-weight: 600;
+	margin: 0 0 5px 2.5px;
+}
+
+.customClass {
+	@media (max-width: 910px) {
+		font-size: 18px;
+	}
+}
+
+.customClass input {
+	padding: 0.5em 0.8em;
+	border: 2px solid #cbd5e1;
+	border-radius: 10px;
+	transition: border 100ms ease-out;
+}
+
+.customClass input:focus {
+	border: 2px solid var(--accentColor);
+	box-shadow: 0px 0px 0px 3px #fbcfe8;
+	outline: none;
+}
+
+.customClass ul {
+	margin-top: 7.5px;
+	border-radius: 10px;
+	border: 2px solid #cbd5e1;
+	background-color: white;
+}
+
+.customClass li {
+	padding: 0.4em 0.6em;
+	border-bottom: 1px solid #e2e8f0;
+	transition: background-color 50ms ease-out, color 50ms ease-out;
+}
+
+.customClass li:hover,
+.customClass li:focus {
+	background-color: var(--accentColor);
+	color: white;
+	outline: none;
+}
+
+.customClass li:only-child {
+	border-radius: 8px !important;
+}
+
+.customClass li:first-of-type {
+	border-radius: 8px 8px 0 0;
+}
+
+.customClass li:last-of-type {
+	border-bottom: 0;
+	border-radius: 0 0 8px 8px;
+}
+
+.customClass span:first-of-type {
+	padding-right: 0.1em;
+}
+
+.customClass span:last-of-type {
+	font-weight: 600;
+}
