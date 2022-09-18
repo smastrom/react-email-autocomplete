@@ -16,7 +16,10 @@ label {
 }
 
 .customClass {
-	@media (max-width: 910px) {
+}
+
+@media (max-width: 910px) {
+	.customClass {
 		font-size: 18px;
 	}
 }
@@ -35,7 +38,6 @@ label {
 }
 
 .customClass ul {
-	margin-top: 7.5px;
 	border-radius: 10px;
 	border: 2px solid #cbd5e1;
 	background-color: white;
@@ -73,4 +75,16 @@ label {
 
 .customClass span:last-of-type {
 	font-weight: 600;
+}
+
+.visuallyHidden {
+	border: 0;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
 }

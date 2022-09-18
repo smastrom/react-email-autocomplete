@@ -1,7 +1,50 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { terser } from 'rollup-plugin-terser';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()]
-})
+import Package from './package.json';
+
+export default defineConfig(({ command, mode }) => {
+	if (mode === 'ci') {
+		return {
+			plugins: [react()],
+		};
+	}
+	return {
+		define: {
+			__DEV__: command !== 'build',
+		},
+		build: {
+			minify: 'terser',
+			lib: {
+				name: Package.name,
+				entry: 'src/index.ts',
+				formats: ['es', 'umd'],
+				fileName: (format) => {
+					if (format === 'es') {
+						return 'index.js';
+					}
+					return `index.${format}.min.js`;
+				},
+			},
+			rollupOptions: {
+				external: ['react'],
+				input: 'src/index.ts',
+				output: {
+					globals: {
+						react: 'React',
+					},
+				},
+				plugins: [
+					terser({
+						compress: {
+							defaults: true,
+							drop_console: false,
+						},
+					}),
+				],
+			},
+		},
+		plugins: [react({ jsxRuntime: 'classic' })],
+	};
+});

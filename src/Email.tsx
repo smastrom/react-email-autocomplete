@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr } from './utils';
 
 import type { Attributes, Props, Events, CustomClasses, SelectionIndex } from './types';
@@ -18,17 +18,20 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			id,
 			value: externalValue,
 			defaultValue,
+			closeOnScroll = false,
+			className,
 			classNames,
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
 			onKeyDown: userOnKeyDown,
 			onInput: userOnInput,
+			children,
 		},
 		externalRef
 	) => {
 		/* Data */
 
-		const internalDomainList = useMemo(() => domainList, [domainList]);
+		const externalDomains = useMemo(() => domainList, [domainList]);
 
 		/* Refs */
 
@@ -39,8 +42,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		const selectionIndex = useRef<SelectionIndex>(-1);
 
-		const isSelected = useRef(false);
-		const isInitial = useRef(true);
+		const skipInitial = useRef(true);
 
 		const listId = useRef<string | undefined>(getUniqueId());
 
@@ -64,65 +66,111 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* UI Helpers */
 
-		const wantsRefine = isValidArr(internalDomainList);
+		const wantsRefine = isValidArr(externalDomains);
 		const shouldRefine = hasDomain && wantsRefine;
 
 		/* Effects */
 
+		function resetState() {
+			setInternalDomains([]);
+			setIsOpen(false);
+		}
+
 		useEffect(() => {
-			if (isInitial.current) {
-				isInitial.current = false;
-			} else if (isSelected.current) {
-				isSelected.current = false;
+			if (skipInitial.current) {
+				skipInitial.current = false;
 			} else {
 				if (hasUsername) {
 					setIsOpen(true);
 
 					if (shouldRefine) {
-						const copyDomains = [...internalDomainList];
+						const copyDomains = [...externalDomains];
 						const newDomains = copyDomains
 							.filter((userDomain) => userDomain.startsWith(domain))
 							.slice(0, absoluteMax);
 
 						if (newDomains.length > 0) {
-							setInternalDomains(newDomains);
+							if (`${username}@${newDomains[0]}` === absoluteValue) {
+								resetState();
+							} else {
+								setInternalDomains(newDomains);
+							}
 						} else {
-							setIsOpen(false);
+							resetState();
 						}
 					} else {
-						setInternalDomains(baseList);
+						if (hasAt) {
+							resetState();
+						} else {
+							setInternalDomains(baseList);
+						}
 					}
 				} else {
-					setIsOpen(false);
+					resetState();
 				}
 			}
 		}, [
-			externalValue,
-			domain,
-			hasUsername,
-			hasAt,
-			shouldRefine,
-			baseList,
 			absoluteMax,
-			internalDomainList,
+			absoluteValue,
+			baseList,
+			externalDomains,
+			hasAt,
+			username,
+			hasUsername,
+			domain,
+			shouldRefine,
 		]);
 
 		/* UI Effects */
 
 		useEffect(() => {
 			function handleClose(event: MouseEvent) {
-				if (!wrapperRef.current?.contains(event.target as Node)) {
-					setIsOpen(false);
+				if (isOpen) {
+					if (!wrapperRef.current?.contains(event.target as Node)) {
+						setIsOpen(false);
+					}
 				}
 			}
-			if (isOpen) {
-				document.addEventListener('click', handleClose);
 
-				return () => {
-					document.removeEventListener('click', handleClose);
-				};
+			document.addEventListener('click', handleClose);
+
+			return () => {
+				document.removeEventListener('click', handleClose);
+			};
+		}, [isOpen]);
+
+		const handleScrollClose = useCallback(() => {
+			let startY: number;
+			let endY = 0;
+
+			function scrollClose() {
+				const yPos = inputRef.current?.getBoundingClientRect().y as number;
+
+				if (typeof startY === 'undefined') {
+					startY = yPos;
+				} else {
+					endY = yPos;
+				}
+
+				if (Math.abs(endY - startY) >= 150) {
+					console.log('Closing on scroll!');
+					resetState();
+					document.removeEventListener('scroll', scrollClose);
+				}
+			}
+
+			if (isOpen) {
+				document.addEventListener('scroll', scrollClose, { passive: true });
+			} else {
+				document.removeEventListener('scroll', scrollClose);
 			}
 		}, [isOpen]);
+
+		useEffect(() => {
+			if (closeOnScroll) {
+				handleScrollClose();
+			}
+		}, [closeOnScroll, handleScrollClose]);
 
 		/* Handlers */
 
@@ -176,8 +224,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			} else {
 				inputRef?.current?.focus();
 			}
-			isSelected.current = true;
-			setIsOpen(false);
+			resetState();
 		}
 
 		function handleListKeyboard(event: React.KeyboardEvent<HTMLLIElement>) {
@@ -206,7 +253,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 					case 'ArrowDown':
 						event.preventDefault();
-						if (selectionIndex.current < absoluteMax - 1) {
+						if (selectionIndex.current < internalDomains.length - 1) {
 							selectionIndex.current += 1;
 
 							if (selectionIndex.current > 0) {
@@ -294,11 +341,25 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			return { style: display };
 		}
 
+		function getWrapperClass() {
+			if (typeof className === 'string' && typeof classNames === 'undefined') {
+				return { className };
+			}
+			return {};
+		}
+
 		function getClasses(classProperty: keyof CustomClasses) {
 			if (typeof classNames !== 'undefined' && typeof classNames[classProperty] === 'string') {
 				return { className: classNames[classProperty] };
 			}
 			return {};
+		}
+
+		function pushRefs(inputElement: HTMLInputElement) {
+			inputRef.current = inputElement;
+			if (externalRef) {
+				(externalRef as React.MutableRefObject<HTMLInputElement | null>).current = inputElement;
+			}
 		}
 
 		/* Prevent rendering */
@@ -311,25 +372,13 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		return (
-			<div ref={wrapperRef} {...getClasses('wrapperClassName')}>
+			<div ref={wrapperRef} {...getWrapperClass()} {...getClasses('wrapperClassName')}>
 				{scrollIntoView && (
-					<span
-						ref={spanRef}
-						aria-hidden="true"
-						className="react-ems-hidden"
-						style={{
-							top: '-1em',
-						}}
-					/>
+					<span ref={spanRef} aria-hidden="true" style={{ top: '-1.5em', position: 'absolute' }} />
 				)}
 
 				<input
-					ref={(thisInput) => {
-						inputRef.current = thisInput;
-						if (externalRef) {
-							(externalRef as React.MutableRefObject<HTMLInputElement | null>).current = thisInput;
-						}
-					}}
+					ref={(thisElement) => pushRefs(thisElement as HTMLInputElement)}
 					type="email"
 					autoComplete="off"
 					aria-autocomplete="list"
@@ -345,24 +394,26 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 				/>
 
 				<ul id={listId.current} {...getListStyles()} {...getClasses('dropdownClassName')}>
-					{internalDomains.map((domain, index) => (
-						<li
-							key={domain}
-							role="option"
-							aria-posinset={index + 1}
-							aria-setsize={internalDomains.length}
-							aria-selected={index === selectionIndex.current}
-							tabIndex={0}
-							ref={(thisLi) => (liRefs.current[index] = thisLi)}
-							onKeyDown={handleListKeyboard}
-							onClick={(event) => handleSuggestionClick(event)}
-							{...getClasses('suggestionClassName')}
-						>
-							<span {...getClasses('usernameClassName')}>{username}</span>
-							<span {...getClasses('domainClassName')}>@{domain}</span>
-						</li>
-					))}
+					{isOpen &&
+						internalDomains.map((domain, index) => (
+							<li
+								key={domain}
+								ref={(thisElement) => (liRefs.current[index] = thisElement)}
+								role="option"
+								aria-posinset={index + 1}
+								aria-setsize={internalDomains.length}
+								aria-selected={index === selectionIndex.current}
+								tabIndex={0}
+								onKeyDown={handleListKeyboard}
+								onClick={(event) => handleSuggestionClick(event)}
+								{...getClasses('suggestionClassName')}
+							>
+								<span {...getClasses('usernameClassName')}>{username}</span>
+								<span {...getClasses('domainClassName')}>@{domain}</span>
+							</li>
+						))}
 				</ul>
+				{children}
 			</div>
 		);
 	}

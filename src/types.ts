@@ -17,6 +17,7 @@ export type Props = {
 	defaultValue?: string;
 	animation?: string;
 	classNames?: CustomClasses;
+	className?: string;
 	scrollIntoView?: boolean;
 	closeOnScroll?: boolean;
 	startAfter?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;

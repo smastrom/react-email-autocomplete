@@ -1,26 +1,40 @@
-import React, { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Email } from '../src/Email';
+import { useSuggestion } from '../src/useSuggestion';
+import { Profiler } from './Profiler';
+
 import domainList from '../src/domains.json';
+import extesionList from '../src/extensions.json';
 
 import '../src/base.css';
 import '../src/input.css';
 
 export const baseList = ['google.com', 'email.com', 'proton.me', 'yahoo.com'];
 
+const pattern = /^\w+@[a-zA-Z.,]+?\.[a-zA-Z]{2,3}$/;
+
 function App() {
 	const extRef = useRef(null);
-
+	const suggRef = useRef(null);
 	const [email, setEmail] = useState<string | undefined>(undefined);
 
-	console.log(email);
-	console.log(extRef.current);
+	const { suggestion, getSuggestion, resetSuggestion } = useSuggestion(domainList, extesionList);
 
-	function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
-		console.log('External focus!');
+	function handleBlur() {
+		if (typeof email === 'string' && pattern.test(email)) {
+			getSuggestion(email);
+		}
 	}
 
-	function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
-		console.log('External blur!');
+	function handleReset() {
+		if (suggestion) {
+			resetSuggestion();
+		}
+	}
+
+	function handleConfirm() {
+		setEmail(suggestion);
+		resetSuggestion();
 	}
 
 	return (
@@ -37,21 +51,36 @@ function App() {
 				<input type="text" />
 				<input type="text" />
 			</div>
-			<Email
-				onFocus={handleFocus}
-				onBlur={handleBlur}
-				ref={extRef}
-				placeholder="Ciao"
-				// animation="dropdownAnim 300ms ease-out"
-				classNames={{
-					wrapperClassName: 'react-ems customClass',
-					dropdownClassName: 'dropdownIn',
-				}}
-				value={email}
-				onChange={(value) => setEmail(value)}
-				baseList={baseList}
-				domainList={domainList}
-			/>
+			<Profiler>
+				<Email
+					className="customClass"
+					onBlur={handleBlur}
+					onFocus={handleReset}
+					baseList={baseList}
+					domainList={domainList}
+					placeholder="Ciao"
+					onChange={(value) => setEmail(value)}
+					value={email}
+				/>
+			</Profiler>
+
+			<div
+				style={{ minHeight: 30 }}
+				aria-live="assertive"
+				aria-atomic="true"
+				aria-relevant="additions"
+			>
+				{suggestion && (
+					<>
+						Did you mean{' '}
+						<button type="button" onClick={handleConfirm}>
+							{suggestion}
+						</button>
+						?<p className="visuallyHidden">Click the button to confirm the correction.</p>
+					</>
+				)}
+			</div>
+
 			<div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 20 }}>
 				<input type="text" />
 				<input type="text" />

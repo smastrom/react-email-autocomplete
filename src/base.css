@@ -1,29 +1,29 @@
-.react-ems {
+.customClass {
 	position: relative;
 }
 
-.react-ems > input,
-.react-ems > ul,
-.react-ems > ul > li {
+.customClass > input,
+.customClass > ul,
+.customClass > ul > li {
 	font-size: inherit;
 	text-align: inherit;
 	box-sizing: border-box;
 	width: 100%;
 }
 
-.react-ems > input {
+.customClass > input {
 	position: relative;
 }
 
-.react-ems > ul {
-	margin: 5px 0 0 0;
+.customClass > ul {
+	margin: 0.4rem 0 0 0;
 	position: absolute;
 	list-style-type: none;
 	padding: 0;
 	z-index: 999;
 }
 
-.react-ems > ul > li {
+.customClass > ul > li {
 	cursor: pointer;
 	user-select: none;
 	overflow: hidden;
@@ -34,7 +34,8 @@
 	animation: dropdownAnim 300ms ease-out;
 }
 
-.react-ems-hidden {
+.customClass-hidden {
+	top: -1em;
 	clip: rect(0 0 0 0);
 	clip-path: inset(50%);
 	height: 1px;
