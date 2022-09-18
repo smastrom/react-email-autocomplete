@@ -28,11 +28,12 @@ export default defineConfig(({ command, mode }) => {
 				},
 			},
 			rollupOptions: {
-				external: ['react'],
+				external: ['react', 'react/jsx-runtime'],
 				input: 'src/index.ts',
 				output: {
 					globals: {
 						react: 'React',
+						'react/jsx-runtime': 'jsxRuntime',
 					},
 				},
 				plugins: [
@@ -45,6 +46,6 @@ export default defineConfig(({ command, mode }) => {
 				],
 			},
 		},
-		plugins: [react({ jsxRuntime: 'classic' })],
+		plugins: [react()],
 	};
 });

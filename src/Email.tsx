@@ -1,30 +1,54 @@
 import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr } from './utils';
+import {
+	cleanValue,
+	getUniqueId,
+	getHonestValue,
+	isInvalid,
+	isValidArr,
+	isNotDesktop,
+} from './utils';
 
-import type { Attributes, Props, Events, CustomClasses, SelectionIndex } from './types';
+import type { Attributes, Props, Events, ClassNames, SelectionIndex } from './types';
+
+enum KeyboardState {
+	Locked = 'LOCKED',
+	Unlocked = 'UNLOCKED',
+	Granted = 'GRANTED',
+}
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
 		{
+			/* Core - Required */
 			onChange: updateValue,
-			placeholder,
+			value: externalValue,
 			baseList,
+			/* Core - Optional */
 			domainList = [],
 			animation,
 			scrollIntoView = true,
 			maxSuggestions = 6,
 			startAfter = 2,
 			nextElement,
-			id,
-			value: externalValue,
-			defaultValue,
 			closeOnScroll = false,
 			className,
 			classNames,
+			listPrefix,
+			/* Input Attributes */
+			id,
+			placeholder,
+			defaultValue,
+			minLength,
+			maxLength,
+			pattern,
+			readOnly,
+			required,
+			/* Input Events */
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
 			onKeyDown: userOnKeyDown,
 			onInput: userOnInput,
+			/* React */
 			children,
 		},
 		externalRef
@@ -51,7 +75,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const [internalDomains, setInternalDomains] = useState(baseList);
 		const [isOpen, setIsOpen] = useState(false);
 
-		/* Data Helpers */
+		const [isAllowedToType, setIsAllowedToType] = useState<KeyboardState>(KeyboardState.Unlocked);
+
+		/*  Helpers */
 
 		const absoluteValue = isInvalid(externalValue) ? '' : cleanValue(externalValue as string);
 		const absoluteMax = getHonestValue(maxSuggestions, 8, 6);
@@ -64,10 +90,10 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const domain = splitVal[1];
 		const hasDomain = hasAt && domain.length >= 1;
 
-		/* UI Helpers */
-
 		const wantsRefine = isValidArr(externalDomains);
 		const shouldRefine = hasDomain && wantsRefine;
+
+		const shouldScrollIntoView = scrollIntoView && isNotDesktop();
 
 		/* Effects */
 
@@ -172,6 +198,57 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 		}, [closeOnScroll, handleScrollClose]);
 
+		const handleScrollIntoView = useCallback(() => {
+			let timeoutID: NodeJS.Timeout;
+
+			function scrollIntoView() {
+				clearTimeout(timeoutID);
+				timeoutID = setTimeout(() => {
+					// console.log('scrollIntoView callBack - Scroll ended!');
+					setIsAllowedToType(KeyboardState.Granted);
+				}, 100);
+			}
+
+			if (isAllowedToType === KeyboardState.Locked) {
+				// console.log('scrollIntoView - Adding Listener!');
+				document.addEventListener('scroll', scrollIntoView, { passive: true });
+			} else if (isAllowedToType === KeyboardState.Granted) {
+				// console.log('scrollIntoView - Removing Listener!');
+				document.removeEventListener('scroll', scrollIntoView);
+			}
+		}, [isAllowedToType]);
+
+		useEffect(() => {
+			if (shouldScrollIntoView) {
+				handleScrollIntoView();
+			}
+		}, [shouldScrollIntoView, handleScrollIntoView]);
+
+		// const scrollIntoViewOnce = useRef(false);
+
+		function triggerScrollIntoView() {
+			const yPos = inputRef?.current?.getBoundingClientRect().y as number;
+			const height = inputRef?.current?.scrollHeight as number;
+
+			/* Is Necessary? */
+
+			if (yPos >= height * 2) {
+				const bodyYPos = document.body.getBoundingClientRect().y;
+				setIsAllowedToType(KeyboardState.Locked);
+				scrollTo({
+					top: yPos - bodyYPos - height,
+					left: 0,
+					behavior: 'smooth',
+				});
+			}
+		}
+
+		/* Prevent rendering */
+
+		if ((typeof externalValue !== 'string' && !baseList) || typeof updateValue !== 'function') {
+			return null;
+		}
+
 		/* Handlers */
 
 		function setCursor() {
@@ -182,24 +259,14 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 		}
 
-		function handleScrollIntoView() {
-			const isNotDesktop = window.matchMedia('(max-width: 910px)').matches;
-			setTimeout(() => {
-				if (isNotDesktop && spanRef.current) {
-					spanRef.current.scrollIntoView({
-						behavior: 'smooth',
-						block: 'start',
-						inline: 'nearest',
-					});
-				}
-			}, 100);
-		}
-
 		function handleInternalChange(event: React.ChangeEvent<HTMLInputElement>) {
 			updateValue(cleanValue(event.target.value));
 		}
 
 		function handleInputKeyboard(event: React.KeyboardEvent<HTMLInputElement>) {
+			if (shouldScrollIntoView && isAllowedToType === KeyboardState.Locked) {
+				return event.preventDefault();
+			}
 			if (event.code === 'Space') {
 				event.preventDefault();
 			}
@@ -286,7 +353,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* Events */
 
-		function getEvents() {
+		function setEvents() {
 			const events: Partial<Events> = {};
 
 			events.onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -297,8 +364,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			};
 
 			events.onFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-				if (scrollIntoView) {
-					handleScrollIntoView();
+				if (shouldScrollIntoView) {
+					triggerScrollIntoView();
 				}
 				if (typeof userOnFocus === 'function') {
 					userOnFocus(event);
@@ -325,7 +392,20 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const userAttrs: Attributes = {
 			id,
 			placeholder,
+			defaultValue,
+			minLength,
+			maxLength,
+			pattern,
+			readOnly,
+			required,
 		};
+
+		function pushRefs(inputElement: HTMLInputElement) {
+			inputRef.current = inputElement;
+			if (externalRef) {
+				(externalRef as React.MutableRefObject<HTMLInputElement | null>).current = inputElement;
+			}
+		}
 
 		function getListStyles() {
 			const display = { display: isOpen ? 'inherit' : 'none' };
@@ -341,38 +421,29 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			return { style: display };
 		}
 
-		function getWrapperClass() {
-			if (typeof className === 'string' && typeof classNames === 'undefined') {
-				return { className };
+		function setWrapperClass() {
+			const classes = `${className || ''} ${classNames?.wrapper || ''}`.trim();
+
+			if (classes.length > 0) {
+				return { className: classes };
 			}
 			return {};
 		}
 
-		function getClasses(classProperty: keyof CustomClasses) {
+		function setClasses(classProperty: keyof ClassNames) {
 			if (typeof classNames !== 'undefined' && typeof classNames[classProperty] === 'string') {
 				return { className: classNames[classProperty] };
 			}
 			return {};
 		}
 
-		function pushRefs(inputElement: HTMLInputElement) {
-			inputRef.current = inputElement;
-			if (externalRef) {
-				(externalRef as React.MutableRefObject<HTMLInputElement | null>).current = inputElement;
-			}
-		}
-
-		/* Prevent rendering */
-
-		if (!baseList || typeof updateValue !== 'function') {
-			console.error(
-				"[react-email-suggestions] - Nothing's returned from rendering. Please provide a baseList and an updateValue handler."
-			);
-			return null;
+		function setPrefix() {
+			const prefix = typeof listPrefix === 'string' ? `${listPrefix}_` : 'react-ems_';
+			return `${prefix}${listId.current}`;
 		}
 
 		return (
-			<div ref={wrapperRef} {...getWrapperClass()} {...getClasses('wrapperClassName')}>
+			<div ref={wrapperRef} {...setWrapperClass()}>
 				{scrollIntoView && (
 					<span ref={spanRef} aria-hidden="true" style={{ top: '-1.5em', position: 'absolute' }} />
 				)}
@@ -384,16 +455,15 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 					aria-autocomplete="list"
 					role="combobox"
 					aria-expanded={isOpen}
-					aria-controls={listId.current}
+					aria-controls={setPrefix()}
 					onChange={(event) => handleInternalChange(event)}
 					value={absoluteValue}
-					defaultValue={defaultValue}
-					{...getClasses('inputClassName')}
-					{...getEvents()}
+					{...setClasses('input')}
+					{...setEvents()}
 					{...userAttrs}
 				/>
 
-				<ul id={listId.current} {...getListStyles()} {...getClasses('dropdownClassName')}>
+				<ul id={setPrefix()} {...getListStyles()} {...setClasses('dropdown')}>
 					{isOpen &&
 						internalDomains.map((domain, index) => (
 							<li
@@ -406,10 +476,10 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 								tabIndex={0}
 								onKeyDown={handleListKeyboard}
 								onClick={(event) => handleSuggestionClick(event)}
-								{...getClasses('suggestionClassName')}
+								{...setClasses('suggestion')}
 							>
-								<span {...getClasses('usernameClassName')}>{username}</span>
-								<span {...getClasses('domainClassName')}>@{domain}</span>
+								<span {...setClasses('username')}>{username}</span>
+								<span {...setClasses('domain')}>@{domain}</span>
 							</li>
 						))}
 				</ul>

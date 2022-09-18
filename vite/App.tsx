@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Email } from '../src/Email';
 import { useSuggestion } from '../src/useSuggestion';
 import { Profiler } from './Profiler';
-
 import domainList from '../src/domains.json';
 import extesionList from '../src/extensions.json';
 
@@ -13,10 +12,17 @@ export const baseList = ['google.com', 'email.com', 'proton.me', 'yahoo.com'];
 
 const pattern = /^\w+@[a-zA-Z.,]+?\.[a-zA-Z]{2,3}$/;
 
+const customClasses = {
+	wrapper: 'ciao',
+};
+
 function App() {
-	const extRef = useRef(null);
-	const suggRef = useRef(null);
 	const [email, setEmail] = useState<string | undefined>(undefined);
+
+	const [payload, setPayload] = useState({
+		name: 'Giovanni',
+		email: '',
+	});
 
 	const { suggestion, getSuggestion, resetSuggestion } = useSuggestion(domainList, extesionList);
 
@@ -26,6 +32,8 @@ function App() {
 		}
 	}
 
+	console.log(email);
+
 	function handleReset() {
 		if (suggestion) {
 			resetSuggestion();
@@ -33,7 +41,7 @@ function App() {
 	}
 
 	function handleConfirm() {
-		setEmail(suggestion);
+		setEmail(email);
 		resetSuggestion();
 	}
 
@@ -51,16 +59,21 @@ function App() {
 				<input type="text" />
 				<input type="text" />
 			</div>
+
 			<Profiler>
 				<Email
 					className="customClass"
 					onBlur={handleBlur}
 					onFocus={handleReset}
 					baseList={baseList}
+					onChange={setEmail}
+					classNames={customClasses}
+					scrollIntoView
+					closeOnScroll
 					domainList={domainList}
 					placeholder="Ciao"
-					onChange={(value) => setEmail(value)}
 					value={email}
+					listPrefix="Marco"
 				/>
 			</Profiler>
 

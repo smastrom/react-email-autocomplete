@@ -1,28 +1,28 @@
 export type Maybe<T> = T | undefined;
 
-export type CustomClasses = {
-	wrapperClassName?: string;
-	inputClassName?: string;
-	dropdownClassName?: string;
-	suggestionClassName?: string;
-	usernameClassName?: string;
-	domainClassName?: string;
+export type ClassNames = {
+	wrapper?: string;
+	input?: string;
+	dropdown?: string;
+	suggestion?: string;
+	username?: string;
+	domain?: string;
 };
 
 export type Props = {
 	value: Maybe<string>;
-	onChange: (value: string) => void;
+	onChange: React.Dispatch<React.SetStateAction<string>> | ((value: string) => void);
 	baseList: string[];
 	domainList?: string[];
-	defaultValue?: string;
 	animation?: string;
-	classNames?: CustomClasses;
+	classNames?: ClassNames;
 	className?: string;
 	scrollIntoView?: boolean;
 	closeOnScroll?: boolean;
 	startAfter?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	maxSuggestions?: 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	nextElement?: string;
+	listPrefix?: string;
 };
 
 export type Events = {
@@ -33,8 +33,15 @@ export type Events = {
 };
 
 export type Attributes = {
-	id?: string;
-	placeholder?: string;
+	id?: HTMLInputElement['id'];
+	placeholder?: HTMLInputElement['placeholder'];
+	defaultValue?: HTMLInputElement['defaultValue'];
+	name?: HTMLInputElement['name'];
+	minLength?: HTMLInputElement['minLength'];
+	maxLength?: HTMLInputElement['maxLength'];
+	pattern?: HTMLInputElement['pattern'];
+	readOnly?: HTMLInputElement['readOnly'];
+	required?: HTMLInputElement['required'];
 };
 
 export type SelectionIndex = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
