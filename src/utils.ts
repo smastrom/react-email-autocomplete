@@ -21,6 +21,6 @@ export function getHonestValue(value: unknown, maxValue: number, defaultValue: n
 	return defaultValue;
 }
 
-export function isNotDesktop() {
-	return /iPhone|iPad|iPod|Android|Mobi/i.test(navigator.userAgent);
+export function isFn(fn: unknown) {
+	return typeof fn === 'function';
 }

@@ -30,8 +30,36 @@
 	text-align: inherit;
 }
 
+@keyframes dropdownAnim {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}
+
+@keyframes dropdownAnimOut {
+	0% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+}
+
 .dropdownIn {
-	animation: dropdownAnim 300ms ease-out;
+	animation: dropdownAnim 150ms ease-out;
+}
+
+.dropdownOut {
+	animation: dropdownAnimOut 150ms ease-out;
 }
 
 .customClass-hidden {

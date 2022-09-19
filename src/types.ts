@@ -9,16 +9,25 @@ export type ClassNames = {
 	domain?: string;
 };
 
+export type SelectPar = {
+	valueSelected: string;
+	withKeyboard: boolean;
+	position: number;
+	target: HTMLLIElement;
+};
+
 export type Props = {
 	value: Maybe<string>;
-	onChange: React.Dispatch<React.SetStateAction<string>> | ((value: string) => void);
+	onChange:
+		| React.Dispatch<React.SetStateAction<string>>
+		| ((value: string) => void | Promise<void>);
+	onSelect?: (object: SelectPar) => void | Promise<void>;
 	baseList: string[];
 	domainList?: string[];
 	animation?: string;
 	classNames?: ClassNames;
 	className?: string;
-	scrollIntoView?: boolean;
-	closeOnScroll?: boolean;
+	closeOnScroll?: number | null;
 	startAfter?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	maxSuggestions?: 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	nextElement?: string;
