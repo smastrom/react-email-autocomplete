@@ -14,7 +14,7 @@ const pattern = /^\w+@[a-zA-Z.,]+?\.[a-zA-Z]{2,3}$/;
 
 const customClasses = {
 	wrapper: 'ciao',
-	dropdown: '',
+	dropdown: 'dropdownIn',
 };
 
 function App() {
@@ -69,7 +69,6 @@ function App() {
 					baseList={baseList}
 					onChange={setEmail}
 					classNames={customClasses}
-					closeOnScroll
 					domainList={domainList}
 					placeholder="Ciao"
 					value={email}

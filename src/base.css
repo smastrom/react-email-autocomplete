@@ -50,16 +50,16 @@
 
 	100% {
 		opacity: 0;
-		transform: translateY(-20px);
+		transform: translateY(-10px);
 	}
 }
 
 .dropdownIn {
-	animation: dropdownAnim 150ms ease-out;
+	animation: dropdownAnim 200ms ease-out;
 }
 
 .dropdownOut {
-	animation: dropdownAnimOut 150ms ease-out;
+	animation: dropdownAnimOut 200ms ease-out;
 }
 
 .customClass-hidden {

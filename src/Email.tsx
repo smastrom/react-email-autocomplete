@@ -1,7 +1,6 @@
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr, isFn } from './utils';
-
-import type { Attributes, Props, Events, ClassNames, SelectPar } from './types';
+import { Attributes, Props, Events, ClassNames, SelectParams, ClassProps } from './types';
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
@@ -10,16 +9,14 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			onChange: updateValue,
 			value: externalValue,
 			baseList,
-			onSelect,
 			/* Core - Optional */
 			domainList = [],
+			onSelect,
 			maxSuggestions = 6,
 			startAfter = 2,
 			nextElement,
-			closeOnScroll = null,
 			className,
 			classNames,
-			listPrefix,
 			/* Input Attributes */
 			id,
 			placeholder,
@@ -45,7 +42,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* Refs */
 
-		const skipInitial = useRef(true);
+		const isDirty = useRef(false);
 
 		const wrapperRef = useRef<HTMLDivElement | null>(null);
 		const inputRef = useRef<HTMLInputElement | null>(null);
@@ -58,7 +55,6 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		const [internalDomains, setInternalDomains] = useState(baseList);
 		const [ariaIndex, setAriaIndex] = useState(-1);
-		const [isOpen, setIsOpen] = useState(false);
 
 		/*  Helpers */
 
@@ -70,51 +66,50 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const username = splitVal[0];
 		const hasUsername = username.length >= absoluteStart;
 		const hasAt = hasUsername && absoluteValue.indexOf('@') !== -1;
-		const domain = splitVal[1];
-		const hasDomain = hasAt && domain.length >= 1;
+		const inputDomain = splitVal[1];
+		const hasDomain = hasAt && inputDomain.length >= 1;
 
 		const wantsRefine = isValidArr(externalDomains);
 		const shouldRefine = hasDomain && wantsRefine;
+
+		const shouldOpen = absoluteValue.length >= absoluteStart;
+		const shouldAppend = shouldOpen && internalDomains.length > 0;
 
 		/* Effect - Update value */
 
 		function resetState() {
 			setInternalDomains([]);
-			setIsOpen(false);
 			setAriaIndex(-1);
 		}
 
+		useLayoutEffect(() => {
+			if (!isDirty.current && shouldOpen) {
+				isDirty.current = true;
+			}
+		}, [shouldOpen]);
+
 		useEffect(() => {
-			if (skipInitial.current) {
-				skipInitial.current = false;
-			} else {
-				if (hasUsername) {
-					setIsOpen(true);
+			if (isDirty.current) {
+				if (shouldRefine) {
+					const newDomains = [...externalDomains]
+						.filter((externalDomain) => externalDomain.startsWith(inputDomain))
+						.slice(0, absoluteMax);
 
-					if (shouldRefine) {
-						const copyDomains = [...externalDomains];
-						const newDomains = copyDomains
-							.filter((userDomain) => userDomain.startsWith(domain))
-							.slice(0, absoluteMax);
-
-						if (newDomains.length > 0) {
-							if (`${username}@${newDomains[0]}` === absoluteValue) {
-								resetState();
-							} else {
-								setInternalDomains(newDomains);
-							}
-						} else {
+					if (newDomains.length > 0) {
+						if (`${username}@${newDomains[0]}` === absoluteValue) {
 							resetState();
+						} else {
+							setInternalDomains(newDomains);
 						}
 					} else {
-						if (hasAt) {
-							resetState();
-						} else {
-							setInternalDomains(baseList);
-						}
+						resetState();
 					}
 				} else {
-					resetState();
+					if (hasAt && !externalDomains) {
+						resetState();
+					} else {
+						setInternalDomains(baseList);
+					}
 				}
 			}
 		}, [
@@ -124,44 +119,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			externalDomains,
 			hasAt,
 			username,
-			hasUsername,
-			domain,
+			inputDomain,
 			shouldRefine,
 		]);
-
-		/* Effects - UI */
-
-		const handleScrollClose = useCallback(() => {
-			let startY: number;
-			let endY = 0;
-
-			function scrollClose() {
-				const yPos = inputRef.current?.getBoundingClientRect().y as number;
-
-				if (typeof startY === 'undefined') {
-					startY = yPos;
-				} else {
-					endY = yPos;
-				}
-
-				if (Math.abs(endY - startY) >= (closeOnScroll as number)) {
-					resetState();
-					document.removeEventListener('scroll', scrollClose);
-				}
-			}
-
-			if (isOpen) {
-				document.addEventListener('scroll', scrollClose, { passive: true });
-			} else {
-				document.removeEventListener('scroll', scrollClose);
-			}
-		}, [isOpen, closeOnScroll]);
-
-		useEffect(() => {
-			if (typeof closeOnScroll === 'number') {
-				handleScrollClose();
-			}
-		}, [closeOnScroll, handleScrollClose]);
 
 		useEffect(() => {
 			if (ariaIndex >= 0) {
@@ -171,7 +131,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		useEffect(() => {
 			function handleClose(event: MouseEvent) {
-				if (isOpen) {
+				if (shouldOpen) {
 					if (!wrapperRef.current?.contains(event.target as Node)) {
 						resetState();
 					}
@@ -183,13 +143,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			return () => {
 				document.removeEventListener('click', handleClose);
 			};
-		}, [isOpen]);
-
-		/* Prevent rendering */
-
-		if ((typeof externalValue !== 'string' && !baseList) || !isFn(updateValue)) {
-			return null;
-		}
+		}, [shouldOpen]);
 
 		/* Internal fake handlers */
 
@@ -197,13 +151,12 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			updateValue(cleanValue(event.target.value));
 		}
 
-		function dispatchSelect(
-			valueSelected: SelectPar['valueSelected'],
-			withKeyboard: SelectPar['withKeyboard'],
-			position: SelectPar['position'],
-			target: SelectPar['target']
+		function fakeSelectDispatch(
+			valueSelected: SelectParams['valueSelected'],
+			withKeyboard: SelectParams['withKeyboard'],
+			position: SelectParams['position']
 		) {
-			onSelect!({ valueSelected, withKeyboard, position, target });
+			onSelect!({ valueSelected, withKeyboard, position });
 		}
 
 		/* Internal Events */
@@ -234,7 +187,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			if (event.code === 'Space') {
 				event.preventDefault();
 			}
-			if (isOpen) {
+			if (shouldOpen) {
 				switch (event.code) {
 					case 'Tab':
 					case 'Escape':
@@ -249,17 +202,17 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleListKeyboard(event: React.KeyboardEvent<HTMLLIElement>) {
-			if (isOpen) {
+			if (shouldOpen) {
 				switch (event.code) {
 					case 'Escape':
-						setIsOpen(false);
+						resetState();
 						return handleCursorFocus();
 
 					case 'Backspace':
 						return inputRef?.current?.focus();
 
 					case 'Tab':
-						return setIsOpen(false);
+						return resetState();
 
 					case 'Enter':
 					case 'Space': {
@@ -270,7 +223,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 						updateValue(newValue);
 						if (isFn(onSelect)) {
-							dispatchSelect(newValue, true, ariaIndex + 1, event.currentTarget);
+							fakeSelectDispatch(newValue, true, ariaIndex + 1);
 						}
 						return handleReFocus();
 					}
@@ -302,7 +255,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			const newValue = cleanValue((event.currentTarget as Node).textContent as string);
 			updateValue(newValue);
 			if (isFn(onSelect)) {
-				dispatchSelect(newValue, false, childIndex + 1, event.currentTarget);
+				fakeSelectDispatch(newValue, false, childIndex + 1);
 			}
 			handleReFocus();
 		}
@@ -313,10 +266,10 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			const events: Partial<Events> = {};
 
 			events.onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-				handleInputKeyboard(event);
 				if (isFn(userOnKeyDown)) {
 					userOnKeyDown!(event);
 				}
+				handleInputKeyboard(event);
 			};
 
 			if (isFn(userOnFocus)) {
@@ -368,7 +321,12 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			if (classes.length > 0) {
 				return { className: classes };
 			}
-			return {};
+			return { className };
+		}
+
+		function setDropdownClasses() {
+			const userClasses = `${classNames?.dropdown || ''}`;
+			return { className: `${className} ${userClasses}`.trim() };
 		}
 
 		function setClasses(classProperty: keyof ClassNames) {
@@ -380,9 +338,13 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			return {};
 		}
 
-		function getPrefix() {
-			const prefix = typeof listPrefix === 'string' ? `${listPrefix}_` : 'react-ems_';
-			return `${prefix}${listId.current}`;
+		const listPrefix = `react-ems_${listId.current}`;
+
+		function setAriaControl() {
+			if (shouldAppend) {
+				return { 'aria-controls': listPrefix }; // Maybe add activeDescendant?
+			}
+			return {};
 		}
 
 		return (
@@ -392,24 +354,19 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 					type="email"
 					autoComplete="off"
 					role="combobox"
-					aria-expanded={isOpen}
-					aria-controls={getPrefix()}
+					aria-expanded={shouldAppend}
 					aria-autocomplete="list"
 					onChange={(event) => handleInternalChange(event)}
 					value={absoluteValue}
-					{...setClasses('input')}
+					{...setAriaControl()}
+					{...setClasses(ClassProps.Input)}
 					{...setEvents()}
 					{...userAttrs}
 				/>
 
-				<ul
-					ref={dropdownRef}
-					id={getPrefix()}
-					style={!isOpen ? { display: 'none' } : {}}
-					{...setClasses('dropdown')}
-				>
-					{isOpen &&
-						internalDomains.map((domain, index) => (
+				{shouldAppend && (
+					<ul ref={dropdownRef} id={listPrefix} {...setDropdownClasses()}>
+						{internalDomains.map((domain, index) => (
 							<li
 								key={domain}
 								ref={(thisElement) => (liRefs.current[index] = thisElement)}
@@ -420,13 +377,15 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 								tabIndex={index === ariaIndex ? 0 : -1}
 								onKeyDown={handleListKeyboard}
 								onClick={(event) => handleSuggestionClick(event, index)}
-								{...setClasses('suggestion')}
+								{...setClasses(ClassProps.Suggestion)}
 							>
-								<span {...setClasses('username')}>{username}</span>
-								<span {...setClasses('domain')}>@{domain}</span>
+								<span {...setClasses(ClassProps.Username)}>{username}</span>
+								<span {...setClasses(ClassProps.Domain)}>@{domain}</span>
 							</li>
 						))}
-				</ul>
+					</ul>
+				)}
+
 				{children}
 			</div>
 		);

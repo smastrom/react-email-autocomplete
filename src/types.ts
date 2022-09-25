@@ -1,5 +1,14 @@
 export type Maybe<T> = T | undefined;
 
+export enum ClassProps {
+	Wrapper = 'wrapper',
+	Input = 'input',
+	Dropdown = 'dropdown',
+	Suggestion = 'suggestion',
+	Username = 'username',
+	Domain = 'domain',
+}
+
 export type ClassNames = {
 	wrapper?: string;
 	input?: string;
@@ -9,11 +18,10 @@ export type ClassNames = {
 	domain?: string;
 };
 
-export type SelectPar = {
+export type SelectParams = {
 	valueSelected: string;
 	withKeyboard: boolean;
 	position: number;
-	target: HTMLLIElement;
 };
 
 export type Props = {
@@ -21,7 +29,7 @@ export type Props = {
 	onChange:
 		| React.Dispatch<React.SetStateAction<string>>
 		| ((value: string) => void | Promise<void>);
-	onSelect?: (object: SelectPar) => void | Promise<void>;
+	onSelect?: (object: SelectParams) => void | Promise<void>;
 	baseList: string[];
 	domainList?: string[];
 	animation?: string;
@@ -31,7 +39,6 @@ export type Props = {
 	startAfter?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	maxSuggestions?: 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	nextElement?: string;
-	listPrefix?: string;
 };
 
 export type Events = {
