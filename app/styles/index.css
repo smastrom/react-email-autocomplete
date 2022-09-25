@@ -55,7 +55,7 @@ html {
 	font-size: 1.75rem;
 }
 
-.content {
+.wrapper {
 	display: flex;
 	gap: 40px;
 	flex-direction: column;
@@ -64,12 +64,22 @@ html {
 }
 
 .selectionInfo {
+	display: flex;
+	gap: 10px;
+}
+
+.selectionInfo div {
 	font-size: 0.925rem;
-	padding: 0.4em 0.8em;
+	padding: 0.3em 0.6em;
 	font-style: italic;
 	background: white;
 	border-radius: 10px;
 	border: 1px solid var(--borderColor);
+}
+
+.selectionInfo span {
+	font-style: italic;
+	font-weight: 600;
 }
 
 .emailWrapper {
@@ -140,7 +150,7 @@ html {
 
 .error {
 	font-size: 0.865rem;
-	color: tomato;
+	color: #ef4444;
 	font-weight: 600;
 }
 
@@ -176,4 +186,20 @@ html {
 
 .profileLink:hover {
 	text-decoration: underline;
+}
+
+.checkmark {
+	fill: #22c55e;
+	display: flex;
+	position: absolute;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	right: 0.2em;
+	width: 2em;
+}
+
+.alert {
+	fill: none;
+	stroke: #ef4444;
 }

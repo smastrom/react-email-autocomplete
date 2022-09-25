@@ -19,6 +19,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			classNames,
 			/* Input Attributes */
 			id,
+			name,
 			placeholder,
 			minLength,
 			maxLength,
@@ -296,7 +297,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		const userAttrs: Attributes = {
 			id,
-			name: HTMLInputElement['name'],
+			name,
 			placeholder,
 			minLength,
 			maxLength,

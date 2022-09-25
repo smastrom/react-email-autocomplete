@@ -5,7 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 import Package from './package.json';
 
 export default defineConfig(({ command, mode }) => {
-	if (mode === 'ci') {
+	if (mode === 'app') {
 		return {
 			plugins: [react()],
 		};

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type Maybe<T> = T | undefined;
 
 export enum ClassProps {
@@ -34,6 +36,7 @@ export type Props = {
 	startAfter?: Values;
 	maxSuggestions?: Omit<Values, 1>;
 	nextElement?: string;
+	children?: React.ReactNode;
 };
 
 export type Events = {

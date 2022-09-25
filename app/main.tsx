@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import App from './App';
+import { App } from './components/App';
 
 import './styles/preflight.css';
 import './styles/index.css';

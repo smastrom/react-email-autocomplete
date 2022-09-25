@@ -1,12 +1,11 @@
 {
-	"name": "vite-project",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
+	"name": "react-email-suggestions",
+	"private": false,
+	"version": "0.9.0",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"build:ci": "tsc && vite build --mode ci",
+		"build:ci": "tsc && vite build --mode app",
 		"preview": "vite preview"
 	},
 	"devDependencies": {
