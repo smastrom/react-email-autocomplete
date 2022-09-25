@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr, isFn } from './utils';
-import { Attributes, Props, Events, ClassNames, SelectParams, ClassProps } from './types';
+import { Attributes, Props, Events, ClassNames, SelectData, ClassProps } from './types';
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
@@ -151,9 +151,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function fakeSelectDispatch(
-			valueSelected: SelectParams['valueSelected'],
-			withKeyboard: SelectParams['withKeyboard'],
-			position: SelectParams['position']
+			valueSelected: SelectData['valueSelected'],
+			withKeyboard: SelectData['withKeyboard'],
+			position: SelectData['position']
 		) {
 			onSelect!({ valueSelected, withKeyboard, position });
 		}

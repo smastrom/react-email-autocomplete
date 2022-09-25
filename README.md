@@ -12,8 +12,6 @@ _First released: October 1st, 2022_
 
 # API
 
-This package exports two modules **completely independent** between each other:
-
 ## :envelope: Email Component
 
 It aims to replace the typical `<input type="email" />` of your form by giving the best UX with all the flexibility you'd expect from an input field:
@@ -57,7 +55,7 @@ You can use it with any email/text input and of course with Email component.
 | `onChange`       | State setter or custom dispatcher to update the state                                            | _Dispatch<SetStateAction<string\>>_ \| _((value: string) => void)_ | undefined | :white_check_mark: |
 | `baseList`       | Domains to suggest while typing the username                                                     | _string[]_                                                         | undefined | :white_check_mark: |
 | `refineList`     | Domains to refine suggestions after typing the username                                          | _string[]_                                                         | []        | :x:                |
-| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _(object: SelectParam) => void \| Promise\<void\>_                 | undefined | :x:                |
+| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _(object: SelectData) => void \| Promise\<void\>_                  | undefined | :x:                |
 | `startAfter`     | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_                             | 2         | :x:                |
 | `maxSuggestions` | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_                                  | 6         | :x:                |
 | `nextElement`    | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                                                           | undefined | :x:                |
@@ -329,13 +327,13 @@ function App() {
 You may have to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard):
 
 ```ts
-type SelectParam = {
+type SelectData = {
   valueSelected: string;
   withKeyboard: boolean;
   position: number;
 };
 
-type OnSelect = (object: SelectParam) => void | Promise<void>;
+type OnSelect = (object: SelectData) => void | Promise<void>;
 ```
 
 ```jsx

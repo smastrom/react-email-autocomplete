@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Email } from '../src/Email';
 import { useSuggestion } from '../src/useSuggestion';
 import { Profiler } from './Profiler';
-import { SelectParams } from '../src/types';
+import { SelectData } from '../src/types';
 import domainList from '../src/domains.json';
 import extesionList from '../src/extensions.json';
 
@@ -119,7 +119,7 @@ function App() {
 		resetSuggestion();
 	}
 
-	function customOnSelect({ valueSelected, withKeyboard, position }: SelectParams) {
+	function customOnSelect({ valueSelected, withKeyboard, position }: SelectData) {
 		setSelectionData(
 			`valueSelected: ${valueSelected}, withKeyboard: ${withKeyboard}, position: ${position}`
 		);

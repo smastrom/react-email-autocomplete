@@ -1,8 +1,15 @@
 import { distance } from 'fastest-levenshtein';
+import { cleanValue } from './utils';
 
 type DistObj = {
 	target: string;
 	distance: number;
+};
+
+export type Options = {
+	maxDomainDistance: number;
+	maxExtensionsDistance: number;
+	minUsernameLength: number;
 };
 
 function isEligDom(splitDom: string[]) {
@@ -17,14 +24,21 @@ function getSortedDist(domainDist: DistObj[], optDist: number) {
 		.sort((prevDom, nextDom) => prevDom.distance - nextDom.distance);
 }
 
-function clean(value: string) {
-	return value.replace(/\s+/g, '');
-}
+export const defaultOptions = {
+	maxDomainDistance: 3,
+	maxExtensionsDistance: 2,
+	minUsernameLength: 4,
+};
 
-export function suggest(domains: readonly string[], extensions: readonly string[]) {
+export function suggest(
+	domains: readonly string[],
+	extensions: readonly string[],
+	options: Options = defaultOptions
+) {
 	return function (value: string): string | undefined {
 		const splitVal = value.split('@');
-		const isEligValue = value.length >= 3 + 1 + 3 + 1 + 2 && splitVal.length === 2;
+		const isEligValue =
+			value.length >= options.minUsernameLength + 1 + 3 + 1 + 2 && splitVal.length === 2;
 
 		if (isEligValue) {
 			const user: string = splitVal[0];
@@ -32,10 +46,10 @@ export function suggest(domains: readonly string[], extensions: readonly string[
 			const splitDom = domain.split('.');
 			const splitDomC = domain.split(',');
 
-			const isEligUser = user.length >= 4;
+			const isEligUser = user.length >= options.minUsernameLength;
 
 			if (isEligUser && (isEligDom(splitDom) || isEligDom(splitDomC))) {
-				const cleanDom = clean(domain);
+				const cleanDom = cleanValue(domain);
 				const isNotInclDom = domains.indexOf(cleanDom) === -1;
 
 				if (isNotInclDom) {
@@ -47,14 +61,14 @@ export function suggest(domains: readonly string[], extensions: readonly string[
 						});
 					}
 
-					const provider = clean(splitDom[0]);
+					const provider = cleanValue(splitDom[0]);
 					let optDist: number;
 
 					if (provider.length <= 3) {
 						optDist = 1;
 					} else {
 						const minDist = Math.floor(cleanDom.length / 2);
-						optDist = Math.min(minDist, 3);
+						optDist = Math.min(minDist, options.maxDomainDistance);
 					}
 
 					const eligDoms = getSortedDist(domainDist, optDist);
@@ -75,7 +89,7 @@ export function suggest(domains: readonly string[], extensions: readonly string[
 							});
 						}
 
-						const optExtDist = userExt.length >= 4 ? 2 : 1;
+						const optExtDist = userExt.length >= 4 ? options.maxExtensionsDistance : 1;
 						const eligExts = getSortedDist(extDists, optExtDist);
 
 						if (eligExts.length > 0) {

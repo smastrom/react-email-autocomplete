@@ -18,7 +18,7 @@ export type ClassNames = {
 	domain?: string;
 };
 
-export type SelectParams = {
+export type SelectData = {
 	valueSelected: string;
 	withKeyboard: boolean;
 	position: number;
@@ -29,7 +29,7 @@ export type Props = {
 	onChange:
 		| React.Dispatch<React.SetStateAction<string>>
 		| ((value: string) => void | Promise<void>);
-	onSelect?: (object: SelectParams) => void | Promise<void>;
+	onSelect?: (object: SelectData) => void | Promise<void>;
 	baseList: string[];
 	domainList?: string[];
 	animation?: string;
