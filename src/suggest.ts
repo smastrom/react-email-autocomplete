@@ -1,15 +1,10 @@
 import { distance } from 'fastest-levenshtein';
+import { Options, defaultOptions } from './useSuggestion';
 import { cleanValue } from './utils';
 
 type DistObj = {
 	target: string;
 	distance: number;
-};
-
-export type Options = {
-	maxDomainDistance: number;
-	maxExtensionsDistance: number;
-	minUsernameLength: number;
 };
 
 function isEligDom(splitDom: string[]) {
@@ -24,12 +19,6 @@ function getSortedDist(domainDist: DistObj[], optDist: number) {
 		.sort((prevDom, nextDom) => prevDom.distance - nextDom.distance);
 }
 
-export const defaultOptions = {
-	maxDomainDistance: 3,
-	maxExtensionsDistance: 2,
-	minUsernameLength: 4,
-};
-
 export function suggest(
 	domains: readonly string[],
 	extensions: readonly string[],
@@ -38,7 +27,9 @@ export function suggest(
 	return function (value: string): string | undefined {
 		const splitVal = value.split('@');
 		const isEligValue =
-			value.length >= options.minUsernameLength + 1 + 3 + 1 + 2 && splitVal.length === 2;
+			value.length >=
+				(options.minUsernameLength ?? defaultOptions.minUsernameLength) + 1 + 3 + 1 + 2 &&
+			splitVal.length === 2;
 
 		if (isEligValue) {
 			const user: string = splitVal[0];
@@ -46,7 +37,8 @@ export function suggest(
 			const splitDom = domain.split('.');
 			const splitDomC = domain.split(',');
 
-			const isEligUser = user.length >= options.minUsernameLength;
+			const isEligUser =
+				user.length >= (options.minUsernameLength ?? defaultOptions.minUsernameLength);
 
 			if (isEligUser && (isEligDom(splitDom) || isEligDom(splitDomC))) {
 				const cleanDom = cleanValue(domain);
@@ -68,7 +60,10 @@ export function suggest(
 						optDist = 1;
 					} else {
 						const minDist = Math.floor(cleanDom.length / 2);
-						optDist = Math.min(minDist, options.maxDomainDistance);
+						optDist = Math.min(
+							minDist,
+							options.maxDomainDistance ?? defaultOptions.maxDomainDistance
+						);
 					}
 
 					const eligDoms = getSortedDist(domainDist, optDist);
@@ -89,7 +84,10 @@ export function suggest(
 							});
 						}
 
-						const optExtDist = userExt.length >= 4 ? options.maxExtensionsDistance : 1;
+						const optExtDist =
+							userExt.length >= 4
+								? options.maxExtensionsDistance ?? defaultOptions.maxExtensionsDistance
+								: 1;
 						const eligExts = getSortedDist(extDists, optExtDist);
 
 						if (eligExts.length > 0) {

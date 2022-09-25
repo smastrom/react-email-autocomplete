@@ -9,20 +9,15 @@ export enum ClassProps {
 	Domain = 'domain',
 }
 
-export type ClassNames = {
-	wrapper?: string;
-	input?: string;
-	dropdown?: string;
-	suggestion?: string;
-	username?: string;
-	domain?: string;
-};
+export type ClassNames = Partial<Record<ClassProps, string>>;
 
 export type SelectData = {
 	valueSelected: string;
 	withKeyboard: boolean;
 	position: number;
 };
+
+type Values = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export type Props = {
 	value: Maybe<string>;
@@ -36,8 +31,8 @@ export type Props = {
 	classNames?: ClassNames;
 	className?: string;
 	closeOnScroll?: number | null;
-	startAfter?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-	maxSuggestions?: 2 | 3 | 4 | 5 | 6 | 7 | 8;
+	startAfter?: Values;
+	maxSuggestions?: Omit<Values, 1>;
 	nextElement?: string;
 };
 
@@ -48,15 +43,11 @@ export type Events = {
 	onInput?: React.FormEventHandler<HTMLInputElement>;
 };
 
-export type Attributes = {
-	id?: HTMLInputElement['id'];
-	placeholder?: HTMLInputElement['placeholder'];
-	name?: HTMLInputElement['name'];
-	minLength?: HTMLInputElement['minLength'];
-	maxLength?: HTMLInputElement['maxLength'];
-	pattern?: HTMLInputElement['pattern'];
-	readOnly?: HTMLInputElement['readOnly'];
-	required?: HTMLInputElement['required'];
-};
+export type Attributes = Partial<
+	Pick<
+		HTMLInputElement,
+		'id' | 'placeholder' | 'name' | 'minLength' | 'maxLength' | 'pattern' | 'readOnly' | 'required'
+	>
+>;
 
-export type SelectionIndex = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type SelectionIndex = -1 | Omit<Values, 8>;

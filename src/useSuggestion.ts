@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { defaultOptions, Options, suggest } from './suggest';
+import { suggest } from './suggest';
 import { Maybe } from './types';
 
 type Values = {
@@ -7,12 +7,28 @@ type Values = {
 	suggestion: Maybe<string>;
 };
 
+export type Options = {
+	maxDomainDistance?: number;
+	maxExtensionsDistance?: number;
+	minUsernameLength?: number;
+};
+
+export const defaultOptions = {
+	maxDomainDistance: 3,
+	maxExtensionsDistance: 2,
+	minUsernameLength: 3,
+};
+
 const defaultValues = {
 	inputValue: undefined,
 	suggestion: undefined,
 };
 
-export function useSuggestion(domainList: string[], extensionList: string[], options?: Options) {
+export function useSuggestion(
+	domainList: readonly string[],
+	extensionList: readonly string[],
+	options?: Options
+) {
 	const getSuggestion = useMemo(
 		() =>
 			suggest(domainList, extensionList, {

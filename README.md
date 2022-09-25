@@ -39,7 +39,7 @@ You can use it with any email/text input and of course with Email component.
 
 ---
 
-**Jump to:** [How suggestion is evaluated?](#how-suggestion-is-evaluated-) | [Usage](#usage) | [Customizing Options](#customizing-options) | [Accessibity](#accessibity)
+**Jump to:** [How suggestion is evaluated?](#how-suggestion-is-evaluated-) | [Usage](#usage) | [Customizing Options](#customizing-options) | [Accessibility](#accessibity)
 
 ---
 
@@ -324,7 +324,7 @@ function App() {
 
 ### Custom onSelect callback
 
-You may have to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard):
+You may need to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard):
 
 ```ts
 type SelectData = {
@@ -548,6 +548,7 @@ const { suggestion, setSuggestion, resetSuggestion } = useSuggestion(
     // Default values
     maxDomainDistance: 3,
     maxExtensionDistance: 2,
+    minUsernameLength: 3,
   }
 );
 ```
