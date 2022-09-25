@@ -45,9 +45,14 @@ export function useSuggestion(domainList: string[], extensionList: string[]) {
 		}
 	}, [values.inputValue, getSuggestion]);
 
-	return {
-		resetSuggestion,
-		getSuggestion: setSuggestion,
-		suggestion: values.suggestion,
-	};
+	const returnObj = useMemo(
+		() => ({
+			resetSuggestion,
+			getSuggestion: setSuggestion,
+			suggestion: values.suggestion,
+		}),
+		[values.suggestion]
+	);
+
+	return returnObj;
 }

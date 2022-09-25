@@ -1,0 +1,179 @@
+:root {
+	--backgroundColor: #f1f5f9;
+	--borderColor: #d5dde7;
+	--accentColor: #ec4899;
+	--textColor: #475569;
+	--borderColor: #cbd5e1;
+	--transparentColor: rgba(0, 0, 0, 0);
+	--padding: 30px;
+}
+
+html {
+	font-family: sans-serif;
+	font-size: 100%;
+	font-weight: 400;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+	background-color: #f1f5f9;
+	color: var(--textColor);
+	font-family: Titillium Web, Avenir, Helvetica, Arial, sans-serif;
+	background: url(https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png);
+}
+
+#root {
+	gap: 60px;
+	padding: 30px;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	display: flex;
+	height: 100vh;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-direction: column;
+}
+
+.githubLink svg {
+	width: 35px;
+	height: 35px;
+	fill: var(--textColor);
+	transition: fill 150ms ease-out;
+}
+
+.githubLink:hover svg {
+	fill: var(--accentColor);
+}
+
+.title {
+	font-size: 1.75rem;
+}
+
+.content {
+	display: flex;
+	gap: 40px;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.selectionInfo {
+	font-size: 0.925rem;
+	padding: 0.4em 0.8em;
+	font-style: italic;
+	background: white;
+	border-radius: 10px;
+	border: 1px solid var(--borderColor);
+}
+
+.emailWrapper {
+	max-width: 300px;
+	width: 100%;
+}
+
+.emailWrapper label {
+	font-size: 0.925rem;
+}
+
+.checkboxNav {
+	display: flex;
+	column-gap: 30px;
+	row-gap: 20px;
+	max-width: 500px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.checkboxWrapper {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.checkboxWrapper * {
+	cursor: pointer;
+}
+
+.checkboxInput {
+	margin: 0;
+	display: none;
+}
+
+.checkboxLabel {
+	white-space: nowrap;
+	display: flex;
+	margin: 0;
+	user-select: none;
+	width: max-content;
+	align-items: center;
+	cursor: pointer;
+	gap: 5px;
+}
+
+.checkboxInput:checked + .checkboxLabel::before {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M-4225-7344h-10a5.006,5.006,0,0,1-5-5v-10a5.007,5.007,0,0,1,5-5h10a5.006,5.006,0,0,1,5,5v10A5,5,0,0,1-4225-7344Zm-8.887-11.052a1.147,1.147,0,0,0-.769.3,1.138,1.138,0,0,0-.379.792,1.142,1.142,0,0,0,.294.832l2.674,2.966a1.475,1.475,0,0,0,1.1.492h.076a1.479,1.479,0,0,0,1.122-.6l4.581-6.213a1.151,1.151,0,0,0-.244-1.606,1.136,1.136,0,0,0-.68-.225,1.155,1.155,0,0,0-.926.467l-3.889,5.275a.149.149,0,0,1-.105.057h-.006a.148.148,0,0,1-.1-.046l-1.891-2.1A1.147,1.147,0,0,0-4233.887-7355.052Z' transform='translate(4240 7364)' fill='%238673e6'/%3E%3C/svg%3E%0A");
+	position: relative;
+	transition: box-shadow 0.1s linear 0s;
+	box-shadow: none;
+	filter: hue-rotate(80deg) saturate(1.8);
+	background-repeat: no-repeat;
+}
+
+.checkboxLabel::before {
+	width: 20px;
+	height: 20px;
+	content: ' ';
+	background: white;
+	box-shadow: inset 0 0 0 2px var(--borderColor);
+	background-image: none;
+	border-radius: 5px;
+	display: flex;
+	margin: 0px 0px 0px 0px;
+	position: relative;
+}
+
+.error {
+	font-size: 0.865rem;
+	color: tomato;
+	font-weight: 600;
+}
+
+.suggestion {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 0.4em 0;
+	font-size: 0.825rem;
+	white-space: nowrap;
+}
+
+.suggestion button {
+	padding: 0;
+	margin: 0 0.2em;
+	cursor: pointer;
+	appearance: none;
+	border: none;
+	background: none;
+	color: var(--accentColor);
+	font-weight: 700;
+}
+
+.suggestion button:hover,
+.suggestion button:focus {
+	text-decoration: underline;
+}
+
+.profileLink {
+	color: var(--accentColor);
+	font-weight: 600;
+}
+
+.profileLink:hover {
+	text-decoration: underline;
+}

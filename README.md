@@ -68,7 +68,7 @@ You can use it with any email/text input and of course with Email component.
 
 - Events: `onBlur`, `onFocus`, `onInput` and `onKeyDown`.
 
-- Attributes: `id`, `name`, `defaultValue`, `placeholder`, `minLength`, `maxLength`, `pattern`, `readOnly` and `required`.
+- Attributes: `id`, `name`, `placeholder`, `minLength`, `maxLength`, `pattern`, `readOnly` and `required`.
 
 - React's `ref` and `children`.
 

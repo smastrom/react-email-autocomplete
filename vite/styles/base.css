@@ -42,33 +42,6 @@
 	}
 }
 
-@keyframes dropdownAnimOut {
-	0% {
-		opacity: 1;
-		transform: translateY(0px);
-	}
-
-	100% {
-		opacity: 0;
-		transform: translateY(-10px);
-	}
-}
-
 .dropdownIn {
 	animation: dropdownAnim 200ms ease-out;
-}
-
-.dropdownOut {
-	animation: dropdownAnimOut 200ms ease-out;
-}
-
-.customClass-hidden {
-	top: -1em;
-	clip: rect(0 0 0 0);
-	clip-path: inset(50%);
-	height: 1px;
-	overflow: hidden;
-	position: absolute;
-	white-space: nowrap;
-	width: 1px;
 }

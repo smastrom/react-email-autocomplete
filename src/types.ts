@@ -51,7 +51,6 @@ export type Events = {
 export type Attributes = {
 	id?: HTMLInputElement['id'];
 	placeholder?: HTMLInputElement['placeholder'];
-	defaultValue?: HTMLInputElement['defaultValue'];
 	name?: HTMLInputElement['name'];
 	minLength?: HTMLInputElement['minLength'];
 	maxLength?: HTMLInputElement['maxLength'];
