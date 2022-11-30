@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type Maybe<T> = T | undefined;
+export type Maybe<T> = T | null;
 
 export enum ClassProps {
 	Wrapper = 'wrapper',
@@ -22,7 +22,7 @@ export type SelectData = {
 type Values = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export type Props = {
-	value: Maybe<string>;
+	value: string | undefined;
 	onChange:
 		| React.Dispatch<React.SetStateAction<string>>
 		| ((value: string) => void | Promise<void>);

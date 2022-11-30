@@ -1,18 +1,18 @@
-import React, { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr, isFn } from './utils';
-import { Attributes, Props, Events, ClassNames, SelectData, ClassProps } from './types';
+import { Attributes, Props, Events, ClassNames, SelectData, ClassProps, Maybe } from './types';
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
 		{
 			/* Core - Required */
 			onChange: updateValue,
-			value: externalValue,
+			value: _externalValue,
 			baseList,
 			/* Core - Optional */
 			domainList = [],
 			onSelect,
-			maxSuggestions = 6,
+			maxSuggestions: _maxSuggestions = 6,
 			startAfter = 2,
 			nextElement,
 			className,
@@ -36,92 +36,38 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		},
 		externalRef
 	) => {
-		/* Data */
-
-		const externalDomains = useMemo(() => domainList, [domainList]);
-
 		/* Refs */
 
-		const isDirty = useRef(false);
-
-		const wrapperRef = useRef<HTMLDivElement | null>(null);
-		const inputRef = useRef<HTMLInputElement | null>(null);
-		const dropdownRef = useRef<HTMLUListElement | null>(null);
-		const liRefs = useRef<(HTMLLIElement | null)[] | []>([]);
+		const wrapperRef = useRef<Maybe<HTMLDivElement>>(null);
+		const inputRef = useRef<Maybe<HTMLInputElement>>(null);
+		const dropdownRef = useRef<Maybe<HTMLUListElement>>(null);
+		const liRefs = useRef<Maybe<HTMLLIElement>[] | []>([]);
 
 		const listId = useRef<string | undefined>(getUniqueId());
 
 		/* State */
 
-		const [internalDomains, setInternalDomains] = useState(baseList);
+		const [suggestions, setSuggestions] = useState(baseList);
 		const [ariaIndex, setAriaIndex] = useState(-1);
 
 		/*  Helpers */
 
-		const absoluteValue = isInvalid(externalValue) ? '' : cleanValue(externalValue as string);
-		const absoluteMax = getHonestValue(maxSuggestions, 8, 6);
-		const absoluteStart = getHonestValue(startAfter, 8, 2);
+		const externalValue = isInvalid(_externalValue) ? '' : cleanValue(_externalValue as string);
+		const isRefineMode = isValidArr(domainList);
+		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
+		const _minLength = getHonestValue(startAfter, 8, 2);
 
-		const splitVal = absoluteValue.split('@');
-		const username = splitVal[0];
-		const hasUsername = username.length >= absoluteStart;
-		const hasAt = hasUsername && absoluteValue.indexOf('@') !== -1;
-		const inputDomain = splitVal[1];
-		const hasDomain = hasAt && inputDomain.length >= 1;
+		const [username, domain] = externalValue.split('@');
+		const hasUsername = username.length >= _minLength;
+		const hasAt = hasUsername && externalValue.indexOf('@') >= 0;
+		const hasDomain = hasAt && domain.length >= 1;
 
-		const wantsRefine = isValidArr(externalDomains);
-		const shouldRefine = hasDomain && wantsRefine;
-
-		const shouldOpen = absoluteValue.length >= absoluteStart;
-		const shouldAppend = shouldOpen && internalDomains.length > 0;
-
-		/* Effect - Update value */
+		const isOpen = suggestions.length > 0 && externalValue.length >= _minLength;
 
 		function resetState() {
-			setInternalDomains([]);
+			setSuggestions([]);
 			setAriaIndex(-1);
 		}
-
-		useLayoutEffect(() => {
-			if (!isDirty.current && shouldOpen) {
-				isDirty.current = true;
-			}
-		}, [shouldOpen]);
-
-		useEffect(() => {
-			if (isDirty.current) {
-				if (shouldRefine) {
-					const newDomains = [...externalDomains]
-						.filter((externalDomain) => externalDomain.startsWith(inputDomain))
-						.slice(0, absoluteMax);
-
-					if (newDomains.length > 0) {
-						if (`${username}@${newDomains[0]}` === absoluteValue) {
-							resetState();
-						} else {
-							setInternalDomains(newDomains);
-						}
-					} else {
-						resetState();
-					}
-				} else {
-					if (hasAt && !externalDomains) {
-						resetState();
-					} else {
-						setInternalDomains(baseList);
-					}
-				}
-			}
-		}, [
-			absoluteMax,
-			absoluteValue,
-			baseList,
-			externalDomains,
-			hasAt,
-			username,
-			inputDomain,
-			shouldRefine,
-		]);
 
 		useEffect(() => {
 			if (ariaIndex >= 0) {
@@ -130,25 +76,46 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}, [ariaIndex]);
 
 		useEffect(() => {
-			function handleClose(event: MouseEvent) {
-				if (shouldOpen) {
-					if (!wrapperRef.current?.contains(event.target as Node)) {
-						resetState();
-					}
+			function handleOutsideClick(event: MouseEvent) {
+				if (isOpen && !wrapperRef.current?.contains(event.target as Node)) {
+					resetState();
 				}
 			}
-
-			document.addEventListener('click', handleClose);
+			document.addEventListener('click', handleOutsideClick);
 
 			return () => {
-				document.removeEventListener('click', handleClose);
+				document.removeEventListener('click', handleOutsideClick);
 			};
-		}, [shouldOpen]);
+		}, [isOpen]);
 
-		/* Internal fake handlers */
+		/* Handlers */
 
 		function handleInternalChange(event: React.ChangeEvent<HTMLInputElement>) {
 			updateValue(cleanValue(event.target.value));
+
+			if (!isRefineMode) {
+				if (hasAt) {
+					resetState();
+				} else {
+					setSuggestions(baseList);
+				}
+			} else {
+				if (hasDomain) {
+					const newDomains = domainList
+						.filter((externalDomain) => externalDomain.startsWith(domain))
+						.slice(0, maxSuggestions);
+
+					if (newDomains.length > 0) {
+						if (`${username}@${newDomains[0]}` === externalValue) {
+							resetState();
+						} else {
+							setSuggestions(newDomains);
+						}
+					}
+				} else {
+					setSuggestions(baseList);
+				}
+			}
 		}
 
 		function fakeSelectDispatch(
@@ -164,7 +131,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		function setCursor() {
 			if (inputRef.current) {
 				inputRef.current.type = 'text';
-				inputRef.current.setSelectionRange(absoluteValue.length, absoluteValue.length);
+				inputRef.current.setSelectionRange(externalValue.length, externalValue.length);
 				inputRef.current.type = 'email';
 			}
 		}
@@ -175,7 +142,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleReFocus() {
-			if (typeof nextElement === 'string') {
+			if (nextElement) {
 				document.getElementById(nextElement)?.focus();
 			} else {
 				handleCursorFocus();
@@ -187,7 +154,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			if (event.code === 'Space') {
 				event.preventDefault();
 			}
-			if (shouldOpen) {
+			if (isOpen) {
 				switch (event.code) {
 					case 'Tab':
 					case 'Escape':
@@ -202,7 +169,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleListKeyboard(event: React.KeyboardEvent<HTMLLIElement>) {
-			if (shouldOpen) {
+			if (isOpen) {
 				switch (event.code) {
 					case 'Escape':
 						resetState();
@@ -230,7 +197,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 					case 'ArrowDown':
 						event.preventDefault();
-						if (ariaIndex < internalDomains.length - 1) {
+						if (ariaIndex < suggestions.length - 1) {
 							setAriaIndex(ariaIndex + 1);
 						}
 						break;
@@ -308,7 +275,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* Props */
 
-		function pushRefs(inputElement: HTMLInputElement) {
+		function mergeRefs(inputElement: HTMLInputElement) {
 			inputRef.current = inputElement;
 			if (externalRef) {
 				(externalRef as React.MutableRefObject<HTMLInputElement | null>).current = inputElement;
@@ -341,8 +308,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const listPrefix = `react-ems_${listId.current}`;
 
 		function setAriaControl() {
-			if (shouldAppend) {
-				return { 'aria-controls': listPrefix }; // Maybe add activeDescendant?
+			if (isOpen) {
+				return { 'aria-controls': listPrefix };
 			}
 			return {};
 		}
@@ -350,29 +317,29 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		return (
 			<div ref={wrapperRef} {...setWrapperClass()}>
 				<input
-					ref={(thisElement) => pushRefs(thisElement as HTMLInputElement)}
+					ref={(thisInput) => mergeRefs(thisInput as HTMLInputElement)}
 					type="email"
 					autoComplete="off"
 					role="combobox"
-					aria-expanded={shouldAppend}
+					aria-expanded={isOpen}
 					aria-autocomplete="list"
 					onChange={(event) => handleInternalChange(event)}
-					value={absoluteValue}
+					value={externalValue}
 					{...setAriaControl()}
 					{...setClasses(ClassProps.Input)}
 					{...setEvents()}
 					{...userAttrs}
 				/>
 
-				{shouldAppend && (
+				{isOpen && (
 					<ul ref={dropdownRef} id={listPrefix} {...setDropdownClasses()}>
-						{internalDomains.map((domain, index) => (
+						{suggestions.map((domain, index) => (
 							<li
 								key={domain}
-								ref={(thisElement) => (liRefs.current[index] = thisElement)}
+								ref={(thisLi) => (liRefs.current[index] = thisLi)}
 								role="option"
 								aria-posinset={index + 1}
-								aria-setsize={internalDomains.length}
+								aria-setsize={suggestions.length}
 								aria-selected={index === ariaIndex}
 								tabIndex={index === ariaIndex ? 0 : -1}
 								onKeyDown={handleListKeyboard}
@@ -385,7 +352,6 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						))}
 					</ul>
 				)}
-
 				{children}
 			</div>
 		);

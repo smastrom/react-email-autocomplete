@@ -2,7 +2,6 @@ export type Options = {
 	withRefine: boolean;
 	customOnSelect: boolean;
 	eventHandlers: boolean;
-	useSuggestion: boolean;
 	withChildren: boolean;
 };
 

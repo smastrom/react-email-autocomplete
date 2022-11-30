@@ -1,5 +1,3 @@
-import React from 'react';
-
 type Props = {
 	isActive: boolean;
 	value: string | undefined;
@@ -7,13 +5,10 @@ type Props = {
 };
 
 export function Suggestion({ isActive, value, confirmCallback }: Props) {
-	if (!isActive) {
+	if (!isActive || !value) {
 		return null;
 	}
 
-	if (!value) {
-		return null;
-	}
 	return (
 		<div aria-live="assertive" aria-atomic="true" aria-relevant="additions" className="suggestion">
 			{value && (

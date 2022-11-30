@@ -40,6 +40,7 @@ export function useSuggestion(
 		[domainList, extensionList, options]
 	);
 
+	// @ts-ignore
 	const [values, setValues] = useState<Values>(defaultValues);
 
 	function setSuggestion(value: string) {
@@ -58,6 +59,7 @@ export function useSuggestion(
 					suggestion: suggestedValue,
 				}));
 			} else {
+				// @ts-ignore
 				setValues(defaultValues);
 			}
 		}
@@ -65,6 +67,7 @@ export function useSuggestion(
 
 	const returnObj = useMemo(
 		() => ({
+			// @ts-ignore
 			resetSuggestion: () => setValues(defaultValues),
 			getSuggestion: setSuggestion,
 			suggestion: values.suggestion,

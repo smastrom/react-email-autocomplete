@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { Email } from '../../src/Email';
-import { useSuggestion } from '../../src/useSuggestion';
 import { Profiler } from './Profiler';
 import { SelectData } from '../../src/types';
 import { Checkbox, Options } from './Checkbox';
 import { Children } from './Children';
-import { Suggestion } from './Suggestion';
+// import { Suggestion } from './Suggestion';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import domainList from '../../src/domains.json';
-import extesionList from '../../src/extensions.json';
+
+const checkboxes: [string, keyof Options][] = [
+	['Refine Mode', 'withRefine'],
+	['onSelect Callback', 'customOnSelect'],
+	['Event Handlers', 'eventHandlers'],
+	['With Children', 'withChildren'],
+];
 
 export const baseList = [
 	'google.com',
@@ -20,30 +25,21 @@ export const baseList = [
 	'aol.com',
 ];
 
-const checkboxes: [string, keyof Options][] = [
-	['Refine Mode', 'withRefine'],
-	['useSuggestion', 'useSuggestion'],
-	['onSelect Callback', 'customOnSelect'],
-	['Event Handlers', 'eventHandlers'],
-	['With Children', 'withChildren'],
-];
-
 function isValid(value: string) {
 	return /^\w+@[a-zA-Z.,]+?\.[a-zA-Z]{2,3}$/.test(value);
 }
 
 export function App() {
-	const { suggestion, getSuggestion, resetSuggestion } = useSuggestion(domainList, extesionList);
+	// const { suggestion, getSuggestion, resetSuggestion } = useSuggestion(domainList, extesionList);
 
 	const [options, setOptions] = useState<Options>({
 		withRefine: true,
 		customOnSelect: false,
-		eventHandlers: true,
-		useSuggestion: true,
+		eventHandlers: false,
 		withChildren: false,
 	});
 
-	const [email, setEmail] = useState<string | undefined>(undefined);
+	const [email, setEmail] = useState<string>();
 
 	const [isError, setIsError] = useState(false);
 	const [isOk, setIsOk] = useState(false);
@@ -52,15 +48,6 @@ export function App() {
 
 	/** Handlers */
 
-	function handleFocus() {
-		if (options.useSuggestion && suggestion) {
-			resetSuggestion();
-		}
-		if (options.eventHandlers) {
-			setIsError(false);
-		}
-	}
-
 	function handleInput(event: React.FormEvent<HTMLInputElement>) {
 		if (options.withChildren) {
 			setIsOk(isValid(event.currentTarget.value));
@@ -68,19 +55,15 @@ export function App() {
 	}
 
 	function handleBlur() {
-		if (typeof email === 'string') {
-			if (options.useSuggestion && email.length > 10) {
-				getSuggestion(email);
-			}
-			if (options.eventHandlers) {
-				setIsError(!isValid(email));
-			}
+		if (options.eventHandlers && email) {
+			setIsError(!isValid(email));
 		}
 	}
 
-	function handleSuggestionConfirm() {
-		setEmail(suggestion);
-		resetSuggestion();
+	function handleFocus() {
+		if (options.eventHandlers) {
+			setIsError(false);
+		}
 	}
 
 	function customOnSelect(data: SelectData) {
@@ -141,16 +124,6 @@ export function App() {
 							<Children isActive={options.withChildren} isError={isError} isValid={isOk} />
 						</Email>
 					</Profiler>
-
-					{options.eventHandlers && isError && !isOk && (
-						<div className="error">Ops! This email doesn&apos;t seem valid.</div>
-					)}
-
-					<Suggestion
-						value={suggestion}
-						isActive={options.useSuggestion}
-						confirmCallback={handleSuggestionConfirm}
-					/>
 				</div>
 			</div>
 
