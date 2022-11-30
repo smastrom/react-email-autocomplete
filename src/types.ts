@@ -14,8 +14,8 @@ export enum ClassProps {
 export type ClassNames = Partial<Record<ClassProps, string>>;
 
 export type SelectData = {
-	valueSelected: string;
-	withKeyboard: boolean;
+	value: string;
+	keyboard: boolean;
 	position: number;
 };
 
@@ -33,7 +33,7 @@ export type Props = {
 	classNames?: ClassNames;
 	className?: string;
 	closeOnScroll?: number | null;
-	startAfter?: Values;
+	minChars?: Values;
 	maxSuggestions?: Omit<Values, 1>;
 	nextElement?: string;
 	children?: React.ReactNode;
@@ -47,10 +47,7 @@ export type Events = {
 };
 
 export type Attributes = Partial<
-	Pick<
-		HTMLInputElement,
-		'id' | 'placeholder' | 'name' | 'minLength' | 'maxLength' | 'pattern' | 'readOnly' | 'required'
-	>
+	Pick<HTMLInputElement, 'id' | 'placeholder' | 'name' | 'readOnly' | 'required' | 'disabled'>
 >;
 
 export type SelectionIndex = -1 | Omit<Values, 8>;

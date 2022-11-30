@@ -24,3 +24,14 @@ export function getHonestValue(value: unknown, maxValue: number, defaultValue: n
 export function isFn(fn: unknown) {
 	return typeof fn === 'function';
 }
+
+export function setUserEvents(
+	target: Partial<Events>,
+	events: Record<keyof Partial<Events>, (event) => void>
+) {
+	for (const eventName in events) {
+		if (isFn(events[eventName])) {
+			target[eventName] = events[eventName];
+		}
+	}
+}

@@ -1,84 +1,84 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
-import { cleanValue, getUniqueId, getHonestValue, isInvalid, isValidArr, isFn } from './utils';
+import {
+	cleanValue,
+	getUniqueId,
+	getHonestValue,
+	isInvalid,
+	isValidArr,
+	setUserEvents,
+} from './utils';
 import { Attributes, Props, Events, ClassNames, SelectData, ClassProps, Maybe } from './types';
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
 		{
 			/* Core - Required */
-			onChange: updateValue,
-			value: _externalValue,
+			onChange: updateEmail,
+			value: _email,
 			baseList,
 			/* Core - Optional */
 			domainList = [],
-			onSelect,
 			maxSuggestions: _maxSuggestions = 6,
-			startAfter = 2,
+			minChars: _minChars = 2,
 			nextElement,
 			className,
 			classNames,
-			/* Input Attributes */
+			onSelect = () => {},
+			children,
+			/* HTML Attributes */
 			id,
 			name,
 			placeholder,
-			minLength,
-			maxLength,
-			pattern,
 			readOnly,
+			disabled,
 			required,
 			/* Input Events */
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
-			onKeyDown: userOnKeyDown,
 			onInput: userOnInput,
-			/* React */
-			children,
+			onKeyDown: userOnKeyDown = () => {},
 		},
 		externalRef
 	) => {
 		/* Refs */
+
+		const listId = useRef<string | undefined>(getUniqueId());
 
 		const wrapperRef = useRef<Maybe<HTMLDivElement>>(null);
 		const inputRef = useRef<Maybe<HTMLInputElement>>(null);
 		const dropdownRef = useRef<Maybe<HTMLUListElement>>(null);
 		const liRefs = useRef<Maybe<HTMLLIElement>[] | []>([]);
 
-		const listId = useRef<string | undefined>(getUniqueId());
-
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
-		const [ariaIndex, setAriaIndex] = useState(-1);
+		const [activeChild, setActiveChild] = useState(-1);
 
 		/*  Helpers */
 
-		const externalValue = isInvalid(_externalValue) ? '' : cleanValue(_externalValue as string);
-		const isRefineMode = isValidArr(domainList);
+		const email = isInvalid(_email) ? '' : cleanValue(_email as string);
+		const [username] = email.split('@');
 		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
-		const _minLength = getHonestValue(startAfter, 8, 2);
+		const minChars = getHonestValue(_minChars, 8, 2);
+		const isRefine = isValidArr(domainList);
 
-		const [username, domain] = externalValue.split('@');
-		const hasUsername = username.length >= _minLength;
-		const hasAt = hasUsername && externalValue.indexOf('@') >= 0;
-		const hasDomain = hasAt && domain.length >= 1;
+		const isOpen = suggestions.length > 0 && email.length >= minChars;
 
-		const isOpen = suggestions.length > 0 && externalValue.length >= _minLength;
-
-		function resetState() {
-			setSuggestions([]);
-			setAriaIndex(-1);
+		function clearList() {
+			setSuggestions([]), setActiveChild(-1);
 		}
 
 		useEffect(() => {
-			if (ariaIndex >= 0) {
-				liRefs?.current[ariaIndex]?.focus();
+			if (activeChild >= 0) {
+				liRefs?.current[activeChild]?.focus();
 			}
-		}, [ariaIndex]);
+		}, [activeChild]);
 
 		useEffect(() => {
 			function handleOutsideClick(event: MouseEvent) {
 				if (isOpen && !wrapperRef.current?.contains(event.target as Node)) {
-					resetState();
+					clearList();
 				}
 			}
 			document.addEventListener('click', handleOutsideClick);
@@ -90,40 +90,38 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* Handlers */
 
-		function handleInternalChange(event: React.ChangeEvent<HTMLInputElement>) {
-			updateValue(cleanValue(event.target.value));
+		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
+			const cleanEmail = cleanValue(event.target.value);
+			const [_username, _domain] = cleanEmail.split('@');
+			const hasAt = _username.length >= minChars && cleanEmail.indexOf('@') >= 0;
+			const hasDomain = hasAt && _domain.length >= 1;
 
-			if (!isRefineMode) {
-				if (hasAt) {
-					resetState();
-				} else {
-					setSuggestions(baseList);
-				}
+			if (!isRefine) {
+				hasAt ? clearList() : setSuggestions(baseList);
 			} else {
 				if (hasDomain) {
-					const newDomains = domainList
-						.filter((externalDomain) => externalDomain.startsWith(domain))
+					const _suggestions = domainList
+						.filter((suggestion) => suggestion.startsWith(_domain))
 						.slice(0, maxSuggestions);
-
-					if (newDomains.length > 0) {
-						if (`${username}@${newDomains[0]}` === externalValue) {
-							resetState();
-						} else {
-							setSuggestions(newDomains);
-						}
+					if (_suggestions.length > 0) {
+						_suggestions[0] === _domain ? clearList() : setSuggestions(_suggestions);
+					} else {
+						clearList();
 					}
 				} else {
 					setSuggestions(baseList);
 				}
 			}
+
+			updateEmail(cleanEmail);
 		}
 
-		function fakeSelectDispatch(
-			valueSelected: SelectData['valueSelected'],
-			withKeyboard: SelectData['withKeyboard'],
+		function dispatchSelect(
+			value: SelectData['value'],
+			keyboard: SelectData['keyboard'],
 			position: SelectData['position']
 		) {
-			onSelect!({ valueSelected, withKeyboard, position });
+			onSelect({ value, keyboard, position });
 		}
 
 		/* Internal Events */
@@ -131,14 +129,13 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		function setCursor() {
 			if (inputRef.current) {
 				inputRef.current.type = 'text';
-				inputRef.current.setSelectionRange(externalValue.length, externalValue.length);
+				inputRef.current.setSelectionRange(email.length, email.length);
 				inputRef.current.type = 'email';
 			}
 		}
 
 		function handleCursorFocus() {
-			setCursor();
-			inputRef?.current?.focus();
+			setCursor(), inputRef?.current?.focus();
 		}
 
 		function handleReFocus() {
@@ -147,10 +144,10 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			} else {
 				handleCursorFocus();
 			}
-			resetState();
+			clearList();
 		}
 
-		function handleInputKeyboard(event: React.KeyboardEvent<HTMLInputElement>) {
+		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
 			if (event.code === 'Space') {
 				event.preventDefault();
 			}
@@ -158,58 +155,49 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 				switch (event.code) {
 					case 'Tab':
 					case 'Escape':
-						return resetState();
+						return clearList();
 
 					case 'ArrowDown':
-						event.preventDefault();
-						liRefs.current[0]?.focus();
-						return setAriaIndex(0);
+						return event.preventDefault(), setActiveChild(0);
 				}
 			}
 		}
 
-		function handleListKeyboard(event: React.KeyboardEvent<HTMLLIElement>) {
+		function handleListKeyDown(event: React.KeyboardEvent<HTMLLIElement>) {
 			if (isOpen) {
 				switch (event.code) {
 					case 'Escape':
-						resetState();
-						return handleCursorFocus();
-
-					case 'Backspace':
-						return inputRef?.current?.focus();
+						return clearList(), handleCursorFocus();
 
 					case 'Tab':
-						return resetState();
+						return clearList();
+
+					case 'BackSpace':
+						return inputRef?.current?.focus();
 
 					case 'Enter':
 					case 'Space': {
 						event.preventDefault();
-						const newValue = cleanValue(
-							(liRefs.current[ariaIndex] as HTMLLIElement).textContent as string
+						const newEmail = cleanValue(
+							(liRefs.current[activeChild] as HTMLLIElement).textContent as string
 						);
-
-						updateValue(newValue);
-						if (isFn(onSelect)) {
-							fakeSelectDispatch(newValue, true, ariaIndex + 1);
-						}
+						dispatchSelect(newEmail, true, activeChild + 1);
+						updateEmail(newEmail);
 						return handleReFocus();
 					}
 
 					case 'ArrowDown':
 						event.preventDefault();
-						if (ariaIndex < suggestions.length - 1) {
-							setAriaIndex(ariaIndex + 1);
+						if (activeChild < suggestions.length - 1) {
+							setActiveChild(activeChild + 1);
 						}
 						break;
 
 					case 'ArrowUp':
 						event.preventDefault();
-						if (ariaIndex === 0) {
-							setAriaIndex(-1);
-							handleCursorFocus();
-						}
-						if (ariaIndex > 0) {
-							setAriaIndex(ariaIndex - 1);
+						setActiveChild(activeChild - 1);
+						if (activeChild === 0) {
+							inputRef?.current?.focus();
 						}
 						break;
 				}
@@ -217,61 +205,26 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleSuggestionClick(event: React.MouseEvent<HTMLLIElement>, childIndex: number) {
-			event.preventDefault();
-			event.stopPropagation();
-			const newValue = cleanValue((event.currentTarget as Node).textContent as string);
-			updateValue(newValue);
-			if (isFn(onSelect)) {
-				fakeSelectDispatch(newValue, false, childIndex + 1);
-			}
+			event.preventDefault(), event.stopPropagation();
+
+			const newEmail = cleanValue((event.currentTarget as Node).textContent as string);
+			dispatchSelect(newEmail, false, childIndex + 1);
+			updateEmail(newEmail);
+
 			handleReFocus();
 		}
 
 		/* Events */
 
 		function setEvents() {
-			const events: Partial<Events> = {};
-
-			events.onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-				if (isFn(userOnKeyDown)) {
-					userOnKeyDown!(event);
-				}
-				handleInputKeyboard(event);
+			const events: Partial<Events> = {
+				onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
+					userOnKeyDown(event), handleInputKeyDown(event);
+				},
 			};
-
-			if (isFn(userOnFocus)) {
-				events.onFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-					userOnFocus!(event);
-				};
-			}
-
-			if (isFn(userOnBlur)) {
-				events.onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-					userOnBlur!(event);
-				};
-			}
-
-			if (isFn(userOnInput)) {
-				events.onInput = (event: React.FormEvent<HTMLInputElement>) => {
-					userOnInput!(event);
-				};
-			}
-
+			setUserEvents(events, { onBlur: userOnBlur, onInput: userOnInput, onFocus: userOnFocus });
 			return events;
 		}
-
-		/*  Attributes */
-
-		const userAttrs: Attributes = {
-			id,
-			name,
-			placeholder,
-			minLength,
-			maxLength,
-			pattern,
-			readOnly,
-			required,
-		};
 
 		/* Props */
 
@@ -285,7 +238,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		function setWrapperClass() {
 			const classes = `${className || ''} ${classNames?.wrapper || ''}`.trim();
 
-			if (classes.length > 0) {
+			if (classes.length) {
 				return { className: classes };
 			}
 			return { className };
@@ -297,7 +250,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function setClasses(classProperty: keyof ClassNames) {
-			if (typeof classNames !== 'undefined' && typeof classNames[classProperty] === 'string') {
+			if (classNames && typeof classNames[classProperty] === 'string') {
 				return {
 					className: classNames[classProperty],
 				};
@@ -314,6 +267,17 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			return {};
 		}
 
+		/*  HTML Attributes */
+
+		const userAttrs: Attributes = {
+			id,
+			name,
+			placeholder,
+			readOnly,
+			required,
+			disabled,
+		};
+
 		return (
 			<div ref={wrapperRef} {...setWrapperClass()}>
 				<input
@@ -323,14 +287,13 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 					role="combobox"
 					aria-expanded={isOpen}
 					aria-autocomplete="list"
-					onChange={(event) => handleInternalChange(event)}
-					value={externalValue}
+					onChange={(event) => handleEmailChange(event)}
+					value={email}
 					{...setAriaControl()}
 					{...setClasses(ClassProps.Input)}
 					{...setEvents()}
 					{...userAttrs}
 				/>
-
 				{isOpen && (
 					<ul ref={dropdownRef} id={listPrefix} {...setDropdownClasses()}>
 						{suggestions.map((domain, index) => (
@@ -340,9 +303,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 								role="option"
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
-								aria-selected={index === ariaIndex}
-								tabIndex={index === ariaIndex ? 0 : -1}
-								onKeyDown={handleListKeyboard}
+								aria-selected={index === activeChild}
+								tabIndex={index === activeChild ? 0 : -1}
+								onKeyDown={handleListKeyDown}
 								onClick={(event) => handleSuggestionClick(event, index)}
 								{...setClasses(ClassProps.Suggestion)}
 							>
