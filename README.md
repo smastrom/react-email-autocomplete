@@ -60,7 +60,7 @@ npm i -S react-bella-email
 
 ## :art: Styling
 
-The component renders a `div` with a very simple DOM structure:
+The component renders a `div` with a very simple structure:
 
 ```js
 Wrapper — div
