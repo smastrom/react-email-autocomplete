@@ -117,11 +117,12 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		function handleSelect(
 			event: React.MouseEvent<HTMLLIElement> | React.KeyboardEvent<HTMLLIElement>,
-			childIndex: number
+			childIndex: number,
+			isKeyboard: boolean
 		) {
 			event.preventDefault(), event.stopPropagation();
 			const selectedEmail = cleanValue((event.currentTarget as Node).textContent as string);
-			dispatchSelect(selectedEmail, false, childIndex + 1);
+			dispatchSelect(selectedEmail, isKeyboard, childIndex + 1);
 			setEmail(selectedEmail);
 			handleReFocus();
 		}
@@ -181,7 +182,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 					case 'Enter':
 					case 'Space': {
-						return handleSelect(event, activeChild);
+						return handleSelect(event, activeChild, true);
 					}
 
 					case 'ArrowDown':
@@ -295,7 +296,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						{suggestions.map((domain, index) => (
 							<li
 								ref={(li) => (liRefs.current[index] = li)}
-								onClick={(event) => handleSelect(event, index)}
+								onClick={(event) => handleSelect(event, index, false)}
 								onKeyDown={handleListKeyDown}
 								key={domain}
 								aria-posinset={index + 1}

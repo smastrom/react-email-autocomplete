@@ -10,9 +10,8 @@ import domainList from '../../src/domains.json';
 
 const checkboxes: [string, keyof Options][] = [
 	['Refine Mode', 'withRefine'],
+	['Events/Children', 'eventHandlers'],
 	['onSelect Callback', 'customOnSelect'],
-	['Event Handlers', 'eventHandlers'],
-	['With Children', 'withChildren'],
 ];
 
 export const baseList = [
@@ -31,37 +30,38 @@ function isValid(value: string) {
 export function App() {
 	const [options, setOptions] = useState<Options>({
 		withRefine: true,
-		customOnSelect: false,
-		eventHandlers: false,
-		withChildren: false,
+		customOnSelect: true,
+		eventHandlers: true,
 	});
 
-	const [email, setEmail] = useState<string>();
+	const [email, setEmail] = useState<string>('');
 
-	const [isError, setIsError] = useState(false);
-	const [isOk, setIsOk] = useState(false);
+	const [status, setStatus] = useState({
+		isError: false,
+		isOk: false,
+	});
 
 	const [selectionData, setSelectionData] = useState<SelectData | null>(null);
 
 	/** Handlers */
 
-	function handleInput(event: React.FormEvent<HTMLInputElement>) {
-		if (options.withChildren) {
-			setIsOk(isValid(event.currentTarget.value));
+	function handleInput() {
+		if (options.eventHandlers) {
+			setStatus((prevState) => ({ ...prevState, isOk: isValid(email) }));
 		}
 	}
 
 	function handleBlur() {
-		if (options.eventHandlers && email) {
+		if (options.eventHandlers) {
 			console.log('Blur');
-			setIsError(!isValid(email));
+			setStatus((prevState) => ({ ...prevState, isError: !isValid(email) }));
 		}
 	}
 
 	function handleFocus() {
 		if (options.eventHandlers) {
 			console.log('Focus');
-			setIsError(false);
+			setStatus((prevState) => ({ ...prevState, isError: false }));
 		}
 	}
 
@@ -110,18 +110,22 @@ export function App() {
 								input: 'inputClass',
 								dropdown: 'dropdownIn',
 							}}
-							className="customClass"
 							// Events
 							onSelect={options.customOnSelect ? customOnSelect : undefined}
 							onInput={handleInput}
 							onBlur={handleBlur}
 							onFocus={handleFocus}
 							// Atrributes
+							className="customClass"
 							name="reactEms"
 							id="reactEms"
 							placeholder="Please enter your email"
 						>
-							<Children isActive={options.withChildren} isError={isError} isValid={isOk} />
+							<Children
+								isActive={options.eventHandlers}
+								isError={status.isError}
+								isValid={status.isOk}
+							/>
 						</Email>
 					</Profiler>
 				</div>

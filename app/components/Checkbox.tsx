@@ -2,7 +2,6 @@ export type Options = {
 	withRefine: boolean;
 	customOnSelect: boolean;
 	eventHandlers: boolean;
-	withChildren: boolean;
 };
 
 type CheckboxProps = {
@@ -19,13 +18,13 @@ export function Checkbox({ optionProp, state, setState, label }: CheckboxProps) 
 				className="checkboxInput"
 				type="checkbox"
 				id={optionProp}
-				checked={state[optionProp]}
 				onChange={() =>
 					setState((prevOptions) => ({
 						...prevOptions,
 						[optionProp]: !prevOptions[optionProp],
 					}))
 				}
+				checked={state[optionProp]}
 			/>
 			<label htmlFor={optionProp} className="checkboxLabel">
 				{label}

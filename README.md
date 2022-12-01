@@ -6,22 +6,17 @@
 
 <br />
 
-![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
+![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
 
 **React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **giving the best UX with all the flexibility you'd expect from an input field:**
 
+- Suggestions while typing
 - Fully accessible with great keyboard controls
 - Completely unstyled and white labeled
 - Forward the most common event handlers and attributes
 - Controllable with React Hook Form
 
 > :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly.
-
----
-
-**Jump to:** [Props](#-cyclone--props) | [Styling](#-art--styling) | [Modes](#modes) | [Keyboard controls](#keyboard-controls)
-
----
 
 <br />
 
@@ -240,7 +235,7 @@ function App() {
 
 Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (like an autocomplete).
 
-![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
+![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
 
 All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a curated [list]() of the ~160 most popular world domains (thanks to **@mailcheck**):
 
