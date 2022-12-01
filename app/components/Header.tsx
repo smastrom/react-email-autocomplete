@@ -20,7 +20,7 @@ export function Header() {
 				</svg>
 			</a>
 
-			<h1 className="title">React Email Suggestions</h1>
+			<h1 className="title">React Bella Email</h1>
 		</div>
 	);
 }

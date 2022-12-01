@@ -8,7 +8,7 @@
 
 ![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
 
-**React Bella Email** is a controlled component that aims to replace the typical `<input type="email" />` of your form by giving the best UX with all the flexibility you'd expect from an input field:
+**React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **giving the best UX with all the flexibility you'd expect from an input field:**
 
 - Fully accessible with great keyboard controls
 - Add the most common event handlers and attributes
@@ -25,20 +25,30 @@
 
 <br />
 
+## :floppy_disk: Installation
+
+```bash
+npm i -S react-bella-email
+# yarn add react-bella-email
+# pnpm add react-bella-email
+```
+
+<br />
+
 ## :cyclone: Props
 
-| Prop             | Description                                                                                      | Type                                                               | Default   | Required           |
-| ---------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | --------- | ------------------ |
-| `value`          | State or portion of state that will hold the email                                               | _string_                                                           | undefined | :white_check_mark: |
-| `onChange`       | State setter or custom dispatcher to update the state                                            | _Dispatch<SetStateAction<string\>>_ \| _((value: string) => void)_ | undefined | :white_check_mark: |
-| `baseList`       | Domains to suggest while typing the username                                                     | _string[]_                                                         | undefined | :white_check_mark: |
-| `refineList`     | Domains to refine suggestions after typing `@`                                                   | _string[]_                                                         | []        | :x:                |
-| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _(object: SelectData) => void \| Promise\<void\>_                  | () => {}  | :x:                |
-| `minChars`       | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_                             | 2         | :x:                |
-| `maxSuggestions` | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_                                  | 6         | :x:                |
-| `nextElement`    | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                                                           | undefined | :x:                |
-| `classNames`     | Class names of each child                                                                        | _ClassNames_                                                       | undefined | :x:                |
-| `className`      | Class name of the wrapper element                                                                | _string_                                                           | undefined | :x:                |
+| Prop             | Description                                                                                      | Type                                   | Default   | Required           |
+| ---------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- | --------- | ------------------ |
+| `value`          | State to hold the value                                                                          | _string_                               | undefined | :white_check_mark: |
+| `onChange`       | State setter or custom dispatcher to update the value                                            | _Change_                               | undefined | :white_check_mark: |
+| `baseList`       | Domains to suggest while typing the username                                                     | _string[]_                             | undefined | :white_check_mark: |
+| `refineList`     | Domains to refine suggestions after typing `@`                                                   | _string[]_                             | []        | :x:                |
+| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _Select_                               | () => {}  | :x:                |
+| `minChars`       | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
+| `maxSuggestions` | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
+| `nextElement`    | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                               | undefined | :x:                |
+| `classNames`     | Class names of each child                                                                        | _ClassNames_                           | undefined | :x:                |
+| `className`      | Class name of the wrapper element                                                                | _string_                               | undefined | :x:                |
 
 ### Are also available:
 
@@ -227,11 +237,11 @@ function App() {
 
 ### 2. Refine Mode
 
-Acts like **Basic** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (like an autocomplete).
+Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (like an autocomplete).
 
 ![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
 
-All you have to do is to provide a second array of domains to `refineList` prop. This package already comes with a curated [list]() of the ~160 most popular world domains (thanks to **@mailcheck**):
+All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a curated [list]() of the ~160 most popular world domains (thanks to **@mailcheck**):
 
 ```jsx
 import { Email, domains } from 'react-bella-email';

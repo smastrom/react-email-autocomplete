@@ -21,12 +21,16 @@ export type SelectData = {
 
 type Values = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
+type Change =
+	| React.Dispatch<React.SetStateAction<string>>
+	| ((value: string) => void | Promise<void>);
+
+type Select = (object: SelectData) => void | Promise<void>;
+
 export type Props = {
 	value: string | undefined;
-	onChange:
-		| React.Dispatch<React.SetStateAction<string>>
-		| ((value: string) => void | Promise<void>);
-	onSelect?: (object: SelectData) => void | Promise<void>;
+	onChange: Change;
+	onSelect?: Select;
 	baseList: string[];
 	domainList?: string[];
 	animation?: string;
