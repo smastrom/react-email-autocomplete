@@ -25,13 +25,13 @@ export function isFn(fn: unknown) {
 	return typeof fn === 'function';
 }
 
-export function setUserEvents(
-	target: Partial<Events>,
-	events: Record<keyof Partial<Events>, (event) => void>
+export function setUserEvents<T>(
+	target: Partial<T>,
+	events: { [Property in keyof T]: T[Property] }
 ) {
 	for (const eventName in events) {
 		if (isFn(events[eventName])) {
-			target[eventName] = events[eventName];
+			target[eventName as keyof Partial<T>] = events[eventName];
 		}
 	}
 }

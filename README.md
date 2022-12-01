@@ -102,7 +102,7 @@ You can add a setting like this in VSCode `settings.json` in order to enable aut
 
 </details>
 
-Or add the wrapper class via `className` prop:
+Or add a class to the container via `className` prop:
 
 ```jsx
 function App() {
@@ -118,7 +118,7 @@ function App() {
 }
 ```
 
-And target any child via CSS:
+And target any child:
 
 ```css
 /* Wrapper */

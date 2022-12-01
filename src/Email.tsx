@@ -116,6 +116,16 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			updateEmail(cleanEmail);
 		}
 
+		function handleSuggestionClick(event: React.MouseEvent<HTMLLIElement>, childIndex: number) {
+			event.preventDefault(), event.stopPropagation();
+
+			const newEmail = cleanValue((event.currentTarget as Node).textContent as string);
+			dispatchSelect(newEmail, false, childIndex + 1);
+			updateEmail(newEmail);
+
+			handleReFocus();
+		}
+
 		function dispatchSelect(
 			value: SelectData['value'],
 			keyboard: SelectData['keyboard'],
@@ -204,25 +214,19 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 		}
 
-		function handleSuggestionClick(event: React.MouseEvent<HTMLLIElement>, childIndex: number) {
-			event.preventDefault(), event.stopPropagation();
-
-			const newEmail = cleanValue((event.currentTarget as Node).textContent as string);
-			dispatchSelect(newEmail, false, childIndex + 1);
-			updateEmail(newEmail);
-
-			handleReFocus();
-		}
-
 		/* Events */
 
-		function setEvents() {
-			const events: Partial<Events> = {
+		function getEvents() {
+			const events: Events = {
 				onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
-					userOnKeyDown(event), handleInputKeyDown(event);
+					handleInputKeyDown(event), userOnKeyDown(event);
 				},
 			};
-			setUserEvents(events, { onBlur: userOnBlur, onInput: userOnInput, onFocus: userOnFocus });
+			setUserEvents<Events>(events, {
+				onBlur: userOnBlur,
+				onInput: userOnInput,
+				onFocus: userOnFocus,
+			});
 			return events;
 		}
 
@@ -231,11 +235,11 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		function mergeRefs(inputElement: HTMLInputElement) {
 			inputRef.current = inputElement;
 			if (externalRef) {
-				(externalRef as React.MutableRefObject<HTMLInputElement | null>).current = inputElement;
+				(externalRef as React.MutableRefObject<Maybe<HTMLInputElement>>).current = inputElement;
 			}
 		}
 
-		function setWrapperClass() {
+		function getWrapperClass() {
 			const classes = `${className || ''} ${classNames?.wrapper || ''}`.trim();
 
 			if (classes.length) {
@@ -244,12 +248,12 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			return { className };
 		}
 
-		function setDropdownClasses() {
+		function getDropdownClass() {
 			const userClasses = `${classNames?.dropdown || ''}`;
 			return { className: `${className} ${userClasses}`.trim() };
 		}
 
-		function setClasses(classProperty: keyof ClassNames) {
+		function getClasses(classProperty: keyof ClassNames) {
 			if (classNames && typeof classNames[classProperty] === 'string') {
 				return {
 					className: classNames[classProperty],
@@ -260,7 +264,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		const listPrefix = `react-ems_${listId.current}`;
 
-		function setAriaControl() {
+		function getAriaControls() {
 			if (isOpen) {
 				return { 'aria-controls': listPrefix };
 			}
@@ -279,7 +283,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		};
 
 		return (
-			<div ref={wrapperRef} {...setWrapperClass()}>
+			<div ref={wrapperRef} {...getWrapperClass()}>
 				<input
 					ref={(thisInput) => mergeRefs(thisInput as HTMLInputElement)}
 					type="email"
@@ -289,13 +293,13 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 					aria-autocomplete="list"
 					onChange={(event) => handleEmailChange(event)}
 					value={email}
-					{...setAriaControl()}
-					{...setClasses(ClassProps.Input)}
-					{...setEvents()}
+					{...getAriaControls()}
+					{...getClasses(ClassProps.Input)}
+					{...getEvents()}
 					{...userAttrs}
 				/>
 				{isOpen && (
-					<ul ref={dropdownRef} id={listPrefix} {...setDropdownClasses()}>
+					<ul ref={dropdownRef} id={listPrefix} {...getDropdownClass()}>
 						{suggestions.map((domain, index) => (
 							<li
 								key={domain}
@@ -307,10 +311,10 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 								tabIndex={index === activeChild ? 0 : -1}
 								onKeyDown={handleListKeyDown}
 								onClick={(event) => handleSuggestionClick(event, index)}
-								{...setClasses(ClassProps.Suggestion)}
+								{...getClasses(ClassProps.Suggestion)}
 							>
-								<span {...setClasses(ClassProps.Username)}>{username}</span>
-								<span {...setClasses(ClassProps.Domain)}>@{domain}</span>
+								<span {...getClasses(ClassProps.Username)}>{username}</span>
+								<span {...getClasses(ClassProps.Domain)}>@{domain}</span>
 							</li>
 						))}
 					</ul>
