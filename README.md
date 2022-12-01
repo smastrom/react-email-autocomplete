@@ -15,11 +15,11 @@
 - Completely unstyled and white labeled
 - Controllable with React Hook Form
 
-**React Bella Email** also ships with a curated list of ~160 world's most popular email providers, to get started quickly.
+> :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly.
 
 ---
 
-**Jump to:** [Props](#-cyclone--props) | [Styling](#-art--styling) | [Usage and Behavior](#usage-and-behavior) | [Keyboard controls](#keyboard-controls)
+**Jump to:** [Props](#-cyclone--props) | [Styling](#-art--styling) | [Modes](#modes) | [Keyboard controls](#keyboard-controls)
 
 ---
 
@@ -191,7 +191,7 @@ This package ships with **zero css**. Initial styles to see the component in act
 
 <br />
 
-## :dna: Usage and Behavior
+## :dna: Modes
 
 ### 1. Basic Mode
 

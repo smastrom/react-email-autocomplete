@@ -13,7 +13,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	(
 		{
 			/* Core - Required */
-			onChange: updateEmail,
+			onChange: setEmail,
 			value: _email,
 			baseList,
 			/* Core - Optional */
@@ -49,6 +49,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		/* Refs */
 
 		const listId = useRef<string>(getUniqueId());
+		const listPrefix = `rbe_${listId.current}`;
 
 		const wrapperRef = useRef<Maybe<HTMLDivElement>>(null);
 		const inputRef = useRef<Maybe<HTMLInputElement>>(null);
@@ -117,7 +118,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 				}
 			}
 
-			updateEmail(cleanEmail);
+			setEmail(cleanEmail);
 		}
 
 		function handleSuggestionSelect(
@@ -127,7 +128,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			event.preventDefault(), event.stopPropagation();
 			const selectedEmail = cleanValue((event.currentTarget as Node).textContent as string);
 			dispatchSelect(selectedEmail, false, childIndex + 1);
-			updateEmail(selectedEmail);
+			setEmail(selectedEmail);
 			handleReFocus();
 		}
 
@@ -211,7 +212,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		function getEvents() {
 			const events: Events = {
-				onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
+				onKeyDown: (event) => {
 					handleInputKeyDown(event);
 					userOnKeyDown(event);
 				},
@@ -241,18 +242,15 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 		}
 
-		function getWrapperClass() {
-			const classes = `${className || ''} ${classNames?.wrapper || ''}`.trim();
-
-			if (classes.length) {
-				return { className: classes };
+		function getAriaControls() {
+			if (isOpen) {
+				return { 'aria-controls': listPrefix };
 			}
-			return { className };
+			return {};
 		}
 
-		function getDropdownClass() {
-			const userClasses = `${classNames?.dropdown || ''}`;
-			return { className: `${className} ${userClasses}`.trim() };
+		function getWrapperClass() {
+			return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() };
 		}
 
 		function getClasses(classProperty: keyof ClassNames) {
@@ -260,15 +258,6 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 				return {
 					className: classNames[classProperty],
 				};
-			}
-			return {};
-		}
-
-		const listPrefix = `react-ems_${listId.current}`;
-
-		function getAriaControls() {
-			if (isOpen) {
-				return { 'aria-controls': listPrefix };
 			}
 			return {};
 		}
@@ -301,7 +290,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 					{...userAttrs}
 				/>
 				{isOpen && (
-					<ul ref={dropdownRef} id={listPrefix} {...getDropdownClass()}>
+					<ul ref={dropdownRef} id={listPrefix} {...getClasses(ClassProps.Dropdown)}>
 						{suggestions.map((domain, index) => (
 							<li
 								key={domain}

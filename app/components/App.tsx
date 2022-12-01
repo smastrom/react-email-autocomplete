@@ -105,7 +105,8 @@ export function App() {
 							value={email}
 							domainList={options.withRefine ? domainList : []}
 							classNames={{
-								wrapper: 'ciao',
+								wrapper: 'wrapperClass',
+								input: 'inputClass',
 								dropdown: 'dropdownIn',
 							}}
 							className="customClass"
