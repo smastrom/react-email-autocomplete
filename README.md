@@ -11,8 +11,8 @@
 **React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **giving the best UX with all the flexibility you'd expect from an input field:**
 
 - Fully accessible with great keyboard controls
-- Add the most common event handlers and attributes
 - Completely unstyled and white labeled
+- Forward the most common event handlers and attributes
 - Controllable with React Hook Form
 
 > :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly.
@@ -49,6 +49,7 @@ npm i -S react-bella-email
 | `nextElement`    | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                               | undefined | :x:                |
 | `classNames`     | Class names of each child                                                                        | _ClassNames_                           | undefined | :x:                |
 | `className`      | Class name of the wrapper element                                                                | _string_                               | undefined | :x:                |
+| `customPrefix`   | Custom prefix for dropdown unique ID                                                             | _string_                               | `rbe_`    | :x:                |
 
 ### Are also available:
 
@@ -58,7 +59,7 @@ npm i -S react-bella-email
 
 - React's `ref` and `children`.
 
-> :bulb: They are forwarded to the `<input />` element.
+> :bulb: They are all forwarded to the `<input />` element.
 
 <br />
 
@@ -273,6 +274,8 @@ function App() {
 Alternatively, you can create your own array of domains or [search]() for the one that more suits your audience.
 
 <br />
+
+## :8ball: Callbacks
 
 ### onChange with object state
 

@@ -40,6 +40,7 @@ export type Props = {
 	minChars?: Values;
 	maxSuggestions?: Omit<Values, 1>;
 	nextElement?: string;
+	customPrefix?: string;
 	children?: React.ReactNode;
 };
 

@@ -53,13 +53,14 @@ export function App() {
 
 	function handleBlur() {
 		if (options.eventHandlers && email) {
-			console.log('Rubra');
+			console.log('Blur');
 			setIsError(!isValid(email));
 		}
 	}
 
 	function handleFocus() {
 		if (options.eventHandlers) {
+			console.log('Focus');
 			setIsError(false);
 		}
 	}
