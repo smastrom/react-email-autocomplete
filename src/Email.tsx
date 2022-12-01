@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import {
 	cleanValue,
@@ -33,7 +32,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			readOnly,
 			disabled,
 			required,
-			/* Input Events */
+			/* User Events */
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
 			onInput: userOnInput,
@@ -158,9 +157,6 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-			if (event.code === 'Space') {
-				event.preventDefault();
-			}
 			if (isOpen) {
 				switch (event.code) {
 					case 'Tab':

@@ -1,9 +1,40 @@
+/* Base styles */
+
+.customClass {
+	position: relative;
+}
+
+.customClass > input,
+.customClass > ul,
+.customClass > ul > li {
+	font-size: inherit;
+	text-align: inherit;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.customClass > input {
+	position: relative;
+}
+
+.customClass > ul {
+	margin: 0.4rem 0 0 0;
+	position: absolute;
+	list-style-type: none;
+	padding: 0;
+	z-index: 999;
+}
+
+.customClass > ul > li {
+	cursor: pointer;
+	user-select: none;
+	overflow: hidden;
+	text-align: inherit;
+}
+
 label {
 	font-weight: 600;
 	margin: 0 0 5px 2.5px;
-}
-
-.customClass {
 }
 
 @media (max-width: 910px) {
@@ -11,6 +42,8 @@ label {
 		font-size: 18px;
 	}
 }
+
+/* Element styles */
 
 .customClass input {
 	padding: 0.5em 0.8em;
@@ -65,14 +98,18 @@ label {
 	font-weight: 600;
 }
 
-.visuallyHidden {
-	border: 0;
-	clip: rect(1px 1px 1px 1px);
-	clip: rect(1px, 1px, 1px, 1px);
-	height: 1px;
-	margin: -1px;
-	overflow: hidden;
-	padding: 0;
-	position: absolute;
-	width: 1px;
+@keyframes dropdownAnim {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}
+
+.dropdownIn {
+	animation: dropdownAnim 200ms ease-out;
 }

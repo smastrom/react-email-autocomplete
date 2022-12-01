@@ -154,31 +154,6 @@ html {
 	font-weight: 600;
 }
 
-.suggestion {
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	padding: 0.4em 0;
-	font-size: 0.825rem;
-	white-space: nowrap;
-}
-
-.suggestion button {
-	padding: 0;
-	margin: 0 0.2em;
-	cursor: pointer;
-	appearance: none;
-	border: none;
-	background: none;
-	color: var(--accentColor);
-	font-weight: 700;
-}
-
-.suggestion button:hover,
-.suggestion button:focus {
-	text-decoration: underline;
-}
-
 .profileLink {
 	color: var(--accentColor);
 	font-weight: 600;
@@ -202,4 +177,16 @@ html {
 .alert {
 	fill: none;
 	stroke: #ef4444;
+}
+
+.visuallyHidden {
+	border: 0;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
 }

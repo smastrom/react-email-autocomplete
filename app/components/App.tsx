@@ -4,7 +4,6 @@ import { Profiler } from './Profiler';
 import { SelectData } from '../../src/types';
 import { Checkbox, Options } from './Checkbox';
 import { Children } from './Children';
-// import { Suggestion } from './Suggestion';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import domainList from '../../src/domains.json';
@@ -30,8 +29,6 @@ function isValid(value: string) {
 }
 
 export function App() {
-	// const { suggestion, getSuggestion, resetSuggestion } = useSuggestion(domainList, extesionList);
-
 	const [options, setOptions] = useState<Options>({
 		withRefine: true,
 		customOnSelect: false,
@@ -56,6 +53,7 @@ export function App() {
 
 	function handleBlur() {
 		if (options.eventHandlers && email) {
+			console.log('Rubra');
 			setIsError(!isValid(email));
 		}
 	}
