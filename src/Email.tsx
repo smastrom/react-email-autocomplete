@@ -42,7 +42,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	) => {
 		/* Refs */
 
-		const listId = useRef<string | undefined>(getUniqueId());
+		const listId = useRef<string>(getUniqueId());
 
 		const wrapperRef = useRef<Maybe<HTMLDivElement>>(null);
 		const inputRef = useRef<Maybe<HTMLInputElement>>(null);
@@ -54,15 +54,19 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const [suggestions, setSuggestions] = useState(baseList);
 		const [activeChild, setActiveChild] = useState(-1);
 
-		/*  Helpers */
+		/* User settings */
+
+		const isRefine = isValidArr(domainList);
+		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
+		const minChars = getHonestValue(_minChars, 8, 2);
+
+		/*  Reactive helpers */
 
 		const email = isInvalid(_email) ? '' : cleanValue(_email as string);
 		const [username] = email.split('@');
-		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
-		const minChars = getHonestValue(_minChars, 8, 2);
-		const isRefine = isValidArr(domainList);
-
 		const isOpen = suggestions.length > 0 && email.length >= minChars;
+
+		/* Effects */
 
 		function clearList() {
 			setSuggestions([]), setActiveChild(-1);
@@ -87,7 +91,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			};
 		}, [isOpen]);
 
-		/* Handlers */
+		/* Value update handlers */
 
 		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
 			const cleanEmail = cleanValue(event.target.value);
@@ -121,19 +125,10 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			const newEmail = cleanValue((event.currentTarget as Node).textContent as string);
 			dispatchSelect(newEmail, false, childIndex + 1);
 			updateEmail(newEmail);
-
 			handleReFocus();
 		}
 
-		function dispatchSelect(
-			value: SelectData['value'],
-			keyboard: SelectData['keyboard'],
-			position: SelectData['position']
-		) {
-			onSelect({ value, keyboard, position });
-		}
-
-		/* Internal Events */
+		/* Event utils */
 
 		function setCursor() {
 			if (inputRef.current) {
@@ -155,6 +150,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 			clearList();
 		}
+
+		/* Keyboard events */
 
 		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
 			if (isOpen) {
@@ -210,7 +207,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			}
 		}
 
-		/* Events */
+		/* User Events */
 
 		function getEvents() {
 			const events: Events = {
@@ -224,6 +221,14 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 				onFocus: userOnFocus,
 			});
 			return events;
+		}
+
+		function dispatchSelect(
+			value: SelectData['value'],
+			keyboard: SelectData['keyboard'],
+			position: SelectData['position']
+		) {
+			onSelect({ value, keyboard, position });
 		}
 
 		/* Props */
