@@ -6,14 +6,16 @@
 
 <br />
 
-It is a controlled component that aims to replace the typical `<input type="email" />` of your form by giving the best UX with all the flexibility you'd expect from an input field:
+![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
+
+**React Bella Email** is a controlled component that aims to replace the typical `<input type="email" />` of your form by giving the best UX with all the flexibility you'd expect from an input field:
 
 - Fully accessible with great keyboard controls
 - Add the most common event handlers and attributes
 - Completely unstyled and white labeled
 - Controllable with React Hook Form
 
-![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
+**React Bella Email** also ships with a curated list of ~160 world's most popular email providers, to get started quickly.
 
 ---
 
@@ -30,8 +32,8 @@ It is a controlled component that aims to replace the typical `<input type="emai
 | `value`          | State or portion of state that will hold the email                                               | _string_                                                           | undefined | :white_check_mark: |
 | `onChange`       | State setter or custom dispatcher to update the state                                            | _Dispatch<SetStateAction<string\>>_ \| _((value: string) => void)_ | undefined | :white_check_mark: |
 | `baseList`       | Domains to suggest while typing the username                                                     | _string[]_                                                         | undefined | :white_check_mark: |
-| `refineList`     | Domains to refine suggestions after typing the username                                          | _string[]_                                                         | []        | :x:                |
-| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _(object: SelectData) => void \| Promise\<void\>_                  | undefined | :x:                |
+| `refineList`     | Domains to refine suggestions after typing `@`                                                   | _string[]_                                                         | []        | :x:                |
+| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _(object: SelectData) => void \| Promise\<void\>_                  | () => {}  | :x:                |
 | `minChars`       | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_                             | 2         | :x:                |
 | `maxSuggestions` | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_                                  | 6         | :x:                |
 | `nextElement`    | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                                                           | undefined | :x:                |
@@ -75,6 +77,8 @@ const myClassNames = {
 };
 
 function App() {
+  const [email, setEmail] = useState('');
+
   return (
     <Email
       classNames={myClassNames}
@@ -106,6 +110,8 @@ Or add a class to the container via `className` prop:
 
 ```jsx
 function App() {
+  const [email, setEmail] = useState('');
+
   return (
     <Email
       className="my-wrapper"
@@ -187,14 +193,14 @@ This package ships with **zero css**. Initial styles to see the component in act
 
 ## :dna: Usage and Behavior
 
-### 1. Basic
+### 1. Basic Mode
 
 Once users start typing, it displays a list of _base_ suggestions and hides it once they type `@` . It already gives a nice UX and should be enough for the vast majority of websites:
 
-![react-email-suggestions](https://i.ibb.co/2hqKpY6/Schermata-2022-09-18-alle-15-18-35.png)
+![react-bella-email](https://i.ibb.co/2hqKpY6/Schermata-2022-09-18-alle-15-18-35.png)
 
 ```jsx
-import { Email } from 'react-email-suggestions';
+import { Email } from 'react-bella-email';
 
 const baseList = [
   'gmail.com',
@@ -219,16 +225,16 @@ function App() {
 }
 ```
 
-### 2. With Refine
+### 2. Refine Mode
 
 Acts like **Basic** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (like an autocomplete).
 
-![react-email-suggestions](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
+![react-bella-email](https://i.ibb.co/nCNZvsg/Schermata-2022-09-18-alle-15-18-14.png)
 
 All you have to do is to provide a second array of domains to `refineList` prop. This package already comes with a curated [list]() of the ~160 most popular world domains (thanks to **@mailcheck**):
 
 ```jsx
-import { Email, domains } from 'react-email-suggestions';
+import { Email, domains } from 'react-bella-email';
 
 const baseList = [
   'gmail.com',
@@ -294,10 +300,10 @@ function App() {
 
 ### Custom onSelect callback
 
-You may need to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard):
+You might need to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard). You can do that by passing a function to `onSelect` prop:
 
 ```jsx
-import { Email, domains } from 'react-email-suggestions';
+import { Email, domains } from 'react-bella-email';
 
 function App() {
   const [email, setEmail] = useState('');
