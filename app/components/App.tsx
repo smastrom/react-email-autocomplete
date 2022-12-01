@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Email } from '../../src/Email';
 import { Profiler } from './Profiler';
 import { SelectData } from '../../src/types';
 import { Checkbox, Options } from './Checkbox';
-import { Children } from './Children';
+import { ValidityIcon } from './ValidityIcon';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import domainList from '../../src/domains.json';
+
+enum Valididty {
+	Idle,
+	Valid,
+	Invalid,
+}
 
 const checkboxes: [string, keyof Options][] = [
 	['Refine Mode', 'withRefine'],
@@ -14,20 +20,11 @@ const checkboxes: [string, keyof Options][] = [
 	['onSelect Callback', 'customOnSelect'],
 ];
 
-export const baseList = [
-	'google.com',
-	'email.com',
-	'proton.me',
-	'yahoo.com',
-	'outlook.com',
-	'aol.com',
-];
-
-function isValid(value: string) {
-	return /^\w+@[a-zA-Z.,]+?\.[a-zA-Z]{2,3}$/.test(value);
-}
+const baseList = ['google.com', 'email.com', 'proton.me', 'yahoo.com', 'outlook.com', 'aol.com'];
 
 export function App() {
+	const inputRef = useRef<HTMLInputElement>(null);
+
 	const [options, setOptions] = useState<Options>({
 		withRefine: true,
 		customOnSelect: true,
@@ -35,34 +32,27 @@ export function App() {
 	});
 
 	const [email, setEmail] = useState<string>('');
-
-	const [status, setStatus] = useState({
-		isError: false,
-		isOk: false,
-	});
-
+	const [validity, setValidity] = useState<Valididty>(Valididty.Idle);
 	const [selectionData, setSelectionData] = useState<SelectData | null>(null);
 
-	/** Handlers */
+	useEffect(() => {
+		inputRef.current?.focus();
+	}, []);
 
-	function handleInput() {
-		if (options.eventHandlers) {
-			setStatus((prevState) => ({ ...prevState, isOk: isValid(email) }));
+	useEffect(() => {
+		if (!options.eventHandlers) {
+			setValidity(Valididty.Idle);
 		}
-	}
+	}, [options.eventHandlers]);
 
 	function handleBlur() {
-		if (options.eventHandlers) {
-			console.log('Blur');
-			setStatus((prevState) => ({ ...prevState, isError: !isValid(email) }));
-		}
+		console.log('Blur');
+		setValidity(testEmail(email) ? Valididty.Valid : Valididty.Invalid);
 	}
 
 	function handleFocus() {
-		if (options.eventHandlers) {
-			console.log('Focus');
-			setStatus((prevState) => ({ ...prevState, isError: false }));
-		}
+		console.log('Focus');
+		setValidity(Valididty.Idle);
 	}
 
 	function customOnSelect(data: SelectData) {
@@ -76,13 +66,7 @@ export function App() {
 
 				<nav className="checkboxNav">
 					{checkboxes.map(([label, prop]) => (
-						<Checkbox
-							key={prop}
-							label={label}
-							optionProp={prop}
-							state={options}
-							setState={setOptions}
-						/>
+						<Checkbox key={prop} label={label} name={prop} state={options} setState={setOptions} />
 					))}
 				</nav>
 
@@ -101,31 +85,33 @@ export function App() {
 					<label htmlFor="reactEms">Your Email</label>
 					<Profiler>
 						<Email
+							ref={inputRef}
 							baseList={baseList}
 							onChange={setEmail}
 							value={email}
 							domainList={options.withRefine ? domainList : []}
 							classNames={{
 								wrapper: 'wrapperClass',
-								input: 'inputClass',
+								input: `inputClass ${validity === Valididty.Invalid ? 'invalidInput' : ''}`,
 								dropdown: 'dropdownIn',
 							}}
 							// Events
 							onSelect={options.customOnSelect ? customOnSelect : undefined}
-							onInput={handleInput}
-							onBlur={handleBlur}
-							onFocus={handleFocus}
+							onBlur={options.eventHandlers ? handleBlur : undefined}
+							onFocus={options.eventHandlers ? handleFocus : undefined}
 							// Atrributes
 							className="customClass"
 							name="reactEms"
 							id="reactEms"
 							placeholder="Please enter your email"
 						>
-							<Children
-								isActive={options.eventHandlers}
-								isError={status.isError}
-								isValid={status.isOk}
-							/>
+							{options.eventHandlers && (
+								<ValidityIcon
+									isActive={options.eventHandlers}
+									isError={validity === Valididty.Invalid}
+									isValid={validity === Valididty.Valid}
+								/>
+							)}
 						</Email>
 					</Profiler>
 				</div>
@@ -134,4 +120,8 @@ export function App() {
 			<Footer />
 		</>
 	);
+}
+
+function testEmail(value: string) {
+	return /^\w+@[a-zA-Z.,]+?\.[a-zA-Z]{2,3}$/.test(value);
 }

@@ -52,6 +52,8 @@ html {
 }
 
 .title {
+	line-height: 1.25;
+	text-align: center;
 	font-size: 1.75rem;
 }
 
@@ -65,10 +67,15 @@ html {
 
 .selectionInfo {
 	display: flex;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 	gap: 10px;
 }
 
 .selectionInfo div {
+	line-height: 1.25;
+	white-space: nowrap;
 	font-size: 0.925rem;
 	padding: 0.3em 0.6em;
 	font-style: italic;
@@ -83,8 +90,7 @@ html {
 }
 
 .emailWrapper {
-	max-width: 300px;
-	width: 100%;
+	width: 300px;
 }
 
 .emailWrapper label {
@@ -175,7 +181,13 @@ html {
 }
 
 .alert {
-	fill: none;
+	display: flex;
+	position: absolute;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	right: 0.6em;
+	width: 1.4em;
 	stroke: #ef4444;
 }
 
@@ -189,4 +201,8 @@ html {
 	padding: 0;
 	position: absolute;
 	width: 1px;
+}
+
+.invalidInput {
+	border-color: #ef4444 !important;
 }

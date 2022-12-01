@@ -5,28 +5,28 @@ export type Options = {
 };
 
 type CheckboxProps = {
-	optionProp: keyof Options;
+	name: keyof Options;
 	state: Options;
 	setState: React.Dispatch<React.SetStateAction<Options>>;
 	label: string;
 };
 
-export function Checkbox({ optionProp, state, setState, label }: CheckboxProps) {
+export function Checkbox({ name, state, setState, label }: CheckboxProps) {
 	return (
 		<div className="checkboxWrapper">
 			<input
 				className="checkboxInput"
 				type="checkbox"
-				id={optionProp}
+				id={name}
 				onChange={() =>
 					setState((prevOptions) => ({
 						...prevOptions,
-						[optionProp]: !prevOptions[optionProp],
+						[name]: !prevOptions[name],
 					}))
 				}
-				checked={state[optionProp]}
+				checked={state[name]}
 			/>
-			<label htmlFor={optionProp} className="checkboxLabel">
+			<label htmlFor={name} className="checkboxLabel">
 				{label}
 			</label>
 		</div>

@@ -210,7 +210,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			eventHandler: React.FocusEventHandler<HTMLInputElement>
 		) {
 			const isInternal = liRefs.current.some((li) => li === event.relatedTarget);
-			if (!isInternal) {
+			if (!isInternal || event.relatedTarget == null) {
 				eventHandler(event);
 			}
 		}
