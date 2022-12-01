@@ -1,5 +1,5 @@
 {
-	"name": "react-email-suggestions",
+	"name": "react-bella-email",
 	"private": false,
 	"version": "0.9.0",
 	"scripts": {
@@ -17,7 +17,6 @@
 		"eslint": "^8.23.1",
 		"eslint-plugin-react": "^7.31.8",
 		"eslint-plugin-react-hooks": "^4.6.0",
-		"fastest-levenshtein": "^1.0.16",
 		"prettier": "^2.7.1",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
@@ -27,7 +26,7 @@
 		"vite": "^3.1.0"
 	},
 	"peerDependencies": {
-		"react": "^16.8.0 || ^17 || ^18",
-		"react-dom": "^16.8.0 || ^17 || ^18"
+		"react": ">=16.8.0",
+		"react-dom": ">=16.8.0"
 	}
 }

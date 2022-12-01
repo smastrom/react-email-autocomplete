@@ -40,6 +40,12 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		},
 		externalRef
 	) => {
+		/* User settings */
+
+		const isRefine = isValidArr(domainList);
+		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
+		const minChars = getHonestValue(_minChars, 8, 2);
+
 		/* Refs */
 
 		const listId = useRef<string>(getUniqueId());
@@ -54,12 +60,6 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		const [suggestions, setSuggestions] = useState(baseList);
 		const [activeChild, setActiveChild] = useState(-1);
 
-		/* User settings */
-
-		const isRefine = isValidArr(domainList);
-		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
-		const minChars = getHonestValue(_minChars, 8, 2);
-
 		/*  Reactive helpers */
 
 		const email = isInvalid(_email) ? '' : cleanValue(_email as string);
@@ -69,7 +69,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		/* Effects */
 
 		function clearList() {
-			setSuggestions([]), setActiveChild(-1);
+			setSuggestions([]);
+			setActiveChild(-1);
 		}
 
 		useEffect(() => {
@@ -104,7 +105,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			} else {
 				if (hasDomain) {
 					const _suggestions = domainList
-						.filter((suggestion) => suggestion.startsWith(_domain))
+						.filter((_suggestion) => _suggestion.startsWith(_domain))
 						.slice(0, maxSuggestions);
 					if (_suggestions.length > 0) {
 						_suggestions[0] === _domain ? clearList() : setSuggestions(_suggestions);
@@ -119,12 +120,14 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			updateEmail(cleanEmail);
 		}
 
-		function handleSuggestionClick(event: React.MouseEvent<HTMLLIElement>, childIndex: number) {
+		function handleSuggestionSelect(
+			event: React.MouseEvent<HTMLLIElement> | React.KeyboardEvent<HTMLLIElement>,
+			childIndex: number
+		) {
 			event.preventDefault(), event.stopPropagation();
-
-			const newEmail = cleanValue((event.currentTarget as Node).textContent as string);
-			dispatchSelect(newEmail, false, childIndex + 1);
-			updateEmail(newEmail);
+			const selectedEmail = cleanValue((event.currentTarget as Node).textContent as string);
+			dispatchSelect(selectedEmail, false, childIndex + 1);
+			updateEmail(selectedEmail);
 			handleReFocus();
 		}
 
@@ -139,7 +142,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		}
 
 		function handleCursorFocus() {
-			setCursor(), inputRef?.current?.focus();
+			setCursor();
+			inputRef?.current?.focus();
 		}
 
 		function handleReFocus() {
@@ -161,7 +165,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						return clearList();
 
 					case 'ArrowDown':
-						return event.preventDefault(), setActiveChild(0);
+						event.preventDefault();
+						return setActiveChild(0);
 				}
 			}
 		}
@@ -170,23 +175,18 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			if (isOpen) {
 				switch (event.code) {
 					case 'Escape':
-						return clearList(), handleCursorFocus();
+						clearList();
+						return handleCursorFocus();
 
 					case 'Tab':
 						return clearList();
 
-					case 'BackSpace':
+					case 'Backspace':
 						return inputRef?.current?.focus();
 
 					case 'Enter':
 					case 'Space': {
-						event.preventDefault();
-						const newEmail = cleanValue(
-							(liRefs.current[activeChild] as HTMLLIElement).textContent as string
-						);
-						dispatchSelect(newEmail, true, activeChild + 1);
-						updateEmail(newEmail);
-						return handleReFocus();
+						return handleSuggestionSelect(event, activeChild);
 					}
 
 					case 'ArrowDown':
@@ -212,7 +212,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		function getEvents() {
 			const events: Events = {
 				onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
-					handleInputKeyDown(event), userOnKeyDown(event);
+					handleInputKeyDown(event);
+					userOnKeyDown(event);
 				},
 			};
 			setUserEvents<Events>(events, {
@@ -286,7 +287,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 		return (
 			<div ref={wrapperRef} {...getWrapperClass()}>
 				<input
-					ref={(thisInput) => mergeRefs(thisInput as HTMLInputElement)}
+					ref={(input) => mergeRefs(input as HTMLInputElement)}
 					type="email"
 					autoComplete="off"
 					role="combobox"
@@ -304,14 +305,14 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 						{suggestions.map((domain, index) => (
 							<li
 								key={domain}
-								ref={(thisLi) => (liRefs.current[index] = thisLi)}
+								ref={(li) => (liRefs.current[index] = li)}
 								role="option"
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
 								aria-selected={index === activeChild}
 								tabIndex={index === activeChild ? 0 : -1}
 								onKeyDown={handleListKeyDown}
-								onClick={(event) => handleSuggestionClick(event, index)}
+								onClick={(event) => handleSuggestionSelect(event, index)}
 								{...getClasses(ClassProps.Suggestion)}
 							>
 								<span {...getClasses(ClassProps.Username)}>{username}</span>
