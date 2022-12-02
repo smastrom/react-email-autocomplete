@@ -20,7 +20,7 @@ const checkboxes: [string, keyof Options][] = [
 	['onSelect Callback', 'customOnSelect'],
 ];
 
-const baseList = ['google.com', 'email.com', 'proton.me', 'yahoo.com', 'outlook.com', 'aol.com'];
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'proton.me', 'outlook.com', 'aol.com'];
 
 export function App() {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -66,7 +66,18 @@ export function App() {
 
 				<nav className="checkboxNav">
 					{checkboxes.map(([label, prop]) => (
-						<Checkbox key={prop} label={label} name={prop} state={options} setState={setOptions} />
+						<Checkbox
+							key={prop}
+							label={label}
+							name={prop}
+							checked={options[prop]}
+							onChange={(name) =>
+								setOptions((prevOptions) => ({
+									...prevOptions,
+									[name]: !prevOptions[name],
+								}))
+							}
+						/>
 					))}
 				</nav>
 
@@ -107,7 +118,6 @@ export function App() {
 						>
 							{options.eventHandlers && (
 								<ValidityIcon
-									isActive={options.eventHandlers}
 									isError={validity === Valididty.Invalid}
 									isValid={validity === Valididty.Valid}
 								/>

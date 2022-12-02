@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
-import { cleanValue, getUniqueId, getHonestValue, isFn } from './utils';
+import { cleanValue, getUniqueId, getHonestValue, isFn, useIsomorphicLayoutEffect } from './utils';
 import { Attributes, Props, Events, ClassNames, SelectData, ClassProps, Maybe } from './types';
 
 export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
@@ -42,8 +42,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/* Refs */
 
-		const listId = useRef<string>(getUniqueId());
-		const listPrefix = `${customPrefix}${listId.current}`;
+		const uniqueId = useRef<string>('');
+		const listId = `${customPrefix}${uniqueId.current}`;
 
 		const wrapperRef = useRef<Maybe<HTMLDivElement>>(null);
 		const inputRef = useRef<Maybe<HTMLInputElement>>(null);
@@ -67,6 +67,12 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			setSuggestions([]);
 			setActiveChild(-1);
 		}
+
+		useIsomorphicLayoutEffect(() => {
+			if (!uniqueId.current) {
+				uniqueId.current = getUniqueId();
+			}
+		}, []);
 
 		useEffect(() => {
 			if (activeChild >= 0) {
@@ -246,7 +252,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		function getAriaControls() {
 			if (isOpen) {
-				return { 'aria-controls': listPrefix };
+				return { 'aria-controls': listId };
 			}
 			return {};
 		}
@@ -292,7 +298,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 					{...userAttrs}
 				/>
 				{isOpen && (
-					<ul ref={dropdownRef} id={listPrefix} {...getClasses(ClassProps.Dropdown)}>
+					<ul ref={dropdownRef} id={listId} {...getClasses(ClassProps.Dropdown)}>
 						{suggestions.map((domain, index) => (
 							<li
 								ref={(li) => (liRefs.current[index] = li)}

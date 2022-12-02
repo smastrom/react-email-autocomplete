@@ -1,5 +1,4 @@
 type Props = {
-	isActive: boolean;
 	isError: boolean;
 	isValid: boolean;
 };

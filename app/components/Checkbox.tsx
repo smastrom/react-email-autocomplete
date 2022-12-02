@@ -6,25 +6,20 @@ export type Options = {
 
 type CheckboxProps = {
 	name: keyof Options;
-	state: Options;
-	setState: React.Dispatch<React.SetStateAction<Options>>;
+	checked: boolean;
 	label: string;
+	onChange: (value: keyof Options) => void;
 };
 
-export function Checkbox({ name, state, setState, label }: CheckboxProps) {
+export function Checkbox({ name, checked, label, onChange }: CheckboxProps) {
 	return (
 		<div className="checkboxWrapper">
 			<input
 				className="checkboxInput"
 				type="checkbox"
 				id={name}
-				onChange={() =>
-					setState((prevOptions) => ({
-						...prevOptions,
-						[name]: !prevOptions[name],
-					}))
-				}
-				checked={state[name]}
+				onChange={() => onChange(name)}
+				checked={checked}
 			/>
 			<label htmlFor={name} className="checkboxLabel">
 				{label}
