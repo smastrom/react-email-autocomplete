@@ -1,11 +1,13 @@
 {
 	"name": "react-bella-email",
-	"private": false,
 	"version": "0.9.0",
+	"private": false,
 	"scripts": {
-		"dev": "vite",
-		"build": "tsc && vite build",
+		"build": "tsc && vite build && yarn declare",
+		"postbuild": "cpy src/types.d.ts dist --rename index.d.ts --flat && rimraf src/types.d.ts",
 		"build:app": "tsc && vite build --mode app",
+		"declare": "tsc src/types.ts --declaration --emitDeclarationOnly --jsx react-jsx",
+		"dev": "vite",
 		"preview": "vite preview"
 	},
 	"devDependencies": {
@@ -14,6 +16,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.37.0",
 		"@typescript-eslint/parser": "^5.37.0",
 		"@vitejs/plugin-react": "^2.1.0",
+		"cpy-cli": "^4.2.0",
 		"cypress": "^11.2.0",
 		"eslint": "^8.23.1",
 		"eslint-plugin-react": "^7.31.8",
@@ -21,13 +24,12 @@
 		"prettier": "^2.7.1",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"react-hook-form": "^7.35.0",
 		"rollup-plugin-terser": "^7.0.2",
 		"typescript": "^4.6.4",
 		"vite": "^3.1.0"
 	},
 	"peerDependencies": {
-		"react": ">=16.8.0",
-		"react-dom": ">=16.8.0"
+		"react": ">=17",
+		"react-dom": ">=17"
 	}
 }

@@ -32,19 +32,19 @@ npm i -S react-bella-email
 
 ## :cyclone: Props
 
-| Prop             | Description                                                                                      | Type                                   | Default   | Required           |
-| ---------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- | --------- | ------------------ |
-| `value`          | State to hold the value                                                                          | _string_                               | undefined | :white_check_mark: |
-| `onChange`       | State setter or custom dispatcher to update the value                                            | _Change_                               | undefined | :white_check_mark: |
-| `baseList`       | Domains to suggest while typing the username                                                     | _string[]_                             | undefined | :white_check_mark: |
-| `refineList`     | Domains to refine suggestions after typing `@`                                                   | _string[]_                             | []        | :x:                |
-| `onSelect`       | Custom callback to invoke on suggestion select                                                   | _Select_                               | () => {}  | :x:                |
-| `minChars`       | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
-| `maxSuggestions` | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
-| `nextElement`    | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                               | undefined | :x:                |
-| `classNames`     | Class names of each child                                                                        | _ClassNames_                           | undefined | :x:                |
-| `className`      | Class name of the wrapper element                                                                | _string_                               | undefined | :x:                |
-| `customPrefix`   | Custom prefix for dropdown unique ID                                                             | _string_                               | `rbe_`    | :x:                |
+| Prop           | Description                                                                                      | Type                                   | Default   | Required           |
+| -------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- | --------- | ------------------ |
+| `value`        | State or portion of state to hold the email                                                      | _string_                               | undefined | :white_check_mark: |
+| `onChange`     | State setter or custom dispatcher to update the email                                            | _Change_                               | undefined | :white_check_mark: |
+| `baseList`     | Domains to suggest while typing the username                                                     | _string[]_                             | undefined | :white_check_mark: |
+| `refineList`   | Domains to refine suggestions after typing `@`                                                   | _string[]_                             | []        | :x:                |
+| `onSelect`     | Custom callback to invoke on suggestion select                                                   | _Select_                               | () => {}  | :x:                |
+| `minChars`     | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
+| `maxResults`   | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
+| `nextElement`  | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                               | undefined | :x:                |
+| `classNames`   | Class names of each child                                                                        | _ClassNames_                           | undefined | :x:                |
+| `className`    | Class name of the wrapper element                                                                | _string_                               | undefined | :x:                |
+| `customPrefix` | Custom prefix for dropdown unique ID                                                             | _string_                               | `rbe_`    | :x:                |
 
 ### Are also available:
 
@@ -231,7 +231,7 @@ function App() {
 
 ### 2. Refine Mode
 
-Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (like an autocomplete).
+Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (autocomplete).
 
 ![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
 

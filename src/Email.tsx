@@ -1,8 +1,16 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isFn, useIsomorphicLayoutEffect } from './utils';
-import { Attributes, Props, Events, ClassNames, SelectData, ClassProps, Maybe } from './types';
+import {
+	ClassNames,
+	Events,
+	SelectData,
+	ClassProps,
+	Maybe,
+	Email as Export,
+	EmailProps,
+} from './types';
 
-export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
+export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 	(
 		{
 			/* Core - Required */
@@ -10,8 +18,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 			value: _email,
 			baseList,
 			/* Core - Optional */
-			domainList = [],
-			maxSuggestions: _maxSuggestions = 6,
+			refineList = [],
+			maxResults: _maxResults = 6,
 			minChars: _minChars = 2,
 			nextElement,
 			className,
@@ -36,8 +44,8 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 	) => {
 		/* User settings */
 
-		const isRefine = domainList?.length > 0;
-		const maxSuggestions = getHonestValue(_maxSuggestions, 8, 6);
+		const isRefine = refineList?.length > 0;
+		const maxResults = getHonestValue(_maxResults, 8, 6);
 		const minChars = getHonestValue(_minChars, 8, 2);
 
 		/* Refs */
@@ -105,9 +113,9 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 				hasAt ? clearList() : setSuggestions(baseList);
 			} else {
 				if (hasDomain) {
-					const _suggestions = domainList
+					const _suggestions = refineList
 						.filter((_suggestion) => _suggestion.startsWith(_domain))
-						.slice(0, maxSuggestions);
+						.slice(0, maxResults);
 					if (_suggestions.length > 0) {
 						_suggestions[0] === _domain ? clearList() : setSuggestions(_suggestions);
 					} else {
@@ -272,7 +280,7 @@ export const Email = forwardRef<HTMLInputElement, Attributes & Props & Events>(
 
 		/*  HTML Attributes */
 
-		const userAttrs: Attributes = {
+		const userAttrs = {
 			id,
 			name,
 			placeholder,

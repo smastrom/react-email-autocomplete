@@ -1,27 +1,26 @@
-export type Options = {
-	withRefine: boolean;
-	customOnSelect: boolean;
-	eventHandlers: boolean;
-};
-
-type CheckboxProps = {
-	name: keyof Options;
+type CheckboxProps<T extends Record<string, boolean>> = {
+	name: keyof T;
 	checked: boolean;
 	label: string;
-	onChange: (value: keyof Options) => void;
+	onChange: (value: keyof T) => void;
 };
 
-export function Checkbox({ name, checked, label, onChange }: CheckboxProps) {
+export function Checkbox<T extends Record<string, boolean>>({
+	name,
+	checked,
+	label,
+	onChange,
+}: CheckboxProps<T>) {
 	return (
 		<div className="checkboxWrapper">
 			<input
 				className="checkboxInput"
 				type="checkbox"
-				id={name}
+				id={name as string}
 				onChange={() => onChange(name)}
 				checked={checked}
 			/>
-			<label htmlFor={name} className="checkboxLabel">
+			<label htmlFor={name as string} className="checkboxLabel">
 				{label}
 			</label>
 		</div>

@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { terser } from 'rollup-plugin-terser';
-
 import Package from './package.json';
 
 export default defineConfig(({ command, mode }) => {
@@ -18,14 +17,9 @@ export default defineConfig(({ command, mode }) => {
 			minify: 'terser',
 			lib: {
 				name: Package.name,
-				entry: 'src/index.ts',
+				entry: 'src/Email.tsx',
 				formats: ['es', 'umd'],
-				fileName: (format) => {
-					if (format === 'es') {
-						return 'index.js';
-					}
-					return `index.${format}.min.js`;
-				},
+				fileName: (format) => (format === 'es' ? 'index.js' : 'index.umd.js'),
 			},
 			rollupOptions: {
 				external: ['react', 'react/jsx-runtime'],
@@ -33,14 +27,13 @@ export default defineConfig(({ command, mode }) => {
 				output: {
 					globals: {
 						react: 'React',
-						'react/jsx-runtime': 'jsxRuntime',
+						'react/jsx-runtime': 'React',
 					},
 				},
 				plugins: [
 					terser({
 						compress: {
 							defaults: true,
-							drop_console: false,
 						},
 					}),
 				],

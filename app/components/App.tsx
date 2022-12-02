@@ -2,17 +2,23 @@ import { useEffect, useRef, useState } from 'react';
 import { Email } from '../../src/Email';
 import { Profiler } from './Profiler';
 import { SelectData } from '../../src/types';
-import { Checkbox, Options } from './Checkbox';
+import { Checkbox } from './Checkbox';
 import { ValidityIcon } from './ValidityIcon';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import domainList from '../../src/domains.json';
+import refineList from '../../src/domains.json';
 
 enum Valididty {
 	Idle,
 	Valid,
 	Invalid,
 }
+
+type Options = {
+	withRefine: boolean;
+	customOnSelect: boolean;
+	eventHandlers: boolean;
+};
 
 const checkboxes: [string, keyof Options][] = [
 	['Refine Mode', 'withRefine'],
@@ -46,12 +52,10 @@ export function App() {
 	}, [options.eventHandlers]);
 
 	function handleBlur() {
-		console.log('Blur');
 		setValidity(testEmail(email) ? Valididty.Valid : Valididty.Invalid);
 	}
 
 	function handleFocus() {
-		console.log('Focus');
 		setValidity(Valididty.Idle);
 	}
 
@@ -66,7 +70,7 @@ export function App() {
 
 				<nav className="checkboxNav">
 					{checkboxes.map(([label, prop]) => (
-						<Checkbox
+						<Checkbox<Options>
 							key={prop}
 							label={label}
 							name={prop}
@@ -100,7 +104,7 @@ export function App() {
 							baseList={baseList}
 							onChange={setEmail}
 							value={email}
-							domainList={options.withRefine ? domainList : []}
+							refineList={options.withRefine ? refineList : []}
 							classNames={{
 								wrapper: 'wrapperClass',
 								input: `inputClass ${validity === Valididty.Invalid ? 'invalidInput' : ''}`,
@@ -115,6 +119,7 @@ export function App() {
 							name="reactEms"
 							id="reactEms"
 							placeholder="Please enter your email"
+							required
 						>
 							{options.eventHandlers && (
 								<ValidityIcon
