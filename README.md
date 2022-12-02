@@ -89,8 +89,7 @@ function App() {
     <Email
       classNames={myClassNames}
       baseList={baseList}
-      domainList={domainList}
-      onChange={setEmail}
+      onChange={setEmail} // or (value) => customSetter(value)
       value={email}
     />
   );
@@ -122,8 +121,7 @@ function App() {
     <Email
       className="my-wrapper"
       baseList={baseList}
-      domainList={domainList}
-      onChange={setEmail}
+      onChange={setEmail} // or (value) => customSetter(value)
       value={email}
     />
   );
@@ -224,7 +222,7 @@ function App() {
     <Email
       className="my-wrapper"
       baseList={baseList}
-      onChange={setEmail} // or (value) => setEmail(value)
+      onChange={setEmail} // or (value) => customSetter(value)
       value={email}
     />
   );
@@ -259,7 +257,7 @@ function App() {
       className="my-wrapper"
       baseList={baseList}
       refineList={domains}
-      onChange={setEmail}
+      onChange={setEmail} // or (value) => customSetter(value)
       value={email}
     />
   );
@@ -302,6 +300,15 @@ function App() {
 }
 ```
 
+<details><summary><strong>Type Definition</strong></summary>
+<br/>
+
+```ts
+type Change =
+  | React.Dispatch<React.SetStateAction<string>>
+  | ((value: string) => void | Promise<void>);
+```
+
 </details>
 
 <br />
@@ -325,7 +332,7 @@ function App() {
       className="my-wrapper"
       baseList={baseList}
       refineList={domains}
-      onChange={setEmail}
+      onChange={setEmail} // or (value) => customSetter(value)
       onSelect={handleSelect}
       value={email}
     />
