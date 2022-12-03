@@ -30,6 +30,7 @@ export function ValidityIcon({ isError, isValid }: Props) {
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
+				aria-hidden="true"
 				strokeWidth="2"
 				strokeLinecap="round"
 				strokeLinejoin="round"

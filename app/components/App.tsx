@@ -106,11 +106,11 @@ export function App() {
 							onChange={setEmail}
 							value={email}
 							refineList={options.withRefine ? refineList : []}
-							/* 							classNames={{
+							classNames={{
 								wrapper: 'wrapperClass',
 								input: `inputClass ${validity === Valididty.Invalid ? 'invalidInput' : ''}`,
 								dropdown: 'dropdownIn',
-							}} */
+							}}
 							// Events
 							onSelect={options.customOnSelect ? customOnSelect : undefined}
 							onBlur={options.eventHandlers ? handleBlur : undefined}

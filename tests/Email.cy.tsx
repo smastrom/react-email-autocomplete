@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from 'react';
 import { Email } from './Email';
 import domains from '../src/domains.json';
 
@@ -67,19 +65,6 @@ it('Should display coherent baseList suggestions according to input change', () 
 	});
 });
 
-it('Should hide baseList suggestions once users press @', () => {
-	const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com'];
-	cy.mount(<Email baseList={baseList} className="WC" />);
-
-	cy.get('.WC').within(() => {
-		cy.get('input').type('myusername');
-		cy.get('li').should('have.length', baseList.length);
-		cy.get('input').type('@');
-		cy.get('ul').should('not.exist');
-		cy.get('li').should('not.exist');
-	});
-});
-
 it('Should display coherent refineList suggestions according to input change', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
@@ -99,15 +84,27 @@ it('Should display coherent refineList suggestions according to input change', (
 	});
 });
 
+it('Should hide baseList suggestions once users press @', () => {
+	const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com'];
+	cy.mount(<Email baseList={baseList} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername');
+		cy.get('li').should('have.length', baseList.length);
+		cy.get('input').type('@');
+		cy.get('ul').should('not.exist');
+		cy.get('li').should('not.exist');
+	});
+});
+
 it('Should hide suggestions if no match', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
 	cy.get('.WC').within(() => {
 		cy.get('input').type('myusername@g');
-		cy.get('li').should('exist');
-
+		cy.get('ul').should('exist');
 		cy.get('input').type('xsdasdsad');
-		cy.get('li').should('not.exist');
+		cy.get('ul').should('not.exist');
 	});
 });
 
@@ -116,44 +113,93 @@ it('Should hide suggestions if clearing', () => {
 
 	cy.get('.WC').within(() => {
 		cy.get('input').type('myusername@g');
-		cy.get('li').should('exist');
+		cy.get('ul').should('exist');
 		cy.get('input').clear();
-		cy.get('li').should('not.exist');
+		cy.get('ul').should('not.exist');
 	});
 });
 
-describe.only('Should update suggestions on input change', () => {
+it('Should hide suggestions if exact match', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').should('exist');
+		cy.get('input').clear().type('myusername@gmail.com');
+		cy.get('ul').should('not.exist');
+		cy.deleteChars(1);
+		cy.get('ul').should('exist');
+	});
+});
+
+describe('Should update suggestions on input change', () => {
+	const initialUsername = 'myusername';
+
 	it('Username', () => {
 		cy.mount(<Email refineList={domains} className="WC" />);
 
 		cy.get('.WC').within(() => {
-			const initialUsername = 'myusername';
-
 			cy.get('input').type(`${initialUsername}@g`);
 			cy.get('span:first-of-type').each((span) => {
-				expect(span.text()).to.contain(initialUsername);
+				expect(span.text()).to.be.eq(initialUsername);
 			});
 
 			cy.get('input').type(`{leftArrow}{leftArrow}`);
-			cy.deleteChars(4);
+			const charsToDel = 4;
+			cy.deleteChars(charsToDel);
 
 			cy.get('span:first-of-type').each((span) => {
-				expect(span.text()).to.be.eq(initialUsername.slice(0, -4));
+				expect(span.text()).to.be.eq(initialUsername.slice(0, -charsToDel));
 			});
 		});
 	});
-	it('Domain', () => {});
+
+	it('Domain', () => {
+		const domain = '@gmail';
+		cy.mount(<Email refineList={domains} className="WC" />);
+
+		cy.get('.WC').within(() => {
+			cy.get('input').type(`${initialUsername}${domain}`);
+			cy.get('span:last-of-type')
+				.each((span) => {
+					expect(span.text()).to.contain(domain);
+				})
+				.its('length')
+				.then((length) => {
+					const charsToDel = 3;
+					cy.deleteChars(charsToDel);
+
+					cy.get('span:last-of-type')
+						.should('have.length.greaterThan', length)
+						.each((span) => {
+							expect(span.text()).to.contain(domain.slice(0, -charsToDel));
+						});
+				});
+		});
+	});
 });
 
-it('Should display suggestion on paste', () => {});
+it('Should update input value on suggestion click', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
 
-describe('Should update value after selection', () => {
-	it('Mouse', () => {});
-	it('Keyboard', () => {});
+	for (let i = 0; i < 10; i++) {
+		cy.get('.WC').within(() => {
+			cy.get('input').type('myusername@g');
+			cy.get('li')
+				.then((list) => {
+					list.toArray();
+					return list[Math.floor(Math.random() * list.length)];
+				})
+				.then((randomLi) => {
+					randomLi.trigger('click');
+					cy.get('input').should('have.value', randomLi.text()).clear();
+				});
+		});
+	}
 });
 
 it('Should focus input and update value if pressing backspace on suggestion', () => {});
-it('Should navigate trough suggestions and input', () => {});
+it('Should keyboard-navigate trough suggestions and input', () => {});
 it('Should close dropdown if clicking outside', () => {});
 
 it('Should hide dropdown if first result equals to user input email', () => {});
