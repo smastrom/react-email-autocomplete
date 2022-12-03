@@ -1,10 +1,11 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  component: {
-    devServer: {
-      framework: "react",
-      bundler: "vite",
-    },
-  },
+	component: {
+		specPattern: '**/*.cy.tsx',
+		devServer: {
+			framework: 'react',
+			bundler: 'vite',
+		},
+	},
 });

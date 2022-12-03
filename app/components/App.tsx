@@ -100,16 +100,17 @@ export function App() {
 					<label htmlFor="reactEms">Your Email</label>
 					<Profiler>
 						<Email
+							wrapperId="myId"
 							ref={inputRef}
 							baseList={baseList}
 							onChange={setEmail}
 							value={email}
 							refineList={options.withRefine ? refineList : []}
-							classNames={{
+							/* 							classNames={{
 								wrapper: 'wrapperClass',
 								input: `inputClass ${validity === Valididty.Invalid ? 'invalidInput' : ''}`,
 								dropdown: 'dropdownIn',
-							}}
+							}} */
 							// Events
 							onSelect={options.customOnSelect ? customOnSelect : undefined}
 							onBlur={options.eventHandlers ? handleBlur : undefined}

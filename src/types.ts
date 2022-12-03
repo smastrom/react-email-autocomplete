@@ -2,7 +2,7 @@ import React from 'react';
 
 export type Maybe<T> = T | null;
 
-export enum ClassProps {
+export enum Elements {
 	Wrapper = 'wrapper',
 	Input = 'input',
 	Dropdown = 'dropdown',
@@ -11,7 +11,7 @@ export enum ClassProps {
 	Domain = 'domain',
 }
 
-export type ClassNames = Partial<Record<ClassProps, string>>;
+export type ClassNames = Partial<Record<Elements, string>>;
 
 export type SelectData = {
 	value: string;
@@ -42,7 +42,7 @@ export type Props = {
 	minChars?: Values;
 	/** Maximum number of suggestions to display. */
 	maxResults?: Omit<Values, 1>;
-	/** Class names of each child. */
+	/** Class names for each element. */
 	classNames?: ClassNames;
 	/** Class name of the wrapper element. */
 	className?: string;
@@ -51,6 +51,8 @@ export type Props = {
 	nextElement?: string;
 	/** Custom prefix for dropdown unique ID. */
 	customPrefix?: string;
+	/** DOM ID of the wrapper element. */
+	wrapperId?: string;
 	children?: React.ReactNode;
 };
 

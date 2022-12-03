@@ -8,7 +8,9 @@
 		"build:app": "tsc && vite build --mode app",
 		"declare": "tsc src/types.ts --declaration --emitDeclarationOnly --jsx react-jsx",
 		"dev": "vite",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"test": "yarn cypress run --component",
+		"test:gui": "yarn cypress open --component"
 	},
 	"devDependencies": {
 		"@types/react": "^17.0.2",

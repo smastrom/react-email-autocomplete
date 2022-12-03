@@ -1,14 +1,6 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isFn, useIsomorphicLayoutEffect } from './utils';
-import {
-	ClassNames,
-	Events,
-	SelectData,
-	ClassProps,
-	Maybe,
-	Email as Export,
-	EmailProps,
-} from './types';
+import { Events, SelectData, Elements, Maybe, Email as Export, EmailProps } from './types';
 
 export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 	(
@@ -27,6 +19,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			onSelect = () => {},
 			customPrefix = 'rbe_',
 			children,
+			wrapperId,
 			/* HTML attributes */
 			id,
 			name,
@@ -269,10 +262,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() };
 		}
 
-		function getClasses(classProperty: keyof ClassNames) {
-			if (classNames && typeof classNames[classProperty] === 'string') {
+		function getClasses(elementName: Elements) {
+			if (classNames && typeof classNames[elementName] === 'string') {
 				return {
-					className: classNames[classProperty],
+					className: classNames[elementName],
 				};
 			}
 			return {};
@@ -290,7 +283,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		};
 
 		return (
-			<div ref={wrapperRef} {...getWrapperClass()}>
+			<div ref={wrapperRef} id={wrapperId} {...getWrapperClass()}>
 				<input
 					ref={(input) => mergeRefs(input as HTMLInputElement)}
 					onChange={(event) => handleEmailChange(event)}
@@ -301,12 +294,12 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					role="combobox"
 					aria-autocomplete="list"
 					{...getAriaControls()}
-					{...getClasses(ClassProps.Input)}
+					{...getClasses(Elements.Input)}
 					{...getEvents()}
 					{...userAttrs}
 				/>
 				{isOpen && (
-					<ul ref={dropdownRef} id={listId} {...getClasses(ClassProps.Dropdown)}>
+					<ul ref={dropdownRef} id={listId} {...getClasses(Elements.Dropdown)}>
 						{suggestions.map((domain, index) => (
 							<li
 								ref={(li) => (liRefs.current[index] = li)}
@@ -318,10 +311,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 								aria-selected={index === activeChild}
 								tabIndex={index === activeChild ? 0 : -1}
 								role="option"
-								{...getClasses(ClassProps.Suggestion)}
+								{...getClasses(Elements.Suggestion)}
 							>
-								<span {...getClasses(ClassProps.Username)}>{username}</span>
-								<span {...getClasses(ClassProps.Domain)}>@{domain}</span>
+								<span {...getClasses(Elements.Username)}>{username}</span>
+								<span {...getClasses(Elements.Domain)}>@{domain}</span>
 							</li>
 						))}
 					</ul>

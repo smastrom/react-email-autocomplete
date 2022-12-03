@@ -8,9 +8,8 @@
 
 ![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
 
-**React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **giving the best UX with all the flexibility you'd expect from an input field:**
+**React Bella Email** is a tiny, zero-dependency controlled input that aims to replace the typical `<input type="email" />` of your form by **providing the best UX** and all the flexibility you'd expect from a native input:
 
-- Suggestions while typing
 - Fully accessible with great keyboard controls
 - Completely unstyled and white labeled
 - Forward the most common event handlers and attributes
@@ -41,9 +40,10 @@ npm i -S react-bella-email
 | `onSelect`     | Custom callback to invoke on suggestion select                                                   | _Select_                               | () => {}  | :x:                |
 | `minChars`     | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
 | `maxResults`   | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
-| `nextElement`  | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                               | undefined | :x:                |
-| `classNames`   | Class names of each child                                                                        | _ClassNames_                           | undefined | :x:                |
+| `classNames`   | Class names for each element                                                                     | _ClassNames_                           | undefined | :x:                |
 | `className`    | Class name of the wrapper element                                                                | _string_                               | undefined | :x:                |
+| `nextElement`  | DOM ID of the next focusable element. If set, it will be focused after a suggestion is selected. | _string_                               | undefined | :x:                |
+| `wrapperId`    | DOM ID of the wrapper element                                                                    | _string_                               | undefined | :x:                |
 | `customPrefix` | Custom prefix for dropdown unique ID                                                             | _string_                               | `rbe_`    | :x:                |
 
 ### Are also available:
