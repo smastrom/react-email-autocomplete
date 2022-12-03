@@ -187,7 +187,6 @@ it('Should update input value on suggestion click', () => {
 			cy.get('input').type('myusername@g');
 			cy.get('li')
 				.then((list) => {
-					list.toArray();
 					return list[Math.floor(Math.random() * list.length)];
 				})
 				.then((randomLi) => {
@@ -198,11 +197,67 @@ it('Should update input value on suggestion click', () => {
 	}
 });
 
-it('Should focus input and update value if pressing backspace on suggestion', () => {});
-it('Should keyboard-navigate trough suggestions and input', () => {});
-it('Should close dropdown if clicking outside', () => {});
+it('Should keyboard-navigate trough suggestions and input', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
 
-it('Should hide dropdown if first result equals to user input email', () => {});
+	const initialValue = 'myusername@g';
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type(initialValue);
+		cy.get('li').then((list) => {
+			const randomLi = Math.floor(Math.random() * list.length) - 1;
+			cy.downArrow(randomLi);
+			cy.get('li')
+				.eq(randomLi - 1)
+				.should('have.focus')
+				.and('have.attr', 'tabindex', '0');
+			cy.upArrow(randomLi);
+			cy.get('input').should('have.focus');
+		});
+	});
+});
+
+it('Should focus input and update value if pressing backspace on suggestion', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	const initialValue = 'myusername@g';
+	const charsToDel = 2;
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type(initialValue);
+		cy.get('li').then((list) => {
+			cy.downArrow(list.length);
+			cy.deleteChars(charsToDel);
+			cy.get('input').should('have.focus').and('have.value', initialValue.slice(0, -charsToDel));
+		});
+	});
+});
+
+it('Should close dropdown if clicking outside', () => {
+	cy.mount(
+		<Email refineList={domains} className="WC" classNames={{ dropdown: 'dropdownClass' }} />
+	);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('ul').should('exist');
+	});
+
+	cy.get('body').trigger('click');
+	cy.get('.dropdownClass').should('not.exist');
+});
+
+it('Should hide dropdown if first result equals to user input email', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('ul').should('exist');
+		cy.get('input').type('mail.com');
+		cy.get('ul').should('not.exist');
+	});
+});
+
 it('Should open dropdown only after minChars is reached', () => {});
 it('Should display maximum user-defined result number', () => {});
 
