@@ -1,12 +1,18 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useState } from 'react';
 import { Email as EmailComponent } from '../src/Email';
-import domains from '../src/domains.json';
 import { Props } from '../src/types';
 
-const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'ciao.com', 'buonasera.com'];
+const baseListInternal = [
+	'gmail.com',
+	'yahoo.com',
+	'hotmail.com',
+	'aol.com',
+	'ciao.com',
+	'buonasera.com',
+];
 
-export function Email({ className, wrapperId, classNames }: Partial<Props>) {
+export function Email({ className, wrapperId, classNames, refineList, baseList }: Partial<Props>) {
 	const [email, setEmail] = useState('');
 
 	return (
@@ -16,8 +22,8 @@ export function Email({ className, wrapperId, classNames }: Partial<Props>) {
 			className={className}
 			classNames={classNames}
 			value={email}
-			refineList={domains}
-			baseList={baseList}
+			refineList={refineList}
+			baseList={baseList || baseListInternal}
 			onChange={setEmail}
 		/>
 	);

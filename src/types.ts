@@ -1,4 +1,13 @@
-import React from 'react';
+import {
+	Dispatch,
+	SetStateAction,
+	FocusEventHandler,
+	KeyboardEventHandler,
+	RefAttributes,
+	ForwardRefExoticComponent,
+	FormEventHandler,
+	ReactNode,
+} from 'react';
 
 export type Maybe<T> = T | null;
 
@@ -21,9 +30,7 @@ export type SelectData = {
 
 export type Values = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export type Change =
-	| React.Dispatch<React.SetStateAction<string>>
-	| ((value: string) => void | Promise<void>);
+export type Change = Dispatch<SetStateAction<string>> | ((value: string) => void | Promise<void>);
 
 export type Select = (object: SelectData) => void | Promise<void>;
 
@@ -53,14 +60,14 @@ export type Props = {
 	customPrefix?: string;
 	/** DOM ID of the wrapper element. */
 	wrapperId?: string;
-	children?: React.ReactNode;
+	children?: ReactNode;
 };
 
 export type Events = {
-	onFocus?: React.FocusEventHandler<HTMLInputElement>;
-	onBlur?: React.FocusEventHandler<HTMLInputElement>;
-	onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
-	onInput?: React.FormEventHandler<HTMLInputElement>;
+	onFocus?: FocusEventHandler<HTMLInputElement>;
+	onBlur?: FocusEventHandler<HTMLInputElement>;
+	onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
+	onInput?: FormEventHandler<HTMLInputElement>;
 };
 
 export type Attributes = Partial<
@@ -69,6 +76,4 @@ export type Attributes = Partial<
 
 export type EmailProps = Props & Events & Attributes;
 
-export declare const Email: React.ForwardRefExoticComponent<
-	EmailProps & React.RefAttributes<HTMLInputElement>
->;
+export declare const Email: ForwardRefExoticComponent<EmailProps & RefAttributes<HTMLInputElement>>;

@@ -2,15 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
 import { Email } from './Email';
-import { mount } from 'cypress/react';
-
-declare global {
-	namespace Cypress {
-		interface Chainable {
-			mount: typeof mount;
-		}
-	}
-}
+import domains from '../src/domains.json';
 
 describe('Classnames', () => {
 	const someClasses = {
@@ -63,24 +55,106 @@ describe('Classnames', () => {
 	});
 });
 
-it('Should enable refine mode only if refineList is defined', () => {});
+it('Should display coherent baseList suggestions according to input change', () => {
+	const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com'];
+	cy.mount(<Email baseList={baseList} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusern');
+		cy.get('li').each((li, index) => {
+			expect(li.text()).to.contain(`myusern@${baseList[index]}`);
+		});
+	});
+});
+
+it('Should hide baseList suggestions once users press @', () => {
+	const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com'];
+	cy.mount(<Email baseList={baseList} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername');
+		cy.get('li').should('have.length', baseList.length);
+		cy.get('input').type('@');
+		cy.get('ul').should('not.exist');
+		cy.get('li').should('not.exist');
+	});
+});
+
+it('Should display coherent refineList suggestions according to input change', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').each((li) => {
+			expect(li.text()).to.contain('myusername@g');
+		});
+		cy.get('input').type('m');
+		cy.get('li').each((li) => {
+			expect(li.text()).to.contain('myusername@gm');
+		});
+		cy.get('input').type('x');
+		cy.get('li').each((li) => {
+			expect(li.text()).to.contain('myusername@gmx');
+		});
+	});
+});
+
+it('Should hide suggestions if no match', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').should('exist');
+
+		cy.get('input').type('xsdasdsad');
+		cy.get('li').should('not.exist');
+	});
+});
+
+it('Should hide suggestions if clearing', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').should('exist');
+		cy.get('input').clear();
+		cy.get('li').should('not.exist');
+	});
+});
+
+describe.only('Should update suggestions on input change', () => {
+	it('Username', () => {
+		cy.mount(<Email refineList={domains} className="WC" />);
+
+		cy.get('.WC').within(() => {
+			const initialUsername = 'myusername';
+
+			cy.get('input').type(`${initialUsername}@g`);
+			cy.get('span:first-of-type').each((span) => {
+				expect(span.text()).to.contain(initialUsername);
+			});
+
+			cy.get('input').type(`{leftArrow}{leftArrow}`);
+			cy.deleteChars(4);
+
+			cy.get('span:first-of-type').each((span) => {
+				expect(span.text()).to.be.eq(initialUsername.slice(0, -4));
+			});
+		});
+	});
+	it('Domain', () => {});
+});
+
+it('Should display suggestion on paste', () => {});
 
 describe('Should update value after selection', () => {
 	it('Mouse', () => {});
 	it('Keyboard', () => {});
 });
 
-it('Should display baseList suggestions and hide them once users press @', () => {});
-it('Should display coherent baseList and refineList suggestions according to input change', () => {});
-it('Should hide suggestions if no domain match', () => {});
-
-describe('Should update suggestions text content', () => {
-	it('Username', () => {});
-	it('Domain', () => {});
-});
-
 it('Should focus input and update value if pressing backspace on suggestion', () => {});
 it('Should navigate trough suggestions and input', () => {});
+it('Should close dropdown if clicking outside', () => {});
 
 it('Should hide dropdown if first result equals to user input email', () => {});
 it('Should open dropdown only after minChars is reached', () => {});

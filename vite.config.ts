@@ -23,7 +23,7 @@ export default defineConfig(({ command, mode }) => {
 			},
 			rollupOptions: {
 				external: ['react', 'react/jsx-runtime'],
-				input: 'src/index.ts',
+				input: 'src/Email.tsx',
 				output: {
 					globals: {
 						react: 'React',
