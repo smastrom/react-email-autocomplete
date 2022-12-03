@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Email } from './Email';
 import domains from '../src/domains.json';
+import { getRandomInt } from '../cypress/support/component';
 
 describe('Classnames', () => {
 	const someClasses = {
@@ -127,13 +128,14 @@ it('Should hide suggestions if exact match', () => {
 		cy.get('li').should('exist');
 		cy.get('input').clear().type('myusername@gmail.com');
 		cy.get('ul').should('not.exist');
-		cy.deleteChars(1);
+		cy.backSpace(1);
 		cy.get('ul').should('exist');
 	});
 });
 
-describe('Should update suggestions on input change', () => {
+describe('Should update both username and domain on input change', () => {
 	const initialUsername = 'myusername';
+	const domain = 'gmail';
 
 	it('Username', () => {
 		cy.mount(<Email refineList={domains} className="WC" />);
@@ -145,8 +147,8 @@ describe('Should update suggestions on input change', () => {
 			});
 
 			cy.get('input').type(`{leftArrow}{leftArrow}`);
-			const charsToDel = 4;
-			cy.deleteChars(charsToDel);
+			const charsToDel = getRandomInt(1, initialUsername.length);
+			cy.get('input').type(`${'{backspace}'.repeat(charsToDel)}`);
 
 			cy.get('span:first-of-type').each((span) => {
 				expect(span.text()).to.be.eq(initialUsername.slice(0, -charsToDel));
@@ -155,24 +157,25 @@ describe('Should update suggestions on input change', () => {
 	});
 
 	it('Domain', () => {
-		const domain = '@gmail';
 		cy.mount(<Email refineList={domains} className="WC" />);
 
 		cy.get('.WC').within(() => {
-			cy.get('input').type(`${initialUsername}${domain}`);
+			cy.get('input').type(`${initialUsername}@${domain}`);
 			cy.get('span:last-of-type')
 				.each((span) => {
 					expect(span.text()).to.contain(domain);
 				})
-				.its('length')
-				.then((length) => {
-					const charsToDel = 3;
-					cy.deleteChars(charsToDel);
-
+				.then((prevResults) => {
+					const charsToDel = domain.length - 1;
+					cy.get('input').type(`${'{backspace}'.repeat(charsToDel)}`);
 					cy.get('span:last-of-type')
-						.should('have.length.greaterThan', length)
+						.should('have.length.greaterThan', prevResults.length)
 						.each((span) => {
 							expect(span.text()).to.contain(domain.slice(0, -charsToDel));
+						})
+						.then((newResults) => {
+							cy.get('input').type(`mail`);
+							cy.get('span:last-of-type').should('have.length.lessThan', newResults.length);
 						});
 				});
 		});
@@ -205,13 +208,11 @@ it('Should keyboard-navigate trough suggestions and input', () => {
 	cy.get('.WC').within(() => {
 		cy.get('input').type(initialValue);
 		cy.get('li').then((list) => {
-			const randomLi = Math.floor(Math.random() * list.length) - 1;
-			cy.downArrow(randomLi);
-			cy.get('li')
-				.eq(randomLi - 1)
-				.should('have.focus')
-				.and('have.attr', 'tabindex', '0');
-			cy.upArrow(randomLi);
+			const randomLiIndex = Math.floor(Math.random() * list.length);
+
+			cy.downArrow(randomLiIndex + 1);
+			cy.get('li').eq(randomLiIndex).should('have.focus').and('have.attr', 'tabindex', '0');
+			cy.upArrow(randomLiIndex + 1);
 			cy.get('input').should('have.focus');
 		});
 	});
@@ -227,7 +228,7 @@ it('Should focus input and update value if pressing backspace on suggestion', ()
 		cy.get('input').type(initialValue);
 		cy.get('li').then((list) => {
 			cy.downArrow(list.length);
-			cy.deleteChars(charsToDel);
+			cy.backSpace(charsToDel);
 			cy.get('input').should('have.focus').and('have.value', initialValue.slice(0, -charsToDel));
 		});
 	});
@@ -258,12 +259,54 @@ it('Should hide dropdown if first result equals to user input email', () => {
 	});
 });
 
-it('Should open dropdown only after minChars is reached', () => {});
-it('Should display maximum user-defined result number', () => {});
+it('Should open dropdown only after minChars is reached', () => {
+	cy.mount(<Email refineList={domains} className="WC" minChars={4} />);
 
-it('Should trigger user onBlur/onFocus only when related target is not a suggestion', () => {});
+	const charsArr = 'myus'.split('');
+
+	cy.get('.WC').within(() => {
+		charsArr.forEach((char, index) => {
+			cy.get('input').type(char);
+			if (index === charsArr.length - 1) {
+				cy.get('ul').should('exist');
+			} else {
+				cy.get('ul').should('not.exist');
+			}
+		});
+	});
+});
+
+it('Should display maximum user-defined result number', () => {
+	cy.mount(<Email refineList={domains} className="WC" maxResults={3} />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').should('have.length', 3);
+	});
+});
+
+it('Should trigger user onBlur/onFocus only when related target is not a suggestion', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('input').focus().type('myusername@g');
+	cy.get('li')
+		.then((list) => {
+			return Math.floor(Math.random() * list.length);
+		})
+		.then((randomLiIndex) => {
+			for (let i = 0; i < 10; i++) {
+				cy.downArrow(randomLiIndex + 1);
+				cy.upArrow(randomLiIndex + 1);
+			}
+			cy.get('input').should('have.focus').blur();
+		});
+
+	cy.get('#CyFocusData')
+		.should('have.attr', 'data-cy-focus', '1')
+		.and('have.attr', 'data-cy-blur', '1');
+});
+
 it('Should be able to add HTML attributes to input element', () => {});
 it('Should be able to add custom prefix to dropdown id', () => {});
 it('Should be able to focus next element upon selection', () => {});
-
-it('Should be able to update a different state shape', () => {});
+it('Should have correct accessibility attributes', () => {});

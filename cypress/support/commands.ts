@@ -1,13 +1,15 @@
-Cypress.Commands.add('deleteChars', (chars: number) => {
-	cy.get('input').type('{backspace}'.repeat(chars));
+import 'cypress-real-events';
+
+Cypress.Commands.add('backSpace', (chars: number) => {
+	cy.realType('{backspace}'.repeat(chars));
 });
 
 Cypress.Commands.add('downArrow', (repeat: number) => {
-	cy.get('input').type('{downArrow}'.repeat(repeat));
+	cy.realType('{downarrow}'.repeat(repeat));
 });
 
 Cypress.Commands.add('upArrow', (repeat: number) => {
-	cy.get('input').type('{upArrow}'.repeat(repeat));
+	cy.realType('{uparrow}'.repeat(repeat));
 });
 
 export {};

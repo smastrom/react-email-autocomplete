@@ -20,6 +20,7 @@
 		"@vitejs/plugin-react": "^2.2.0",
 		"cpy-cli": "^4.2.0",
 		"cypress": "^11.2.0",
+		"cypress-real-events": "^1.7.4",
 		"eslint": "^8.29.0",
 		"eslint-plugin-react": "^7.31.11",
 		"eslint-plugin-react-hooks": "^4.6.0",
