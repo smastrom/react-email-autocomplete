@@ -64,7 +64,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		/* Effects */
 
-		function clearList() {
+		function clearResults() {
 			setSuggestions([]);
 			setActiveChild(-1);
 		}
@@ -84,7 +84,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		useEffect(() => {
 			function handleOutsideClick(event: MouseEvent) {
 				if (isOpen && !wrapperRef.current?.contains(event.target as Node)) {
-					clearList();
+					clearResults();
 				}
 			}
 			document.addEventListener('click', handleOutsideClick);
@@ -103,16 +103,16 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			const hasDomain = hasAt && _domain.length >= 1;
 
 			if (!isRefine) {
-				hasAt ? clearList() : setSuggestions(baseList);
+				hasAt ? clearResults() : setSuggestions(baseList);
 			} else {
 				if (hasDomain) {
 					const _suggestions = refineList
 						.filter((_suggestion) => _suggestion.startsWith(_domain))
 						.slice(0, maxResults);
 					if (_suggestions.length > 0) {
-						_suggestions[0] === _domain ? clearList() : setSuggestions(_suggestions);
+						_suggestions[0] === _domain ? clearResults() : setSuggestions(_suggestions);
 					} else {
-						clearList();
+						clearResults();
 					}
 				} else {
 					setSuggestions(baseList);
@@ -155,7 +155,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			} else {
 				handleCursorFocus();
 			}
-			clearList();
+			clearResults();
 		}
 
 		/* Keyboard events */
@@ -165,7 +165,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				switch (event.code) {
 					case 'Tab':
 					case 'Escape':
-						return clearList();
+						return clearResults();
 
 					case 'ArrowDown':
 						event.preventDefault();
@@ -178,11 +178,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			if (isOpen) {
 				switch (event.code) {
 					case 'Escape':
-						clearList();
+						clearResults();
 						return handleCursorFocus();
 
 					case 'Tab':
-						return clearList();
+						return clearResults();
 
 					case 'Backspace':
 						return inputRef?.current?.focus();

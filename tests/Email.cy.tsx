@@ -13,17 +13,17 @@ declare global {
 }
 
 describe('Classnames', () => {
-	it('Should be able to add custom wrapper class', () => {
-		cy.mount(<Email className="customWrapperClass" />);
-		cy.get('.customWrapperClass').should('exist');
-	});
-
 	const someClasses = {
 		wrapper: 'WC',
 		input: 'IC',
 		username: 'UC',
 		domain: 'DC',
 	};
+
+	it('Should be able to add custom wrapper class', () => {
+		cy.mount(<Email className="customWrapperClass" />);
+		cy.get('.customWrapperClass').should('exist');
+	});
 
 	it('Should be able to add custom classes', () => {
 		cy.mount(
