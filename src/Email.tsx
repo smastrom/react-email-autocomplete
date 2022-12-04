@@ -13,7 +13,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			refineList = [],
 			maxResults: _maxResults = 6,
 			minChars: _minChars = 2,
-			nextElement,
 			className,
 			classNames,
 			onSelect = () => {},
@@ -135,7 +134,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			event.preventDefault(), event.stopPropagation();
 			const selectedEmail = cleanValue((event.currentTarget as Node).textContent as string);
 			setEmail(selectedEmail);
-			handleReFocus();
+			clearResults();
 			requestAnimationFrame(() => {
 				dispatchSelect(selectedEmail, isKeyboard, childIndex + 1);
 			});
@@ -150,15 +149,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				inputRef.current.type = 'email';
 				inputRef.current.focus();
 			}
-		}
-
-		function handleReFocus() {
-			if (nextElement) {
-				document.getElementById(nextElement)?.focus();
-			} else {
-				handleCursorFocus();
-			}
-			clearResults();
 		}
 
 		/* Keyboard events */

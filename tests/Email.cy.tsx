@@ -3,7 +3,7 @@ import { getRandomInt } from '../cypress/support/component';
 import domains from '../src/domains.json';
 
 it('Should pass ARIA axe tests', () => {
-	cy.mount(<Email className="WC" nextElement="CyNameInput" />);
+	cy.mount(<Email className="WC" />);
 	cy.get('.WC').within(() => {
 		cy.get('input').type('myuser');
 	});
@@ -302,17 +302,6 @@ it('Should be able to add custom prefix to dropdown id', () => {
 		cy.get('input').type('myuser');
 		cy.get('ul').invoke('attr', 'id').should('contain', prefix);
 	});
-});
-
-it('Should be able to focus next element upon selection', () => {
-	cy.mount(<Email className="WC" nextElement="CyNameInput" />);
-
-	cy.get('.WC').within(() => {
-		cy.get('input').type('myuser');
-		cy.get('li').first().click();
-	});
-
-	cy.get('#CyNameInput').should('have.focus');
 });
 
 describe('Classnames', () => {

@@ -27,10 +27,6 @@ export function EventsChildren() {
 	const [email, setEmail] = useState('myusername@gmail.com');
 	const [validity, setValidity] = useState<Valididty>(Valididty.IDLE);
 
-	function getValidity(value: string) {
-		return testEmail(value) ? Valididty.VALID : Valididty.INVALID;
-	}
-
 	useLayoutEffect(() => {
 		setValidity(getValidity(email));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,6 +44,10 @@ export function EventsChildren() {
 
 	function handleSelect({ value }: { value: string }) {
 		setValidity(getValidity(value));
+	}
+
+	function getValidity(value: string) {
+		return testEmail(value) ? Valididty.VALID : Valididty.INVALID;
 	}
 
 	const isValid = validity === Valididty.VALID;
@@ -75,9 +75,9 @@ export function EventsChildren() {
 				ref={inputRef}
 				onBlur={handleBlur}
 				onFocus={handleFocus}
+				onSelect={handleSelect}
 				baseList={baseList}
 				refineList={domains}
-				onSelect={handleSelect}
 				value={email}
 				onChange={setEmail}
 			>

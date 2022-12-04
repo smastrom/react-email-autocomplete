@@ -53,9 +53,6 @@ export type Props = {
 	classNames?: ClassNames;
 	/** Class name of the wrapper element. */
 	className?: string;
-	/** DOM ID of the next focusable element. If set, it will
-	 * be focused after a suggestion is selected. */
-	nextElement?: string;
 	/** Custom prefix for dropdown unique ID. */
 	customPrefix?: string;
 	/** DOM ID of the wrapper element. */

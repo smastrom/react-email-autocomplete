@@ -6,9 +6,9 @@ export function useLocalizedList(lists: LocalizedList, appLocale?: string) {
 	const [list, setList] = useState(lists.default);
 
 	useEffect(() => {
-		const localeList = lists[userLocale];
-		if (localeList) {
-			return setList(localeList);
+		const exactLocaleList = lists[userLocale];
+		if (exactLocaleList) {
+			return setList(exactLocaleList);
 		}
 
 		const langCode = userLocale.split(/[-_]/)[0];
