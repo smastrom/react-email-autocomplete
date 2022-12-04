@@ -11,7 +11,7 @@ export function useLocalizedList(lists: LocalizedList, appLocale?: string) {
 			return setList(localeList);
 		}
 
-		const langCode = userLocale.split('-')[0];
+		const langCode = userLocale.split(/[-_]/)[0];
 		const langCodeList = lists[langCode];
 		if (langCodeList) {
 			return setList(langCodeList);
