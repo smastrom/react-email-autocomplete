@@ -15,7 +15,7 @@ type JSX = {
 };
 
 export const Profiler = ({ children }: JSX) => (
-	<ReactProfiler onRender={onRender} id="react-email-suggestions">
+	<ReactProfiler onRender={onRender} id="react-bella-email">
 		{children}
 	</ReactProfiler>
 );

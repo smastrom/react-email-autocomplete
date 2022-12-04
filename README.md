@@ -2,7 +2,7 @@
 
 ### The email input that your users will love.
 
-[Demo and examples]() — [Stackblitz]()
+[Demo and examples](https://react-bella-email.netlify.app) — [Stackblitz]()
 
 <br />
 
@@ -52,7 +52,7 @@ npm i -S react-bella-email
 
 - Attributes: `id`, `name`, `placeholder`, `required`, `disabled`, `readOnly` and `pattern`.
 
-- React's `ref` and `children`.
+- React's `ref`.
 
 > :bulb: They are all forwarded to the `<input />` element.
 
@@ -60,17 +60,17 @@ npm i -S react-bella-email
 
 ## :art: Styling
 
-The component renders a `div` with a very simple structure:
+The component renders a single `div` with a very simple structure:
 
 ```js
 Wrapper — div
-├──Email Input Field — input
+├── Email Input Field — input
 └── Dropdown — ul
-    └── Suggestions - li
+    └── Suggestions[] - li
         └──[username - span:first-of-type] [@domain.com - span:last-of-type]
 ```
 
-You can either specify `classNames` for one or multiple elements:
+You can either specify `classNames` for the elements you'd like to style:
 
 ```jsx
 const myClassNames = {
@@ -96,10 +96,24 @@ function App() {
 }
 ```
 
+<details><summary><strong>TypeScript</strong></summary>
+<br />
+
+```ts
+import type { ClassNames } from 'react-bella-email';
+
+const myClassNames: ClassNames = {
+  wrapper: 'my-wrapper',
+  input: 'my-input',
+};
+```
+
+</details>
+
 <details><summary><strong>Tailwind Intellisense for VSCode</strong></summary>
 <br />
 
-You can add a setting like this in VSCode `settings.json` in order to enable autcomplete for any object property variables ending with `ClassNames`.
+You can add a this property in VSCode's `settings.json` in order to enable autcomplete for any object property or variable ending with `ClassNames`.
 
 ```json
   "tailwindCSS.experimental.classRegex": [
@@ -160,7 +174,7 @@ And target any child:
 
 <br />
 
-This package ships with **zero css**. Initial styles to see the component in action may match the following properties:
+This package ships with **zero css**. Initial styles enough to see the component in action may match the following properties:
 
 ```css
 .my-wrapper,

@@ -4,7 +4,7 @@ export function Header() {
 	return (
 		<div className="header">
 			<a
-				href="https://github.com/smastrom/react-email-suggestions"
+				href="https://github.com/smastrom/react-bella-email"
 				target="_blank"
 				aria-label="GitHub Repo"
 				className="githubLink"

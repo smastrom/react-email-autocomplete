@@ -185,9 +185,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 						return inputRef?.current?.focus();
 
 					case 'Enter':
-					case 'Space': {
+					case 'Space':
 						return handleSelect(event, activeChild, true);
-					}
 
 					case 'ArrowDown':
 						event.preventDefault();
