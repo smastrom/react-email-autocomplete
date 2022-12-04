@@ -2,6 +2,17 @@ import { Email } from './Email';
 import { getRandomInt } from '../cypress/support/component';
 import domains from '../src/domains.json';
 
+it('Should pass ARIA axe tests', () => {
+	cy.mount(<Email className="WC" nextElement="CyNameInput" />);
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myuser');
+	});
+	cy.injectAxe();
+	cy.checkA11y('.WC', {
+		runOnly: ['cat.aria'],
+	});
+});
+
 it('Should display coherent baseList suggestions according to input change', () => {
 	const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com'];
 	cy.mount(<Email baseList={baseList} className="WC" />);
@@ -17,18 +28,20 @@ it('Should display coherent baseList suggestions according to input change', () 
 it('Should display coherent refineList suggestions according to input change', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
+	const user = 'myusername';
+
 	cy.get('.WC').within(() => {
-		cy.get('input').type('myusername@g');
+		cy.get('input').type(`${user}@g`);
 		cy.get('li').each((li) => {
-			expect(li.text()).to.contain('myusername@g');
+			expect(li.text()).to.contain(`${user}@g`);
 		});
 		cy.get('input').type('m');
 		cy.get('li').each((li) => {
-			expect(li.text()).to.contain('myusername@gm');
+			expect(li.text()).to.contain(`${user}@gm`);
 		});
 		cy.get('input').type('x');
 		cy.get('li').each((li) => {
-			expect(li.text()).to.contain('myusername@gmx');
+			expect(li.text()).to.contain(`${user}@gmx`);
 		});
 	});
 });
@@ -67,7 +80,7 @@ it('Should hide suggestions if clearing', () => {
 	});
 });
 
-it('Should hide suggestions if exact match', () => {
+it('Should hide/show suggestions if exact match', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
 	cy.get('.WC').within(() => {
@@ -108,7 +121,7 @@ it('Should hide suggestions if pressing escape key', () => {
 	cy.get('.dropdownClass').should('not.exist');
 });
 
-it('Should update suggestions username on username change', () => {
+it("Should update suggestions' username on username change", () => {
 	const initialUsername = 'myusername';
 
 	it('Username', () => {
@@ -201,17 +214,6 @@ it('Should focus and update input value if pressing backspace on a suggestion', 
 			cy.backSpace(charsToDel);
 			cy.get('input').should('have.focus').and('have.value', initialValue.slice(0, -charsToDel));
 		});
-	});
-});
-
-it('Should hide dropdown if first result equals to user input email', () => {
-	cy.mount(<Email refineList={domains} className="WC" />);
-
-	cy.get('.WC').within(() => {
-		cy.get('input').type('myusername@g');
-		cy.get('ul').should('exist');
-		cy.get('input').type('mail.com');
-		cy.get('ul').should('not.exist');
 	});
 });
 
@@ -313,19 +315,8 @@ it('Should be able to focus next element upon selection', () => {
 	cy.get('#CyNameInput').should('have.focus');
 });
 
-it('Should pass ARIA axe tests', () => {
-	cy.mount(<Email className="WC" nextElement="CyNameInput" />);
-	cy.get('.WC').within(() => {
-		cy.get('input').type('myuser');
-	});
-	cy.injectAxe();
-	cy.checkA11y('.WC', {
-		runOnly: ['cat.aria'],
-	});
-});
-
 describe('Classnames', () => {
-	const someClasses = {
+	const classes = {
 		wrapper: 'WC',
 		input: 'IC',
 		username: 'UC',
@@ -341,7 +332,7 @@ describe('Classnames', () => {
 		cy.mount(
 			<Email
 				classNames={{
-					...someClasses,
+					...classes,
 					dropdown: 'DPC',
 					suggestion: 'SC',
 				}}
@@ -358,7 +349,7 @@ describe('Classnames', () => {
 	});
 
 	it('Should be able to add only defined classes', () => {
-		cy.mount(<Email classNames={someClasses} />);
+		cy.mount(<Email classNames={classes} />);
 
 		cy.get('.WC').within(() => {
 			cy.get('input').should('have.class', 'IC').type('myusername');
@@ -370,7 +361,7 @@ describe('Classnames', () => {
 	});
 
 	it('Should add both wrapper classes', () => {
-		cy.mount(<Email className="wrapperClass" classNames={{ wrapper: someClasses.wrapper }} />);
+		cy.mount(<Email className="wrapperClass" classNames={{ wrapper: classes.wrapper }} />);
 		cy.get('.wrapperClass').should('have.class', 'WC');
 	});
 });
