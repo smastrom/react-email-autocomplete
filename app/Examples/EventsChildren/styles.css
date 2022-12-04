@@ -5,8 +5,9 @@
 	--validBackgroundColor: #effaeb;
 	--invalidAccentColor: #ff7272;
 	--invalidBackgroundColor: #ffeded;
+	--textColor: #475569;
+	color: var(--textColor);
 	min-width: 300px;
-	color: #475569;
 	position: relative;
 	width: 100%;
 }
@@ -19,12 +20,15 @@
 	padding: 0.4em 0.6em;
 	border-radius: 10px;
 	border: 2px solid transparent;
-	transition: border-color 100ms ease-in-out, background-color 100ms ease-in-out;
+	transition: border-color 100ms ease-in-out, background-color 100ms ease-in-out,
+		color 100ms ease-in-out;
 }
 
 .eventsInput:hover,
 .eventsInput:focus {
 	outline: none;
+	color: var(--textColor);
+	background-color: var(--backgroundColor);
 	border: 2px solid var(--accentColor);
 }
 
@@ -71,7 +75,7 @@
 	color: var(--accentColor);
 }
 
-.eventsUsername {
+.eventsDomain {
 	font-weight: 600;
 }
 

@@ -1,5 +1,6 @@
 import { SVGAttributes, useLayoutEffect, useRef, useState } from 'react';
 import { Email, domains } from '../../../src';
+import { OnSelectData } from '../../../src/types';
 
 import './styles.css';
 
@@ -17,7 +18,7 @@ const classes = {
 	wrapper: 'eventsWrapper',
 	dropdown: 'eventsDropdown',
 	suggestion: 'eventsSuggestion',
-	username: 'eventsUsername',
+	domain: 'eventsDomain',
 };
 
 const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
@@ -42,7 +43,7 @@ export function EventsChildren() {
 		}
 	}
 
-	function handleSelect({ value }: { value: string }) {
+	function handleSelect({ value }: OnSelectData) {
 		setValidity(getValidity(value));
 	}
 

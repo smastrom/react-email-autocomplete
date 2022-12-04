@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { cleanValue, getUniqueId, getHonestValue, isFn, useIsomorphicLayoutEffect } from './utils';
-import { Events, SelectData, Elements, Maybe, Email as Export, EmailProps } from './types';
+import { Events, OnSelectData, Elements, Maybe, Email as Export, EmailProps } from './types';
 
 export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 	(
@@ -227,9 +227,9 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}
 
 		function dispatchSelect(
-			value: SelectData['value'],
-			keyboard: SelectData['keyboard'],
-			position: SelectData['position']
+			value: OnSelectData['value'],
+			keyboard: OnSelectData['keyboard'],
+			position: OnSelectData['position']
 		) {
 			onSelect({ value, keyboard, position });
 		}

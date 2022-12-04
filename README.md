@@ -34,10 +34,10 @@ npm i -S react-bella-email
 | Prop           | Description                                           | Type                                   | Default   | Required           |
 | -------------- | ----------------------------------------------------- | -------------------------------------- | --------- | ------------------ |
 | `value`        | State or portion of state to hold the email           | _string_                               | undefined | :white_check_mark: |
-| `onChange`     | State setter or custom dispatcher to update the email | _Change_                               | undefined | :white_check_mark: |
+| `onChange`     | State setter or custom dispatcher to update the email | _OnChange_                             | undefined | :white_check_mark: |
 | `baseList`     | Domains to suggest while typing the username          | _string[]_                             | undefined | :white_check_mark: |
 | `refineList`   | Domains to refine suggestions after typing `@`        | _string[]_                             | []        | :x:                |
-| `onSelect`     | Custom callback on suggestion select                  | _Select_                               | () => {}  | :x:                |
+| `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
 | `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
 | `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
 | `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
@@ -477,13 +477,13 @@ function App() {
 <br/>
 
 ```ts
-type SelectData = {
+type OnSelectData = {
   value: string;
   keyboard: boolean;
   position: number;
 };
 
-type OnSelect = (object: SelectData) => void | Promise<void>;
+type OnSelect = (object: OnSelectData) => void | Promise<void>;
 ```
 
 </details>

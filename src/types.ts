@@ -22,7 +22,7 @@ export enum Elements {
 
 export type ClassNames = Partial<Record<Elements, string>>;
 
-export type SelectData = {
+export type OnSelectData = {
 	value: string;
 	keyboard: boolean;
 	position: number;
@@ -30,21 +30,20 @@ export type SelectData = {
 
 export type Values = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export type Change = Dispatch<SetStateAction<string>> | ((value: string) => void | Promise<void>);
-
-export type Select = (object: SelectData) => void | Promise<void>;
+export type OnChange = Dispatch<SetStateAction<string>> | ((value: string) => void | Promise<void>);
+export type OnSelect = (object: OnSelectData) => void | Promise<void>;
 
 export type Props = {
 	/** State or portion of state to hold the email. */
 	value: string | undefined;
 	/** State setter or custom dispatcher to update the email. */
-	onChange: Change;
+	onChange: OnChange;
 	/** Domains to suggest while typing the username. */
 	baseList: string[];
 	/** Domains to refine suggestions after typing @. */
 	refineList?: string[];
 	/** Custom callback to invoke on suggestion select. */
-	onSelect?: Select;
+	onSelect?: OnSelect;
 	/** Minimum chars required to display suggestions. */
 	minChars?: Values;
 	/** Maximum number of suggestions to display. */
