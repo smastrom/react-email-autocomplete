@@ -17,7 +17,6 @@ export function Email({ baseList, ...props }: Partial<EmailProps>) {
 	return (
 		<>
 			<EmailComponent
-				id="CyEmail"
 				onChange={setEmail}
 				value={email}
 				baseList={

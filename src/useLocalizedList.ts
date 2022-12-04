@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { LocalizedList } from './types';
 
-export function useLocalizedList(lists: LocalizedList, locale?: string) {
-	const userLocale = locale || navigator?.language;
+export function useLocalizedList(lists: LocalizedList, appLocale?: string) {
+	const userLocale = appLocale || navigator?.language;
 	const [list, setList] = useState(lists.default);
 
 	useEffect(() => {

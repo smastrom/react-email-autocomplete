@@ -1,20 +1,6 @@
-import { mount } from 'cypress/react';
 import 'cypress-real-events';
 import 'cypress-axe';
-
-Cypress.Commands.add('mount', mount);
-
-Cypress.Commands.add('backSpace', (chars: number) => {
-	cy.realType('{backspace}'.repeat(chars));
-});
-
-Cypress.Commands.add('downArrow', (repeat: number) => {
-	cy.realType('{downarrow}'.repeat(repeat));
-});
-
-Cypress.Commands.add('upArrow', (repeat: number) => {
-	cy.realType('{uparrow}'.repeat(repeat));
-});
+import './commands';
 
 export function getRandomInt(min: number, max: number) {
 	min = Math.ceil(min);

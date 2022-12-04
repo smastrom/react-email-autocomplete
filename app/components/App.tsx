@@ -11,7 +11,7 @@ import { useLocalizedList } from '../../src/useLocalizedList';
 
 export const lists = {
 	it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'outlook.com', 'virgilio.it', 'tiscali.it'],
-	'sdsdsdsdde-DE': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
+	'de-DE': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
 	default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
 };
 
