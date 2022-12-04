@@ -1,6 +1,6 @@
 # :love_letter: React Bella Email
 
-### The email input that your users will love.
+### The email input field that your users will love.
 
 [Demo and examples](https://react-bella-email.netlify.app) — [Stackblitz]()
 
@@ -37,7 +37,7 @@ npm i -S react-bella-email
 | `onChange`     | State setter or custom dispatcher to update the email                                            | _Change_                               | undefined | :white_check_mark: |
 | `baseList`     | Domains to suggest while typing the username                                                     | _string[]_                             | undefined | :white_check_mark: |
 | `refineList`   | Domains to refine suggestions after typing `@`                                                   | _string[]_                             | []        | :x:                |
-| `onSelect`     | Custom callback to invoke on suggestion select                                                   | _Select_                               | () => {}  | :x:                |
+| `onSelect`     | Custom callback on suggestion select                                                             | _Select_                               | () => {}  | :x:                |
 | `minChars`     | Minimum chars required to display suggestions                                                    | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
 | `maxResults`   | Maximum number of suggestions to display                                                         | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
 | `classNames`   | Class names for each element                                                                     | _ClassNames_                           | undefined | :x:                |
@@ -60,13 +60,13 @@ npm i -S react-bella-email
 
 ## :art: Styling
 
-The component renders a single `div` with a very simple child structure:
+The component renders a single `div` with a very simple structure:
 
 ```js
 Wrapper — div
 ├── Email Input Field — input
 └── Dropdown — ul
-    └── Suggestions - li[]
+    └── Suggestions[] - li[]
         └──[username - span:first-of-type] [@domain.com - span:last-of-type]
 ```
 
@@ -145,28 +145,28 @@ function App() {
 And target any child:
 
 ```css
-/* Wrapper */
 .my-wrapper {
+  /* Wrapper */
 }
 
-/* Input field */
 .my-wrapper input {
+  /* Input field */
 }
 
-/* Dropdown */
 .my-wrapper ul {
+  /* Dropdown */
 }
 
-/* Suggestions */
 .my-wrapper li {
+  /* Suggestions */
 }
 
-/* Username */
 .my-wrapper li > span:first-of-type {
+  /* Username */
 }
 
-/* Domain */
 .my-wrapper li > span:last-of-type {
+  /* Domain */
 }
 ```
 
@@ -319,26 +319,47 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Internationalization
 
-It is great to display the first suggestions according to the [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
+It is great to display the suggestions according to the [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
 
 **1 - Create an object and define lists for each browser locale:**
 
 ```js
 export const lists = {
-  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'], // Required
-  it: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
-  'it-CH': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
+  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
+  it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com'],
+  'it-CH': [
+    'gmail.com',
+    'outlook.com',
+    'bluewin.ch',
+    'gmx.de',
+    'libero.it',
+    'sunrise.ch',
+  ],
 };
 ```
 
-You can specify lang codes with or without country codes. In case you don't specify a country code (such as `it`), it will match browser locales such as `it`, `it-CH` and `it-IT` and so on.
+<details><summary><strong>TypeScript</strong></summary>
+<br />
 
-Instead, if you specify `it-CH` it will match only `it-CH` but not `it` or `it-IT`.
+```ts
+import type { LocalizedList } from 'react-bella-email';
+
+export const lists: LocalizedList = {
+  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
+  it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com'],
+};
+```
+
+</details>
+
+You can specify [lang codes](https://www.localeplanet.com/icu/iso639.html) with or without country codes. In case you don't specify a country code (such as `it`), it will match browser locales such as `it`, `it-CH` and `it-IT` and so on.
+
+Instead, if you specify `it-CH` it will match `it-CH` but not `it` or `it-IT`.
 
 **2 - Use the hook:**
 
 ```jsx
-import lists from './lists';
+import { lists } from './lists';
 import { Email, useLocalizedList } from 'react-bella-email';
 
 function App() {
@@ -355,8 +376,6 @@ function App() {
   );
 }
 ```
-
-No matter the language of your app, it will always display suggestions according to the browser locale.
 
 ### Usage with internationalization frameworks
 
@@ -430,7 +449,7 @@ type Change =
 
 ### Custom onSelect callback
 
-You might need to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard). You can do that by passing a function to `onSelect` prop:
+If you need to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard). You can do that by passing a function to `onSelect` prop:
 
 ```jsx
 import { Email, domains } from 'react-bella-email';
@@ -483,7 +502,7 @@ No special configuration needed, it just works. Just follow the official React H
 - **Up / Down arrow** - Navigate through suggestions
 - **Enter / Space** - Confirm the suggestion and focus the input field (or the next one).
 - **Tab / Shift + Tab** - Close the list and go to next/prev focusable input
-- **Backspace** - Keep the list open and keep refining the suggestions
+- **Backspace** - Keep refining the suggestions
 - **Escape** - Close the list and focus the input field
 
 <br />
