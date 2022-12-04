@@ -8,7 +8,7 @@
 
 ![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
 
-**React Bella Email** is a tiny, zero-dependency controlled input that aims to replace the typical `<input type="email" />` of your form by **providing the best UX** and all the flexibility you'd expect from a native input:
+**React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **providing the best UX** with all the flexibility you'd expect from a native input:
 
 - Fully accessible with great keyboard controls
 - Completely unstyled and white labeled
@@ -60,13 +60,13 @@ npm i -S react-bella-email
 
 ## :art: Styling
 
-The component renders a single `div` with a very simple structure:
+The component renders a single `div` with a very simple child structure:
 
 ```js
 Wrapper — div
 ├── Email Input Field — input
 └── Dropdown — ul
-    └── Suggestions[] - li
+    └── Suggestions - li[]
         └──[username - span:first-of-type] [@domain.com - span:last-of-type]
 ```
 
@@ -169,6 +169,41 @@ And target any child:
 .my-wrapper li > span:last-of-type {
 }
 ```
+
+<details><summary><strong>CSS-in-JS</strong></summary>
+
+<br />
+
+```jsx
+import styled from 'styled-components';
+import { Email as BellaEmail } from 'react-bella-email';
+
+export const Email = styled(BellaEmail)`
+  /* Wrapper styles */
+
+  & input {
+    /* Input field */
+  }
+
+  & ul {
+    /* Dropdown */
+  }
+
+  & li {
+    /* Suggestions */
+  }
+
+  & li > span:first-of-type {
+    /* Username */
+  }
+
+  & li > span:last-of-type {
+    /* Domain */
+  }
+`;
+```
+
+</details>
 
 <details><summary><strong>Basic styles</strong></summary>
 
@@ -284,21 +319,23 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Internationalization
 
-It would be a great to display the first suggestions according to the user's browser locale. **React Bella Email** includes a very simple hook that does exactly that.
+It is great to display the first suggestions according to the [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
 
-**1 - Create an object with the lists for each browser locale:**
+**1 - Create an object and define lists for each browser locale:**
 
 ```js
 export const lists = {
+  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'], // Required
   it: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
-  'de-DE': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
-  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'], // 'default' is required.
+  'it-CH': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
 };
 ```
 
-You can specify lang codes with or without region codes. In case you don't specify a region code (such as `it`), it will match `it`, `it-CH` and `it-IT` and so on. Instead, if you specify `it-CH` it will match only `it-CH` but not `it` or `it-IT`.
+You can specify lang codes with or without country codes. In case you don't specify a country code (such as `it`), it will match browser locales such as `it`, `it-CH` and `it-IT` and so on.
 
-**2 - Use `useLocalizedList` hook:**
+Instead, if you specify `it-CH` it will match only `it-CH` but not `it` or `it-IT`.
+
+**2 - Use the hook:**
 
 ```jsx
 import lists from './lists';
@@ -319,11 +356,11 @@ function App() {
 }
 ```
 
+No matter the language of your app, it will always display suggestions according to the browser locale.
+
 ### Usage with internationalization frameworks
 
-The default stategy explained above relies on the browser locale. No matter the language of your app, it will always display suggestions according to the browser locale.
-
-Instead, if you prefer to keep the suggestions in line with your app locale, you can directly pass the locale string as second argument:
+If you prefer to keep the suggestions in line with your app locale instead of the browser's one, you can directly pass the locale string as second argument:
 
 ```jsx
 import lists from './lists';
