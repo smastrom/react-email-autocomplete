@@ -3,7 +3,6 @@ import { App } from './components/App';
 
 import './styles/preflight.css';
 import './styles/app.css';
-import './styles/fonts.css';
 import './styles/input.css';
 
 ReactDOM.render(

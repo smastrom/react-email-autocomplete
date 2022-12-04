@@ -70,7 +70,7 @@ Wrapper — div
         └──[username - span:first-of-type] [@domain.com - span:last-of-type]
 ```
 
-You can either specify `classNames` for the elements you'd like to style:
+You can either specify `classNames` for any element you'd like to style:
 
 ```jsx
 const myClassNames = {
@@ -125,7 +125,7 @@ You can add a this property in VSCode's `settings.json` in order to enable autco
 
 </details>
 
-Or add a class to the container via `className` prop:
+Or add a class to the wrapper `div` via `className` prop:
 
 ```jsx
 function App() {
@@ -449,7 +449,7 @@ type Change =
 
 ### Custom onSelect callback
 
-If you need to invoke a callback (e.g. server email validation), everytime a suggestion is selected (either with mouse or keyboard). You can do that by passing a function to `onSelect` prop:
+If you need to invoke a callback (e.g. server validation), everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
 
 ```jsx
 import { Email, domains } from 'react-bella-email';

@@ -1,0 +1,96 @@
+.eventsWrapper {
+	--backgroundColor: #f4f4f7;
+	--accentColor: #6e5bfe;
+	--validAccentColor: #3bc100;
+	--validBackgroundColor: #effaeb;
+	--invalidAccentColor: #ff7272;
+	--invalidBackgroundColor: #ffeded;
+	min-width: 300px;
+	color: #475569;
+	position: relative;
+	width: 100%;
+}
+
+.eventsInput {
+	width: 100%;
+	background-color: var(--backgroundColor);
+	border: none;
+	font-weight: 600;
+	padding: 0.4em 0.6em;
+	border-radius: 10px;
+	border: 2px solid transparent;
+	transition: border-color 100ms ease-in-out, background-color 100ms ease-in-out;
+}
+
+.eventsInput:hover,
+.eventsInput:focus {
+	outline: none;
+	border: 2px solid var(--accentColor);
+}
+
+.eventsInput::placeholder {
+	color: #999;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.eventsDropdown {
+	width: 100%;
+	position: absolute;
+	list-style-type: none;
+	z-index: 999;
+	animation: fadeIn 200ms ease-in-out;
+	margin-top: 5px;
+	background-color: var(--backgroundColor);
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.eventsSuggestion {
+	font-size: 95%;
+	overflow: hidden;
+	user-select: none;
+	padding: 0.4em 0.6em;
+	border-radius: 6px;
+	background-color: transparent;
+	transition: color 100ms ease-in-out, background-color 100ms ease-in-out;
+}
+
+.eventsSuggestion:hover,
+.eventsSuggestion:focus {
+	outline: none;
+	background-color: white;
+	cursor: pointer;
+	color: var(--accentColor);
+}
+
+.eventsUsername {
+	font-weight: 600;
+}
+
+.validInput {
+	border: 2px solid var(--validAccentColor);
+	color: var(--validAccentColor);
+	background-color: var(--validBackgroundColor);
+}
+
+.invalidInput {
+	border: 2px solid var(--invalidAccentColor);
+	color: var(--invalidAccentColor);
+	background-color: var(--invalidBackgroundColor);
+}
+
+/* Icons */
+
+.validIcon {
+	position: absolute;
+	right: 1em;
+	height: 100%;
+}

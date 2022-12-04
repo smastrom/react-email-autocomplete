@@ -44,6 +44,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		/* Refs */
 
+		const isTouched = useRef(false);
+
 		const uniqueId = useRef<string>('');
 		const listId = `${customPrefix}${uniqueId.current}`;
 
@@ -61,7 +63,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		const email = typeof _email !== 'string' ? '' : cleanValue(_email);
 		const [username] = email.split('@');
-		const isOpen = suggestions.length > 0 && email.length >= minChars;
+		const isOpen = isTouched.current && suggestions.length > 0 && email.length >= minChars;
 
 		/* Effects */
 
@@ -98,6 +100,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* Value update handlers */
 
 		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
+			isTouched.current = true;
+
 			const cleanEmail = cleanValue(event.target.value);
 			const [_username, _domain] = cleanEmail.split('@');
 			const hasAt = _username.length >= minChars && cleanEmail.indexOf('@') >= 0;
@@ -130,9 +134,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		) {
 			event.preventDefault(), event.stopPropagation();
 			const selectedEmail = cleanValue((event.currentTarget as Node).textContent as string);
-			dispatchSelect(selectedEmail, isKeyboard, childIndex + 1);
 			setEmail(selectedEmail);
 			handleReFocus();
+			requestAnimationFrame(() => {
+				dispatchSelect(selectedEmail, isKeyboard, childIndex + 1);
+			});
 		}
 
 		/* Event utils */
