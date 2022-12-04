@@ -7,6 +7,13 @@ import { ValidityIcon } from './ValidityIcon';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import refineList from '../../src/domains.json';
+import { useLocalizedList } from '../../src/useLocalizedList';
+
+export const lists = {
+	it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'outlook.com', 'virgilio.it', 'tiscali.it'],
+	'sdsdsdsdde-DE': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
+	default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
+};
 
 enum Valididty {
 	Idle,
@@ -26,10 +33,12 @@ const checkboxes: [string, keyof Options][] = [
 	['onSelect Callback', 'customOnSelect'],
 ];
 
-const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'proton.me', 'outlook.com', 'aol.com'];
+// const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'proton.me', 'outlook.com', 'aol.com'];
 
 export function App() {
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	const baseList = useLocalizedList(lists);
 
 	const [options, setOptions] = useState<Options>({
 		withRefine: true,

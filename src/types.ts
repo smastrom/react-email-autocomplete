@@ -80,3 +80,7 @@ export type Attributes = Partial<
 export type EmailProps = Props & Events & Attributes;
 
 export declare const Email: ForwardRefExoticComponent<EmailProps & RefAttributes<HTMLInputElement>>;
+
+export type LocalizedList = {
+	default: string[];
+} & Record<string, string[]>;
