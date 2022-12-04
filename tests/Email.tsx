@@ -1,26 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Email as EmailComponent } from '../src/Email';
-import { Props } from '../src/types';
+import { EmailProps } from '../src/types';
 
-const baseListInternal = [
-	'gmail.com',
-	'yahoo.com',
-	'hotmail.com',
-	'aol.com',
-	'ciao.com',
-	'buonasera.com',
-];
-
-export function Email({
-	className,
-	wrapperId,
-	classNames,
-	refineList,
-	baseList,
-	minChars,
-	maxResults,
-}: Partial<Props>) {
+export function Email({ baseList, ...props }: Partial<EmailProps>) {
 	const [email, setEmail] = useState('');
 
 	const [focusCount, setFocusCount] = useState({
@@ -36,19 +18,24 @@ export function Email({
 		<>
 			<EmailComponent
 				id="CyEmail"
-				wrapperId={wrapperId}
-				maxResults={maxResults}
-				className={className}
-				classNames={classNames}
+				onChange={setEmail}
+				value={email}
+				baseList={
+					baseList || [
+						'gmail.com',
+						'yahoo.com',
+						'hotmail.com',
+						'aol.com',
+						'outlook.com',
+						'proton.me',
+					]
+				}
 				onFocus={() => handleFocus('focus')}
 				onBlur={() => handleFocus('blur')}
-				value={email}
-				minChars={minChars}
-				refineList={refineList}
-				baseList={baseList || baseListInternal}
-				onChange={setEmail}
+				{...props}
 			/>
 			<span id="CyFocusData" data-cy-focus={focusCount.focus} data-cy-blur={focusCount.blur} />
+			<input type="text" id="CyNameInput" />
 		</>
 	);
 }

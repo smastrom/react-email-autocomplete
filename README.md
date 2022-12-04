@@ -1,6 +1,6 @@
-# React Bella Email
+# :love_letter: React Bella Email
 
-### Your React's next email input field.
+### The email input that your users will love.
 
 [Demo and examples]() — [Stackblitz]()
 
@@ -50,7 +50,7 @@ npm i -S react-bella-email
 
 - Events: `onBlur`, `onFocus`, `onInput` and `onKeyDown`.
 
-- Attributes: `id`, `name`, `placeholder`, `required`, `disabled` and `readOnly`.
+- Attributes: `id`, `name`, `placeholder`, `required`, `disabled`, `readOnly` and `pattern`.
 
 - React's `ref` and `children`.
 

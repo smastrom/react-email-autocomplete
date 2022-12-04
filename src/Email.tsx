@@ -27,6 +27,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			readOnly,
 			disabled,
 			required,
+			pattern,
 			/* User events */
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
@@ -136,17 +137,13 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		/* Event utils */
 
-		function setCursor() {
+		function handleCursorFocus() {
 			if (inputRef.current) {
 				inputRef.current.type = 'text';
 				inputRef.current.setSelectionRange(email.length, email.length);
 				inputRef.current.type = 'email';
+				inputRef.current.focus();
 			}
-		}
-
-		function handleCursorFocus() {
-			setCursor();
-			inputRef?.current?.focus();
 		}
 
 		function handleReFocus() {
@@ -280,6 +277,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			readOnly,
 			required,
 			disabled,
+			pattern,
 		};
 
 		return (
@@ -299,7 +297,13 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					{...userAttrs}
 				/>
 				{isOpen && (
-					<ul ref={dropdownRef} id={listId} {...getClasses(Elements.Dropdown)}>
+					<ul
+						ref={dropdownRef}
+						id={listId}
+						role="listbox"
+						aria-label="Suggestions"
+						{...getClasses(Elements.Dropdown)}
+					>
 						{suggestions.map((domain, index) => (
 							<li
 								ref={(li) => (liRefs.current[index] = li)}

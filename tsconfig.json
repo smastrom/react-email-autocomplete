@@ -15,5 +15,5 @@
 		"noEmit": true,
 		"jsx": "react-jsx"
 	},
-	"include": ["app", "src", "cypress", "tests", "cypress/support/cypress.d.ts"]
+	"include": ["app", "src", "cypress", "tests", "cypress/support/cypress.d.ts", "cypress-axe"]
 }

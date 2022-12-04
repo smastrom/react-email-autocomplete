@@ -71,7 +71,10 @@ export type Events = {
 };
 
 export type Attributes = Partial<
-	Pick<HTMLInputElement, 'id' | 'placeholder' | 'name' | 'readOnly' | 'required' | 'disabled'>
+	Pick<
+		HTMLInputElement,
+		'id' | 'placeholder' | 'name' | 'readOnly' | 'required' | 'disabled' | 'pattern'
+	>
 >;
 
 export type EmailProps = Props & Events & Attributes;

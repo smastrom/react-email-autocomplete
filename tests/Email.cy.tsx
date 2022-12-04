@@ -1,58 +1,6 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 import { Email } from './Email';
-import domains from '../src/domains.json';
 import { getRandomInt } from '../cypress/support/component';
-
-describe('Classnames', () => {
-	const someClasses = {
-		wrapper: 'WC',
-		input: 'IC',
-		username: 'UC',
-		domain: 'DC',
-	};
-
-	it('Should be able to add custom wrapper class', () => {
-		cy.mount(<Email className="customWrapperClass" />);
-		cy.get('.customWrapperClass').should('exist');
-	});
-
-	it('Should be able to add custom classes', () => {
-		cy.mount(
-			<Email
-				classNames={{
-					...someClasses,
-					dropdown: 'DPC',
-					suggestion: 'SC',
-				}}
-			/>
-		);
-
-		cy.get('.WC').within(() => {
-			cy.get('input').should('have.class', 'IC').type('myusername');
-			cy.get('ul').should('have.class', 'DPC');
-			cy.get('li').should('have.class', 'SC');
-			cy.get('span:first-of-type').should('have.class', 'UC');
-			cy.get('span:last-of-type').should('have.class', 'DC');
-		});
-	});
-
-	it('Should be able to add only defined classes', () => {
-		cy.mount(<Email classNames={someClasses} />);
-
-		cy.get('.WC').within(() => {
-			cy.get('input').should('have.class', 'IC').type('myusername');
-			cy.get('ul').should('not.have.class', 'DPC');
-			cy.get('li').should('not.have.class', 'SC');
-			cy.get('span:first-of-type').should('have.class', 'UC');
-			cy.get('span:last-of-type').should('have.class', 'DC');
-		});
-	});
-
-	it('Should add both wrapper classes', () => {
-		cy.mount(<Email className="wrapperClass" classNames={{ wrapper: someClasses.wrapper }} />);
-		cy.get('.wrapperClass').should('have.class', 'WC');
-	});
-});
+import domains from '../src/domains.json';
 
 it('Should display coherent baseList suggestions according to input change', () => {
 	const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com'];
@@ -132,6 +80,34 @@ it('Should hide suggestions if exact match', () => {
 	});
 });
 
+it('Should hide suggestions if clicking outside', () => {
+	cy.mount(
+		<Email refineList={domains} className="WC" classNames={{ dropdown: 'dropdownClass' }} />
+	);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('ul').should('exist');
+	});
+
+	cy.get('body').trigger('click');
+	cy.get('.dropdownClass').should('not.exist');
+});
+
+it('Should hide suggestions if pressing escape key', () => {
+	cy.mount(
+		<Email refineList={domains} className="WC" classNames={{ dropdown: 'dropdownClass' }} />
+	);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('ul').should('exist');
+	});
+
+	cy.realType('{esc}');
+	cy.get('.dropdownClass').should('not.exist');
+});
+
 it('Should update suggestions username on username change', () => {
 	const initialUsername = 'myusername';
 
@@ -152,33 +128,6 @@ it('Should update suggestions username on username change', () => {
 				expect(span.text()).to.be.eq(initialUsername.slice(0, -charsToDel));
 			});
 		});
-	});
-});
-
-it('Should display different suggestions on domain change', () => {
-	const domain = 'gmail';
-
-	cy.mount(<Email refineList={domains} className="WC" />);
-
-	cy.get('.WC').within(() => {
-		cy.get('input').type(`myusername@${domain}`);
-		cy.get('span:last-of-type')
-			.each((span) => {
-				expect(span.text()).to.contain(domain);
-			})
-			.then((prevResults) => {
-				const charsToDel = domain.length - 1;
-				cy.get('input').type(`${'{backspace}'.repeat(charsToDel)}`);
-				cy.get('span:last-of-type')
-					.should('have.length.greaterThan', prevResults.length)
-					.each((span) => {
-						expect(span.text()).to.contain(domain.slice(0, -charsToDel));
-					})
-					.then((newResults) => {
-						cy.get('input').type(`mail`);
-						cy.get('span:last-of-type').should('have.length.lessThan', newResults.length);
-					});
-			});
 	});
 });
 
@@ -255,34 +204,6 @@ it('Should focus and update input value if pressing backspace on a suggestion', 
 	});
 });
 
-it('Should close dropdown if clicking outside', () => {
-	cy.mount(
-		<Email refineList={domains} className="WC" classNames={{ dropdown: 'dropdownClass' }} />
-	);
-
-	cy.get('.WC').within(() => {
-		cy.get('input').type('myusername@g');
-		cy.get('ul').should('exist');
-	});
-
-	cy.get('body').trigger('click');
-	cy.get('.dropdownClass').should('not.exist');
-});
-
-it('Should close dropdown if pressing escape key', () => {
-	cy.mount(
-		<Email refineList={domains} className="WC" classNames={{ dropdown: 'dropdownClass' }} />
-	);
-
-	cy.get('.WC').within(() => {
-		cy.get('input').type('myusername@g');
-		cy.get('ul').should('exist');
-	});
-
-	cy.realType('{esc}');
-	cy.get('.dropdownClass').should('not.exist');
-});
-
 it('Should hide dropdown if first result equals to user input email', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
@@ -320,28 +241,136 @@ it('Should display maximum user-defined result number', () => {
 	});
 });
 
-it('Should trigger user onBlur/onFocus only when related target is not a suggestion', () => {
+it('Should trigger user onBlur/onFocus only if related target is not a suggestion', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
-	cy.get('input').focus().type('myusername@g');
-	cy.get('li')
-		.then((list) => {
-			return Math.floor(Math.random() * list.length);
-		})
-		.then((randomLiIndex) => {
-			for (let i = 0; i < 10; i++) {
-				cy.downArrow(randomLiIndex + 1);
-				cy.upArrow(randomLiIndex + 1);
-			}
-			cy.get('input').should('have.focus').blur();
-		});
+	cy.get('.WC').within(() => {
+		cy.get('input').focus().type('myusername@g');
+		cy.get('li')
+			.then((list) => {
+				return Math.floor(Math.random() * list.length);
+			})
+			.then((randomLiIndex) => {
+				for (let i = 0; i < 10; i++) {
+					cy.downArrow(randomLiIndex + 1);
+					cy.upArrow(randomLiIndex + 1);
+				}
+				cy.get('input').should('have.focus').blur();
+			});
+	});
 
 	cy.get('#CyFocusData')
 		.should('have.attr', 'data-cy-focus', '1')
 		.and('have.attr', 'data-cy-blur', '1');
 });
 
-it('Should be able to forward HTML attributes to input element', () => {});
-it('Should be able to add custom prefix to dropdown id', () => {});
-it('Should be able to focus next element upon selection', () => {});
-it('Should have correct accessibility attributes', () => {});
+it('Should be able to forward HTML attributes to input element', () => {
+	const name = 'MyName';
+	const placeholder = 'MyPlaceholder';
+	const pattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
+
+	cy.mount(
+		<Email
+			className="WC"
+			name={name}
+			placeholder={placeholder}
+			pattern={pattern}
+			disabled
+			required
+			readOnly
+		/>
+	);
+
+	cy.get('.WC').within(() => {
+		cy.get('input')
+			.should('have.attr', 'name', name)
+			.and('have.attr', 'placeholder', placeholder)
+			.and('have.attr', 'pattern', pattern)
+			.and('be.disabled')
+			.and('have.attr', 'readonly', 'readonly')
+			.and('have.attr', 'required', 'required');
+	});
+});
+
+it('Should be able to add custom prefix to dropdown id', () => {
+	const prefix = 'MyPrefix_';
+	cy.mount(<Email className="WC" customPrefix={prefix} />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myuser');
+		cy.get('ul').invoke('attr', 'id').should('contain', prefix);
+	});
+});
+
+it('Should be able to focus next element upon selection', () => {
+	cy.mount(<Email className="WC" nextElement="CyNameInput" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myuser');
+		cy.get('li').first().click();
+	});
+
+	cy.get('#CyNameInput').should('have.focus');
+});
+
+it('Should pass ARIA axe tests', () => {
+	cy.mount(<Email className="WC" nextElement="CyNameInput" />);
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myuser');
+	});
+	cy.injectAxe();
+	cy.checkA11y('.WC', {
+		runOnly: ['cat.aria'],
+	});
+});
+
+describe('Classnames', () => {
+	const someClasses = {
+		wrapper: 'WC',
+		input: 'IC',
+		username: 'UC',
+		domain: 'DC',
+	};
+
+	it('Should be able to add custom wrapper class', () => {
+		cy.mount(<Email className="customWrapperClass" />);
+		cy.get('.customWrapperClass').should('exist');
+	});
+
+	it('Should be able to add custom classes', () => {
+		cy.mount(
+			<Email
+				classNames={{
+					...someClasses,
+					dropdown: 'DPC',
+					suggestion: 'SC',
+				}}
+			/>
+		);
+
+		cy.get('.WC').within(() => {
+			cy.get('input').should('have.class', 'IC').type('myusername');
+			cy.get('ul').should('have.class', 'DPC');
+			cy.get('li').should('have.class', 'SC');
+			cy.get('span:first-of-type').should('have.class', 'UC');
+			cy.get('span:last-of-type').should('have.class', 'DC');
+		});
+	});
+
+	it('Should be able to add only defined classes', () => {
+		cy.mount(<Email classNames={someClasses} />);
+
+		cy.get('.WC').within(() => {
+			cy.get('input').should('have.class', 'IC').type('myusername');
+			cy.get('ul').should('not.have.class', 'DPC');
+			cy.get('li').should('not.have.class', 'SC');
+			cy.get('span:first-of-type').should('have.class', 'UC');
+			cy.get('span:last-of-type').should('have.class', 'DC');
+		});
+	});
+
+	it('Should add both wrapper classes', () => {
+		cy.mount(<Email className="wrapperClass" classNames={{ wrapper: someClasses.wrapper }} />);
+		cy.get('.wrapperClass').should('have.class', 'WC');
+	});
+});

@@ -7,5 +7,13 @@ export default defineConfig({
 			framework: 'react',
 			bundler: 'vite',
 		},
+		setupNodeEvents(on) {
+			on('task', {
+				log(message) {
+					console.log(message);
+					return null;
+				},
+			});
+		},
 	},
 });
