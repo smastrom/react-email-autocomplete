@@ -115,6 +115,11 @@ export function App() {
 							onSelect={options.customOnSelect ? customOnSelect : undefined}
 							onBlur={options.eventHandlers ? handleBlur : undefined}
 							onFocus={options.eventHandlers ? handleFocus : undefined}
+							onKeyDown={(event) => {
+								if (event.code === 'Comma') {
+									event.preventDefault();
+								}
+							}}
 							// Atrributes
 							className="customClass"
 							name="reactEms"

@@ -94,7 +94,6 @@ it('Should hide baseList suggestions once users press @', () => {
 		cy.get('li').should('have.length', baseList.length);
 		cy.get('input').type('@');
 		cy.get('ul').should('not.exist');
-		cy.get('li').should('not.exist');
 	});
 });
 
@@ -133,9 +132,8 @@ it('Should hide suggestions if exact match', () => {
 	});
 });
 
-describe('Should update both username and domain on input change', () => {
+it('Should update suggestions username on username change', () => {
 	const initialUsername = 'myusername';
-	const domain = 'gmail';
 
 	it('Username', () => {
 		cy.mount(<Email refineList={domains} className="WC" />);
@@ -155,30 +153,32 @@ describe('Should update both username and domain on input change', () => {
 			});
 		});
 	});
+});
 
-	it('Domain', () => {
-		cy.mount(<Email refineList={domains} className="WC" />);
+it('Should display different suggestions on domain change', () => {
+	const domain = 'gmail';
 
-		cy.get('.WC').within(() => {
-			cy.get('input').type(`${initialUsername}@${domain}`);
-			cy.get('span:last-of-type')
-				.each((span) => {
-					expect(span.text()).to.contain(domain);
-				})
-				.then((prevResults) => {
-					const charsToDel = domain.length - 1;
-					cy.get('input').type(`${'{backspace}'.repeat(charsToDel)}`);
-					cy.get('span:last-of-type')
-						.should('have.length.greaterThan', prevResults.length)
-						.each((span) => {
-							expect(span.text()).to.contain(domain.slice(0, -charsToDel));
-						})
-						.then((newResults) => {
-							cy.get('input').type(`mail`);
-							cy.get('span:last-of-type').should('have.length.lessThan', newResults.length);
-						});
-				});
-		});
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type(`myusername@${domain}`);
+		cy.get('span:last-of-type')
+			.each((span) => {
+				expect(span.text()).to.contain(domain);
+			})
+			.then((prevResults) => {
+				const charsToDel = domain.length - 1;
+				cy.get('input').type(`${'{backspace}'.repeat(charsToDel)}`);
+				cy.get('span:last-of-type')
+					.should('have.length.greaterThan', prevResults.length)
+					.each((span) => {
+						expect(span.text()).to.contain(domain.slice(0, -charsToDel));
+					})
+					.then((newResults) => {
+						cy.get('input').type(`mail`);
+						cy.get('span:last-of-type').should('have.length.lessThan', newResults.length);
+					});
+			});
 	});
 });
 
@@ -196,6 +196,27 @@ it('Should update input value on suggestion click', () => {
 					randomLi.trigger('click');
 					cy.get('input').should('have.value', randomLi.text()).clear();
 				});
+		});
+	}
+});
+
+it('Should update input value on suggestion keydown', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	for (let i = 0; i < 10; i++) {
+		cy.get('.WC').within(() => {
+			cy.get('input').type('myusername@g');
+			cy.get('li').then((list) => {
+				const randomLiIndex = Math.floor(Math.random() * list.length);
+				cy.downArrow(randomLiIndex + 1);
+				cy.get('li')
+					.eq(randomLiIndex)
+					.should('have.focus')
+					.and('have.attr', 'aria-selected', 'true')
+					.and('have.attr', 'tabindex', '0')
+					.type('{enter}');
+				cy.get('input').should('have.value', list[randomLiIndex].innerText).clear();
+			});
 		});
 	}
 });
@@ -218,7 +239,7 @@ it('Should keyboard-navigate trough suggestions and input', () => {
 	});
 });
 
-it('Should focus input and update value if pressing backspace on suggestion', () => {
+it('Should focus and update input value if pressing backspace on a suggestion', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
 	const initialValue = 'myusername@g';
@@ -245,6 +266,20 @@ it('Should close dropdown if clicking outside', () => {
 	});
 
 	cy.get('body').trigger('click');
+	cy.get('.dropdownClass').should('not.exist');
+});
+
+it('Should close dropdown if pressing escape key', () => {
+	cy.mount(
+		<Email refineList={domains} className="WC" classNames={{ dropdown: 'dropdownClass' }} />
+	);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('ul').should('exist');
+	});
+
+	cy.realType('{esc}');
 	cy.get('.dropdownClass').should('not.exist');
 });
 
@@ -306,7 +341,7 @@ it('Should trigger user onBlur/onFocus only when related target is not a suggest
 		.and('have.attr', 'data-cy-blur', '1');
 });
 
-it('Should be able to add HTML attributes to input element', () => {});
+it('Should be able to forward HTML attributes to input element', () => {});
 it('Should be able to add custom prefix to dropdown id', () => {});
 it('Should be able to focus next element upon selection', () => {});
 it('Should have correct accessibility attributes', () => {});
