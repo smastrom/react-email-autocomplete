@@ -282,6 +282,73 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 <br />
 
+## :globe_with_meridians: Internationalization
+
+It would be a great to display the first suggestions according to the user's browser locale. **React Bella Email** includes a very simple hook that does exactly that.
+
+**1 - Create an object with the lists for each browser locale:**
+
+```js
+export const lists = {
+  it: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
+  'de-DE': ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'],
+  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com'], // 'default' is required.
+};
+```
+
+You can specify lang codes with or without region codes. In case you don't specify a region code (such as `it`), it will match `it`, `it-CH` and `it-IT` and so on. Instead, if you specify `it-CH` it will match only `it-CH` but not `it` or `it-IT`.
+
+**2 - Use `useLocalizedList` hook:**
+
+```jsx
+import lists from './lists';
+import { Email, useLocalizedList } from 'react-bella-email';
+
+function App() {
+  const baseList = useLocalizedList(lists);
+  const [email, setEmail] = useState('');
+
+  return (
+    <Email
+      className="my-wrapper"
+      baseList={baseList}
+      onChange={setEmail} // or (value) => customSetter(value)
+      value={email}
+    />
+  );
+}
+```
+
+### Usage with internationalization frameworks
+
+The default stategy explained above relies on the browser locale. No matter the language of your app, it will always display suggestions according to the browser locale.
+
+Instead, if you prefer to keep the suggestions in line with your app locale, you can directly pass the locale string as second argument:
+
+```jsx
+import lists from './lists';
+import { useRouter } from 'next/router';
+import { Email, useLocalizedList } from 'react-bella-email';
+
+function App() {
+  const { locale } = useRouter();
+  const baseList = useLocalizedList(lists, locale);
+
+  const [email, setEmail] = useState('');
+
+  return (
+    <Email
+      className="my-wrapper"
+      baseList={baseList}
+      onChange={setEmail} // or (value) => customSetter(value)
+      value={email}
+    />
+  );
+}
+```
+
+<br />
+
 ## :8ball: Callbacks
 
 ### onChange with object state
@@ -290,7 +357,6 @@ Alternatively, you can create your own array of domains or [search]() for the on
 function App() {
   const [payload, setPayload] = useState({
     name: '',
-    lastName: '',
     email: '',
   });
 
@@ -302,14 +368,12 @@ function App() {
   }
 
   return (
-    // ...
     <Email
       className="my-wrapper"
       baseList={baseList}
       onChange={handleChange}
       value={payload.email}
     />
-    // ...
   );
 }
 ```

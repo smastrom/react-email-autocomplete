@@ -2,11 +2,6 @@ import { mount } from 'cypress/react';
 import 'cypress-real-events';
 import 'cypress-axe';
 
-import '../../app/styles/app.css';
-import '../../app/styles/fonts.css';
-import '../../app/styles/input.css';
-import '../../app/styles/preflight.css';
-
 Cypress.Commands.add('mount', mount);
 
 Cypress.Commands.add('backSpace', (chars: number) => {
