@@ -1,7 +1,30 @@
 {
 	"name": "react-bella-email",
-	"version": "0.9.0",
+	"version": "0.9.6",
 	"private": false,
+	"homepage": "https://react-bella-email.netlify.app",
+	"bugs": {
+		"url": "https://github.com/smastrom/react-bella-email/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/smastrom/react-bella-email"
+	},
+	"license": "MIT",
+	"author": "Simone Mastromattei <smastrom@proton.me>",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.umd.js"
+		}
+	},
+	"main": "dist/index.umd.js",
+	"module": "dist/index.js",
+	"browser": "dist/index.umd.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "tsc && vite build && yarn declare",
 		"postbuild": "cpy src/types.d.ts dist --rename index.d.ts --flat && rimraf src/types.d.ts",
@@ -10,7 +33,12 @@
 		"dev": "vite",
 		"preview": "vite preview",
 		"test": "yarn cypress run --component",
-		"test:gui": "yarn cypress open --component"
+		"test:gui": "yarn cypress open --component",
+		"prepare": "husky install"
+	},
+	"lint-staged": {
+		"*.{ts,tsx}": "eslint --cache --fix",
+		"*.{ts,tsx,css,json,md}": "prettier --write"
 	},
 	"devDependencies": {
 		"@types/react": "^17.0.2",
@@ -26,6 +54,8 @@
 		"eslint": "^8.29.0",
 		"eslint-plugin-react": "^7.31.11",
 		"eslint-plugin-react-hooks": "^4.6.0",
+		"husky": "^8.0.0",
+		"lint-staged": "^13.1.0",
 		"prettier": "^2.8.0",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
