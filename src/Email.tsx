@@ -65,10 +65,14 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
-		const [itemState, setItemState] = useState<{ focusedItem: number; hoveredItem: number }>({
+		const [itemState, _setItemState] = useState<{ focusedItem: number; hoveredItem: number }>({
 			focusedItem: -1,
 			hoveredItem: -1
 		});
+
+		function setItemState(focusedItem = -1, hoveredItem = -1) {
+			_setItemState({ focusedItem, hoveredItem });
+		}
 
 		/*  Reactive helpers */
 
@@ -78,13 +82,9 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		/* Callbacks */
 
-		function handleLeave() {
-			setItemState({ focusedItem: -1, hoveredItem: -1 });
-		}
-
 		const clearResults = useCallback(() => {
 			setSuggestions([]);
-			handleLeave();
+			setItemState();
 		}, []);
 
 		/* Effects */
@@ -109,7 +109,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			}
 
 			if (!isOpen) {
-				handleLeave();
+				setItemState();
 			}
 
 			document.addEventListener('click', handleOutsideClick);
@@ -119,7 +119,16 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			};
 		}, [isOpen, clearResults]);
 
-		/* Value update handlers */
+		/* Event utils */
+
+		function handleCursorFocus() {
+			if (inputRef.current) {
+				inputRef.current.setSelectionRange(email.length, email.length);
+				inputRef.current.focus();
+			}
+		}
+
+		/* Value handlers */
 
 		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
 			isTouched.current = true;
@@ -171,15 +180,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			});
 		}
 
-		/* Event utils */
-
-		function handleCursorFocus() {
-			if (inputRef.current) {
-				inputRef.current.setSelectionRange(email.length, email.length);
-				inputRef.current.focus();
-			}
-		}
-
 		/* Keyboard events */
 
 		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -192,7 +192,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 					case 'ArrowDown':
 						event.preventDefault(), event.stopPropagation();
-						return setItemState({ hoveredItem: 0, focusedItem: 0 });
+						return setItemState(0, 0);
 				}
 			}
 		}
@@ -226,7 +226,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
 					if (itemState.focusedItem < suggestions.length - 1) {
-						setItemState((prevState) => ({
+						_setItemState((prevState) => ({
 							hoveredItem: prevState.focusedItem + 1,
 							focusedItem: prevState.focusedItem + 1
 						}));
@@ -235,7 +235,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
-					setItemState((prevState) => ({
+					_setItemState((prevState) => ({
 						hoveredItem: prevState.focusedItem - 1,
 						focusedItem: prevState.focusedItem - 1
 					}));
@@ -340,10 +340,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 							<li
 								role="option"
 								ref={(li) => (liRefs.current[index] = li)}
-								onPointerMove={() => setItemState({ focusedItem: -1, hoveredItem: index })}
-								onMouseMove={() => setItemState({ focusedItem: -1, hoveredItem: index })}
-								onPointerLeave={handleLeave}
-								onMouseLeave={handleLeave}
+								onPointerMove={() => setItemState(undefined, index)}
+								onMouseMove={() => setItemState(undefined, index)}
+								onPointerLeave={() => setItemState()}
+								onMouseLeave={() => setItemState()}
 								onClick={(event) => handleSelect(event, index, false)}
 								onKeyDown={handleListKeyDown}
 								key={domain}
