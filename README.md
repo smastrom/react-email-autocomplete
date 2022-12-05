@@ -66,7 +66,7 @@ The component renders a single `div` with a very simple structure:
 Wrapper — div
 ├── Email Input Field — input
 └── Dropdown — ul
-    └── Suggestions[] - li[]
+    └── Suggestions - li[]
         └──[username - span:first-of-type] [@domain.com - span:last-of-type]
 ```
 
@@ -125,24 +125,7 @@ You can add a this property in VSCode's `settings.json` in order to enable autco
 
 </details>
 
-Or add a class to the wrapper `div` via `className` prop:
-
-```jsx
-function App() {
-  const [email, setEmail] = useState('');
-
-  return (
-    <Email
-      className="my-wrapper"
-      baseList={baseList}
-      onChange={setEmail} // or (newValue) => customSetter(newValue)
-      value={email}
-    />
-  );
-}
-```
-
-And target any child:
+Or add a class to the wrapper `div` via `className` prop, and target any child:
 
 ```css
 .my-wrapper {
@@ -153,21 +136,11 @@ And target any child:
   /* Input field */
 }
 
-.my-wrapper ul {
-  /* Dropdown */
-}
-
-.my-wrapper li {
-  /* Suggestions */
-}
-
 .my-wrapper li > span:first-of-type {
   /* Username */
 }
 
-.my-wrapper li > span:last-of-type {
-  /* Domain */
-}
+/* ... */
 ```
 
 <details><summary><strong>Basic styles</strong></summary>
@@ -206,6 +179,20 @@ This package ships with **zero css**. Initial styles enough to see the component
 ```
 
 </details>
+
+### Focus/Hover styles
+
+Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-email-active` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened in case the cursor is hovering it.
+
+```css
+.my-suggestion[data-email-active='true'] {
+  background-color: aliceblue;
+}
+
+.my-suggestion:focus {
+  outline: none;
+}
+```
 
 <br />
 
@@ -284,9 +271,9 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Localization
 
-It is great to display different suggestions according to [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook to do exactly that.
+It is great to display different suggestions according to [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
 
-**1 - Create an object to define the lists for each browser locale:**
+**1 - Create an object and define lists for each browser locale:**
 
 ```js
 export const lists = {
@@ -413,13 +400,14 @@ No special configuration needed, it just works. Just follow the official React H
 
 <br />
 
-## :keyboard: Keyboard controls
+## :keyboard: List keyboard controls
 
-- **Up / Down arrow** - Navigate through suggestions
-- **Enter / Space** - Confirm the suggestion and focus the input field (or the next one).
-- **Tab / Shift + Tab** - Close the list and go to next/prev focusable input
-- **Backspace** - Keep refining the suggestions
+- **↑ ↓** - Navigate through suggestions / input field
+- **← →** - Move cursor and focus the input field while keeping list open
+- **Backspace / Alphanumeric keys** - Edit the input value and keep refining suggestions
+- **Enter / Space** - Confirm the suggestion
 - **Escape** - Close the list and focus the input field
+- **Tab / Shift + Tab** - Close the list and go to next/prev focusable input
 
 <br />
 
