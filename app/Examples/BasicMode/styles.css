@@ -1,0 +1,60 @@
+.basicWrapper {
+	--accentColor: #0062ff;
+	--textColor: #475569;
+	--selectionColor: #f7f8ff;
+	--shadowColor: rgba(99, 99, 99, 0.2);
+	color: var(--textColor);
+	min-width: 300px;
+	position: relative;
+	width: 100%;
+}
+
+.basicInput {
+	width: 100%;
+	border: none;
+	font-weight: 600;
+	padding: 0.4em 0.6em;
+	border-bottom: 2px solid #dedede;
+	transition: border-color 100ms ease-in-out, background-color 100ms ease-in-out,
+		color 100ms ease-in-out;
+}
+
+.basicInput[aria-expanded='true'],
+.basicInput:hover,
+.basicInput:focus {
+	border-bottom: 2px solid var(--accentColor);
+}
+
+.basicInput:focus {
+	outline: none;
+}
+
+.basicInput::placeholder {
+}
+
+.basicDropdown {
+	width: 100%;
+	box-shadow: var(--shadowColor) 0px 2px 8px 0px;
+	position: absolute;
+	list-style-type: none;
+	background-color: white;
+	z-index: 999;
+	margin-top: 0;
+}
+
+.basicSuggestion {
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.basicSuggestion:focus {
+	outline: none;
+}
+
+.basicSuggestion[data-email-active='true'] {
+	background-color: var(--selectionColor);
+}
+
+.basicDomain {
+	color: var(--accentColor);
+}

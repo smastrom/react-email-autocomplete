@@ -5,7 +5,7 @@ const onRender: ProfilerOnRenderCallback = (_, phase, actualDuration, startTime,
 		`phase: ${phase}`,
 		`actualDuration: ${actualDuration}`,
 		`startTime: ${startTime}`,
-		`commitTime: ${commitTime}`,
+		`commitTime: ${commitTime}`
 	].join(', ');
 	console.info(performanceData);
 };
