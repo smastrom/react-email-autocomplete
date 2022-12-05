@@ -79,7 +79,7 @@ const myClassNames = {
   dropdown: 'my-dropdown',
   suggestion: 'my-suggestion',
   username: 'my-username',
-  domain: 'my-domain',
+  domain: 'my-domain'
 };
 
 function App() {
@@ -104,7 +104,7 @@ import type { ClassNames } from 'react-bella-email';
 
 const myClassNames: ClassNames = {
   wrapper: 'my-wrapper',
-  input: 'my-input',
+  input: 'my-input'
 };
 ```
 
@@ -170,41 +170,6 @@ And target any child:
 }
 ```
 
-<details><summary><strong>CSS-in-JS</strong></summary>
-
-<br />
-
-```jsx
-import styled from 'styled-components';
-import { Email as BellaEmail } from 'react-bella-email';
-
-export const Email = styled(BellaEmail)`
-  /* Wrapper styles */
-
-  & input {
-    /* Input field */
-  }
-
-  & ul {
-    /* Dropdown */
-  }
-
-  & li {
-    /* Suggestions */
-  }
-
-  & li > span:first-of-type {
-    /* Username */
-  }
-
-  & li > span:last-of-type {
-    /* Domain */
-  }
-`;
-```
-
-</details>
-
 <details><summary><strong>Basic styles</strong></summary>
 
 <br />
@@ -261,7 +226,7 @@ const baseList = [
   'hotmail.com',
   'aol.com',
   'msn.com',
-  'proton.me',
+  'proton.me'
 ];
 
 function App() {
@@ -295,7 +260,7 @@ const baseList = [
   'hotmail.com',
   'aol.com',
   'msn.com',
-  'proton.me',
+  'proton.me'
 ];
 
 function App() {
@@ -327,14 +292,7 @@ It is great to display different suggestions according to [user's locale](https:
 export const lists = {
   default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
   it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com'],
-  'it-CH': [
-    'gmail.com',
-    'outlook.com',
-    'bluewin.ch',
-    'gmx.de',
-    'libero.it',
-    'sunrise.ch',
-  ],
+  'it-CH': ['gmail.com', 'outlook.com', 'bluewin.ch', 'gmx.de', 'libero.it', 'sunrise.ch']
 };
 ```
 
@@ -346,7 +304,7 @@ import type { LocalizedList } from 'react-bella-email';
 
 export const lists: LocalizedList = {
   default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
-  it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com'],
+  it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com']
 };
 ```
 
