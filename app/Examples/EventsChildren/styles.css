@@ -72,7 +72,7 @@
 	outline: none;
 }
 
-.eventsSuggestion[data-active='true'] {
+.eventsSuggestion[data-email-active='true'] {
 	outline: none;
 	background-color: white;
 	cursor: pointer;

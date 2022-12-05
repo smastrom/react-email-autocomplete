@@ -350,7 +350,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
 								aria-selected={index === itemState.focusedItem}
-								data-active={index === itemState.hoveredItem}
+								data-email-active={index === itemState.hoveredItem}
 								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
 							>
