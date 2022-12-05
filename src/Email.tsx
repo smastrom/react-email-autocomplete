@@ -65,8 +65,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
-		const [itemState, setItemState] = useState<{ activeItem: number; hoveredItem: number }>({
-			activeItem: -1,
+		const [itemState, setItemState] = useState<{ focusedItem: number; hoveredItem: number }>({
+			focusedItem: -1,
 			hoveredItem: -1
 		});
 
@@ -79,7 +79,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* Callbacks */
 
 		function handleLeave() {
-			setItemState({ activeItem: -1, hoveredItem: -1 });
+			setItemState({ focusedItem: -1, hoveredItem: -1 });
 		}
 
 		const clearResults = useCallback(() => {
@@ -96,10 +96,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}, []);
 
 		useEffect(() => {
-			if (itemState.activeItem >= 0) {
-				liRefs?.current[itemState.activeItem]?.focus();
+			if (itemState.focusedItem >= 0) {
+				liRefs?.current[itemState.focusedItem]?.focus();
 			}
-		}, [itemState.activeItem]);
+		}, [itemState.focusedItem]);
 
 		useEffect(() => {
 			function handleOutsideClick(event: MouseEvent) {
@@ -192,7 +192,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 					case 'ArrowDown':
 						event.preventDefault(), event.stopPropagation();
-						return setItemState({ hoveredItem: 0, activeItem: 0 });
+						return setItemState({ hoveredItem: 0, focusedItem: 0 });
 				}
 			}
 		}
@@ -215,7 +215,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'Enter':
 				case 'Space':
 					event.preventDefault(), event.stopPropagation();
-					return handleSelect(event, itemState.activeItem, true);
+					return handleSelect(event, itemState.focusedItem, true);
 
 				case 'Backspace':
 				case 'ArrowLeft':
@@ -225,10 +225,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
-					if (itemState.activeItem < suggestions.length - 1) {
+					if (itemState.focusedItem < suggestions.length - 1) {
 						setItemState((prevState) => ({
-							hoveredItem: prevState.activeItem + 1,
-							activeItem: prevState.activeItem + 1
+							hoveredItem: prevState.focusedItem + 1,
+							focusedItem: prevState.focusedItem + 1
 						}));
 					}
 					break;
@@ -236,10 +236,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
 					setItemState((prevState) => ({
-						hoveredItem: prevState.activeItem - 1,
-						activeItem: prevState.activeItem - 1
+						hoveredItem: prevState.focusedItem - 1,
+						focusedItem: prevState.focusedItem - 1
 					}));
-					if (itemState.activeItem === 0) {
+					if (itemState.focusedItem === 0) {
 						inputRef?.current?.focus();
 					}
 					break;
@@ -287,7 +287,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}
 
 		function getWrapperClass() {
-			return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() };
+			return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() || undefined };
 		}
 
 		function getClasses(elementName: Elements) {
@@ -340,8 +340,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 							<li
 								role="option"
 								ref={(li) => (liRefs.current[index] = li)}
-								onPointerMove={() => setItemState({ activeItem: -1, hoveredItem: index })}
-								onMouseMove={() => setItemState({ activeItem: -1, hoveredItem: index })}
+								onPointerMove={() => setItemState({ focusedItem: -1, hoveredItem: index })}
+								onMouseMove={() => setItemState({ focusedItem: -1, hoveredItem: index })}
 								onPointerLeave={handleLeave}
 								onMouseLeave={handleLeave}
 								onClick={(event) => handleSelect(event, index, false)}
@@ -349,7 +349,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 								key={domain}
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
-								aria-selected={index === itemState.activeItem}
+								aria-selected={index === itemState.focusedItem}
 								data-active={index === itemState.hoveredItem}
 								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
