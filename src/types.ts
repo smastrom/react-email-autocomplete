@@ -30,7 +30,9 @@ export type OnSelectData = {
 
 export type Values = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export type OnChange = Dispatch<SetStateAction<string>> | ((value: string) => void | Promise<void>);
+export type OnChange =
+	| Dispatch<SetStateAction<string>>
+	| ((newValue: string) => void | Promise<void>);
 export type OnSelect = (object: OnSelectData) => void | Promise<void>;
 
 export type Props = {
@@ -56,6 +58,8 @@ export type Props = {
 	customPrefix?: string;
 	/** DOM ID of the wrapper element. */
 	wrapperId?: string;
+	/** Validity state of the field for assistive technologies. */
+	isInvalid?: boolean;
 	children?: ReactNode;
 };
 

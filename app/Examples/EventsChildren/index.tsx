@@ -79,6 +79,7 @@ export function EventsChildren() {
 				onSelect={handleSelect}
 				baseList={baseList}
 				refineList={domains}
+				isInvalid={isInvalid}
 				value={email}
 				onChange={setEmail}
 			>
@@ -91,6 +92,7 @@ export function EventsChildren() {
 
 const ValidIcon = () => (
 	<svg
+		aria-hidden="true"
 		className="validIcon"
 		xmlns="http://www.w3.org/2000/svg"
 		width="12.018"
@@ -98,7 +100,6 @@ const ValidIcon = () => (
 		viewBox="0 0 12.018 8.732"
 	>
 		<path
-			aria-hidden="true"
 			d="M13.19,6,6.872,12.318,4,9.446"
 			transform="translate(-2.586 -4.586)"
 			fill="none"
@@ -121,6 +122,7 @@ const invalidIconAttrs: SVGAttributes<SVGPathElement> = {
 
 const InvalidIcon = () => (
 	<svg
+		aria-hidden="true"
 		className="validIcon"
 		xmlns="http://www.w3.org/2000/svg"
 		width="10.828"

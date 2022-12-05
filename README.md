@@ -44,6 +44,7 @@ npm i -S react-bella-email
 | `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
 | `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
 | `customPrefix` | Custom prefix for dropdown unique ID                  | _string_                               | `rbe_`    | :x:                |
+| `isInvalid`    | Value of `aria-invalid`                               | _boolean_                              | undefined | :x:                |
 
 ### Are also available:
 
@@ -88,7 +89,7 @@ function App() {
     <Email
       classNames={myClassNames}
       baseList={baseList}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
   );
@@ -134,7 +135,7 @@ function App() {
     <Email
       className="my-wrapper"
       baseList={baseList}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
   );
@@ -270,7 +271,7 @@ function App() {
     <Email
       className="my-wrapper"
       baseList={baseList}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
   );
@@ -305,7 +306,7 @@ function App() {
       className="my-wrapper"
       baseList={baseList}
       refineList={domains}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
   );
@@ -316,11 +317,11 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 <br />
 
-## :globe_with_meridians: Internationalization
+## :globe_with_meridians: Localization
 
-It is great to display the suggestions according to the [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
+It is great to display different suggestions according to [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook to do exactly that.
 
-**1 - Create an object and define lists for each browser locale:**
+**1 - Create an object to define the lists for each browser locale:**
 
 ```js
 export const lists = {
@@ -369,7 +370,7 @@ function App() {
     <Email
       className="my-wrapper"
       baseList={baseList}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
   );
@@ -395,7 +396,7 @@ function App() {
     <Email
       className="my-wrapper"
       baseList={baseList}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
   );
@@ -404,49 +405,7 @@ function App() {
 
 <br />
 
-## :8ball: Callbacks
-
-### onChange with object state
-
-```jsx
-function App() {
-  const [payload, setPayload] = useState({
-    name: '',
-    email: '',
-  });
-
-  function handleChange(value) {
-    setPayLoad((prevData) => ({
-      ...prevData,
-      email: value,
-    }));
-  }
-
-  return (
-    <Email
-      className="my-wrapper"
-      baseList={baseList}
-      onChange={handleChange}
-      value={payload.email}
-    />
-  );
-}
-```
-
-<details><summary><strong>Type Definition</strong></summary>
-<br/>
-
-```ts
-type Change =
-  | React.Dispatch<React.SetStateAction<string>>
-  | ((value: string) => void | Promise<void>);
-```
-
-</details>
-
-<br />
-
-### Custom onSelect callback
+## :8ball: onSelect callback
 
 If you need to invoke a callback (e.g. server validation), everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
 
@@ -465,7 +424,7 @@ function App() {
       className="my-wrapper"
       baseList={baseList}
       refineList={domains}
-      onChange={setEmail} // or (value) => customSetter(value)
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
       onSelect={handleSelect}
       value={email}
     />
@@ -490,7 +449,7 @@ type OnSelect = (object: OnSelectData) => void | Promise<void>;
 
 <br />
 
-### React Hook Form
+## React Hook Form
 
 No special configuration needed, it just works. Just follow the official React Hook Form's [Controller documentation](https://react-hook-form.com/api/usecontroller/controller).
 

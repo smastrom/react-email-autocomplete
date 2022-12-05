@@ -32,6 +32,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			onBlur: userOnBlur,
 			onInput: userOnInput,
 			onKeyDown: userOnKeyDown = () => {},
+			/* ARIA */
+			isInvalid,
 		},
 		externalRef
 	) => {
@@ -285,6 +287,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					type="email"
 					autoComplete="off"
 					role="combobox"
+					aria-invalid={isInvalid}
 					aria-autocomplete="list"
 					{...getAriaControls()}
 					{...getClasses(Elements.Input)}
