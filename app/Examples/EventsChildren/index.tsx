@@ -25,7 +25,7 @@ const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.c
 
 export function EventsChildren() {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [email, setEmail] = useState('myusername@gmail.com');
+	const [email, setEmail] = useState('sadjhgghjsadghjds');
 	const [validity, setValidity] = useState<Valididty>(Valididty.IDLE);
 
 	useLayoutEffect(() => {

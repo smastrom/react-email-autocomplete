@@ -70,6 +70,10 @@
 .eventsSuggestion:hover,
 .eventsSuggestion:focus {
 	outline: none;
+}
+
+.eventsSuggestion[data-active='true'] {
+	outline: none;
 	background-color: white;
 	cursor: pointer;
 	color: var(--accentColor);

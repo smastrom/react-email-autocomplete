@@ -7,9 +7,10 @@ it('Should pass ARIA axe tests', () => {
 	cy.get('.WC').within(() => {
 		cy.get('input').type('myuser');
 	});
+	cy.downArrow(2);
 	cy.injectAxe();
 	cy.checkA11y('.WC', {
-		runOnly: ['cat.aria'],
+		runOnly: ['cat.aria']
 	});
 });
 
@@ -175,7 +176,6 @@ it('Should update input value on suggestion keydown', () => {
 					.eq(randomLiIndex)
 					.should('have.focus')
 					.and('have.attr', 'aria-selected', 'true')
-					.and('have.attr', 'tabindex', '0')
 					.type('{enter}');
 				cy.get('input').should('have.value', list[randomLiIndex].innerText).clear();
 			});
@@ -194,7 +194,7 @@ it('Should keyboard-navigate trough suggestions and input', () => {
 			const randomLiIndex = Math.floor(Math.random() * list.length);
 
 			cy.downArrow(randomLiIndex + 1);
-			cy.get('li').eq(randomLiIndex).should('have.focus').and('have.attr', 'tabindex', '0');
+			cy.get('li').eq(randomLiIndex).should('have.focus').and('have.attr', 'aria-selected', 'true');
 			cy.upArrow(randomLiIndex + 1);
 			cy.get('input').should('have.focus');
 		});
@@ -309,7 +309,7 @@ describe('Classnames', () => {
 		wrapper: 'WC',
 		input: 'IC',
 		username: 'UC',
-		domain: 'DC',
+		domain: 'DC'
 	};
 
 	it('Should be able to add custom wrapper class', () => {
@@ -323,7 +323,7 @@ describe('Classnames', () => {
 				classNames={{
 					...classes,
 					dropdown: 'DPC',
-					suggestion: 'SC',
+					suggestion: 'SC'
 				}}
 			/>
 		);

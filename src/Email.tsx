@@ -1,5 +1,12 @@
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
-import { cleanValue, getUniqueId, getHonestValue, isFn, useIsomorphicLayoutEffect } from './utils';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import {
+	cleanValue,
+	getUniqueId,
+	getHonestValue,
+	isFn,
+	useIsomorphicLayoutEffect,
+	alphanumericKeys
+} from './utils';
 import { Events, OnSelectData, Elements, Maybe, Email as Export, EmailProps } from './types';
 
 export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
@@ -19,6 +26,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			customPrefix = 'rbe_',
 			children,
 			wrapperId,
+			/* User events */
+			onFocus: userOnFocus,
+			onBlur: userOnBlur,
+			onInput: userOnInput,
+			onKeyDown: userOnKeyDown = () => {},
 			/* HTML attributes */
 			id,
 			name,
@@ -27,13 +39,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			disabled,
 			required,
 			pattern,
-			/* User events */
-			onFocus: userOnFocus,
-			onBlur: userOnBlur,
-			onInput: userOnInput,
-			onKeyDown: userOnKeyDown = () => {},
 			/* ARIA */
-			isInvalid,
+			isInvalid
 		},
 		externalRef
 	) => {
@@ -58,7 +65,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
-		const [activeChild, setActiveChild] = useState(-1);
+		const [itemState, setItemState] = useState<{ activeItem: number; hoveredItem: number }>({
+			activeItem: -1,
+			hoveredItem: -1
+		});
 
 		/*  Reactive helpers */
 
@@ -66,12 +76,18 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		const [username] = email.split('@');
 		const isOpen = isTouched.current && suggestions.length > 0 && email.length >= minChars;
 
-		/* Effects */
+		/* Callbacks */
 
-		function clearResults() {
-			setSuggestions([]);
-			setActiveChild(-1);
+		function handleLeave() {
+			setItemState({ activeItem: -1, hoveredItem: -1 });
 		}
+
+		const clearResults = useCallback(() => {
+			setSuggestions([]);
+			handleLeave();
+		}, []);
+
+		/* Effects */
 
 		useIsomorphicLayoutEffect(() => {
 			if (!uniqueId.current) {
@@ -80,10 +96,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}, []);
 
 		useEffect(() => {
-			if (activeChild >= 0) {
-				liRefs?.current[activeChild]?.focus();
+			if (itemState.activeItem >= 0) {
+				liRefs?.current[itemState.activeItem]?.focus();
 			}
-		}, [activeChild]);
+		}, [itemState.activeItem]);
 
 		useEffect(() => {
 			function handleOutsideClick(event: MouseEvent) {
@@ -91,12 +107,17 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					clearResults();
 				}
 			}
+
+			if (!isOpen) {
+				handleLeave();
+			}
+
 			document.addEventListener('click', handleOutsideClick);
 
 			return () => {
 				document.removeEventListener('click', handleOutsideClick);
 			};
-		}, [isOpen]);
+		}, [isOpen, clearResults]);
 
 		/* Value update handlers */
 
@@ -128,17 +149,25 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			setEmail(cleanEmail);
 		}
 
+		function dispatchSelect(
+			value: OnSelectData['value'],
+			keyboard: OnSelectData['keyboard'],
+			position: OnSelectData['position']
+		) {
+			onSelect({ value, keyboard, position });
+		}
+
 		function handleSelect(
 			event: React.MouseEvent<HTMLLIElement> | React.KeyboardEvent<HTMLLIElement>,
-			childIndex: number,
+			itemIndex: number,
 			isKeyboard: boolean
 		) {
 			event.preventDefault(), event.stopPropagation();
-			const selectedEmail = cleanValue((event.currentTarget as Node).textContent as string);
+			const selectedEmail = cleanValue(event.currentTarget.textContent as string);
 			setEmail(selectedEmail);
 			clearResults();
 			requestAnimationFrame(() => {
-				dispatchSelect(selectedEmail, isKeyboard, childIndex + 1);
+				dispatchSelect(selectedEmail, isKeyboard, itemIndex + 1);
 			});
 		}
 
@@ -146,9 +175,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		function handleCursorFocus() {
 			if (inputRef.current) {
-				inputRef.current.type = 'text';
 				inputRef.current.setSelectionRange(email.length, email.length);
-				inputRef.current.type = 'email';
 				inputRef.current.focus();
 			}
 		}
@@ -160,47 +187,62 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				switch (event.code) {
 					case 'Tab':
 					case 'Escape':
+						event.stopPropagation();
 						return clearResults();
 
 					case 'ArrowDown':
-						event.preventDefault();
-						return setActiveChild(0);
+						event.preventDefault(), event.stopPropagation();
+						return setItemState({ hoveredItem: 0, activeItem: 0 });
 				}
 			}
 		}
 
 		function handleListKeyDown(event: React.KeyboardEvent<HTMLLIElement>) {
-			if (isOpen) {
-				switch (event.code) {
-					case 'Escape':
-						clearResults();
-						return handleCursorFocus();
+			if (alphanumericKeys.test(event.key)) {
+				event.stopPropagation();
+				return inputRef?.current?.focus();
+			}
+			switch (event.code) {
+				case 'Tab':
+					event.stopPropagation();
+					return clearResults();
 
-					case 'Tab':
-						return clearResults();
+				case 'Escape':
+					event.preventDefault(), event.stopPropagation();
+					clearResults();
+					return handleCursorFocus();
 
-					case 'Backspace':
-						return inputRef?.current?.focus();
+				case 'Enter':
+				case 'Space':
+					event.preventDefault(), event.stopPropagation();
+					return handleSelect(event, itemState.activeItem, true);
 
-					case 'Enter':
-					case 'Space':
-						return handleSelect(event, activeChild, true);
+				case 'Backspace':
+				case 'ArrowLeft':
+				case 'ArrowRight':
+					event.stopPropagation();
+					return inputRef?.current?.focus();
 
-					case 'ArrowDown':
-						event.preventDefault();
-						if (activeChild < suggestions.length - 1) {
-							setActiveChild(activeChild + 1);
-						}
-						break;
+				case 'ArrowDown':
+					event.preventDefault(), event.stopPropagation();
+					if (itemState.activeItem < suggestions.length - 1) {
+						setItemState((prevState) => ({
+							hoveredItem: prevState.activeItem + 1,
+							activeItem: prevState.activeItem + 1
+						}));
+					}
+					break;
 
-					case 'ArrowUp':
-						event.preventDefault();
-						setActiveChild(activeChild - 1);
-						if (activeChild === 0) {
-							inputRef?.current?.focus();
-						}
-						break;
-				}
+				case 'ArrowUp':
+					event.preventDefault(), event.stopPropagation();
+					setItemState((prevState) => ({
+						hoveredItem: prevState.activeItem - 1,
+						activeItem: prevState.activeItem - 1
+					}));
+					if (itemState.activeItem === 0) {
+						inputRef?.current?.focus();
+					}
+					break;
 			}
 		}
 
@@ -224,16 +266,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				},
 				...(isFn(userOnInput) ? { onInput: userOnInput } : {}),
 				...(isFn(userOnBlur) ? { onBlur: (event) => handleExternal(event, userOnBlur!) } : {}),
-				...(isFn(userOnFocus) ? { onFocus: (event) => handleExternal(event, userOnFocus!) } : {}),
+				...(isFn(userOnFocus) ? { onFocus: (event) => handleExternal(event, userOnFocus!) } : {})
 			};
-		}
-
-		function dispatchSelect(
-			value: OnSelectData['value'],
-			keyboard: OnSelectData['keyboard'],
-			position: OnSelectData['position']
-		) {
-			onSelect({ value, keyboard, position });
 		}
 
 		/* Props */
@@ -257,9 +291,9 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}
 
 		function getClasses(elementName: Elements) {
-			if (classNames && typeof classNames[elementName] === 'string') {
+			if (classNames?.[elementName]) {
 				return {
-					className: classNames[elementName],
+					className: classNames[elementName]
 				};
 			}
 			return {};
@@ -274,7 +308,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			readOnly,
 			required,
 			disabled,
-			pattern,
+			pattern
 		};
 
 		return (
@@ -284,11 +318,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					onChange={(event) => handleEmailChange(event)}
 					aria-expanded={isOpen}
 					value={email}
-					type="email"
-					autoComplete="off"
+					type="text"
 					role="combobox"
-					aria-invalid={isInvalid}
+					autoComplete="off"
 					aria-autocomplete="list"
+					aria-invalid={isInvalid}
 					{...getAriaControls()}
 					{...getClasses(Elements.Input)}
 					{...getEvents()}
@@ -296,23 +330,28 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				/>
 				{isOpen && (
 					<ul
+						role="listbox"
+						aria-label="List"
 						ref={dropdownRef}
 						id={listId}
-						role="listbox"
-						aria-label="Suggestions"
 						{...getClasses(Elements.Dropdown)}
 					>
 						{suggestions.map((domain, index) => (
 							<li
+								role="option"
 								ref={(li) => (liRefs.current[index] = li)}
+								onPointerMove={() => setItemState({ activeItem: -1, hoveredItem: index })}
+								onMouseMove={() => setItemState({ activeItem: -1, hoveredItem: index })}
+								onPointerLeave={handleLeave}
+								onMouseLeave={handleLeave}
 								onClick={(event) => handleSelect(event, index, false)}
 								onKeyDown={handleListKeyDown}
 								key={domain}
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
-								aria-selected={index === activeChild}
-								tabIndex={index === activeChild ? 0 : -1}
-								role="option"
+								aria-selected={index === itemState.activeItem}
+								data-active={index === itemState.hoveredItem}
+								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
 							>
 								<span {...getClasses(Elements.Username)}>{username}</span>

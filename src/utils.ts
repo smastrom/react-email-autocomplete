@@ -3,6 +3,8 @@ import { useLayoutEffect, useEffect } from 'react';
 export const useIsomorphicLayoutEffect =
 	typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
+export const alphanumericKeys = /^[a-z0-9]$/i;
+
 export function cleanValue(value: string) {
 	return value.replace(/\s+/g, '').toLowerCase();
 }
