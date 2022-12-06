@@ -66,19 +66,46 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
-		const [itemState, _setItemState] = useState<{ focusedItem: number; hoveredItem: number }>({
-			focusedItem: -1,
-			hoveredItem: -1
+
+		/**
+		 * 'focusedIndex' is used to trigger suggestions focus and set
+		 * 'aria-selected' to 'true', it can only be set by keyboard events.
+		 * 'hoveredIndex' is used to keep track of both focused/hovered
+		 * suggestion in order to set 'data-email-active="true"'.
+		 *
+		 * When focusedIndex is set, hoveredIndex is set to the same value.
+		 * When hoveredIndex is set by pointer events, focusedIndex is set to -1.
+		 *
+		 * Keyboard handlers are able to set the new focus by 'resuming' from
+		 * any eventual 'hoveredIndex' triggered by pointer events and viceversa.
+		 */
+		const [itemState, _setItemState] = useState({
+			focusedIndex: -1,
+			hoveredIndex: -1
 		});
 
-		function setItemState(focusedItem = -1, hoveredItem = -1) {
-			_setItemState({ focusedItem, hoveredItem });
+		function setItemState(focusedIndex = -1, hoveredIndex = -1) {
+			_setItemState({ focusedIndex, hoveredIndex });
+		}
+
+		function setFromHover(isDecrement = false) {
+			const factor = isDecrement ? -1 : 1;
+			_setItemState((prevState) => ({
+				hoveredIndex: prevState.hoveredIndex + factor,
+				focusedIndex: prevState.hoveredIndex + factor
+			}));
 		}
 
 		/*  Reactive helpers */
 
 		const email = typeof _email !== 'string' ? '' : cleanValue(_email);
 		const [username] = email.split('@');
+
+		/**
+		 * 'isOpen' conditionally renders the dropdown, we let the
+		 * results length decide if it should be mounted or not, avoiding
+		 * unnecessary states and effects.
+		 */
 		const isOpen = isTouched.current && suggestions.length > 0 && username.length >= minChars;
 
 		/* Callbacks */
@@ -97,10 +124,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}, []);
 
 		useEffect(() => {
-			if (itemState.focusedItem >= 0) {
-				liRefs?.current[itemState.focusedItem]?.focus();
+			if (itemState.focusedIndex >= 0) {
+				liRefs?.current[itemState.focusedIndex]?.focus();
 			}
-		}, [itemState.focusedItem]);
+		}, [itemState.focusedIndex]);
 
 		useEffect(() => {
 			function handleOutsideClick(event: MouseEvent) {
@@ -133,13 +160,13 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
 			/**
-			 * On first mount/change, suggestions are set to baseList,
-			 * as soon as the username is longer than minChars,
-			 * the dropdown is mounted as such domains should be
-			 * displayed without any further condition by both modes.
+			 * On first mount/change, suggestions state is init with baseList.
+			 * As soon as the username is longer than minChars, the dropdown
+			 * is immediately mounted as such domains should be displayed
+			 * without any further condition by both modes.
 			 *
 			 * We also want the dropdown to be mounted exclusively
-			 * when the user types so we set this ref to true.
+			 * when users type so we set this ref to true.
 			 */
 			isTouched.current = true;
 
@@ -156,11 +183,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 							.slice(0, maxResults);
 						if (_suggestions.length > 0) {
 							/**
-							 * We also want to close the dropdown if the user enters exactly
-							 * the same domain of the first suggestion.
+							 * We also want to close the dropdown if users type exactly
+							 * the same domain of the first/only suggestion.
 							 *
-							 * This will also unmount the dropdown after selecting a suggestion
-							 * or if pasting the email.
+							 * This will also unmount the dropdown after selecting a suggestion.
 							 */
 							_suggestions[0] === _domain ? clearResults() : setSuggestions(_suggestions);
 						} else {
@@ -199,6 +225,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		/* Keyboard events */
 
+		console.log(itemState);
+
 		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
 			if (isOpen) {
 				switch (event.code) {
@@ -207,9 +235,26 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 						event.stopPropagation();
 						return clearResults();
 
+					/**
+					 * The conditions inside the following clauses
+					 * allow the user to 'resume' and set the new focus
+					 * from an eventual hovered item.
+					 */
+					case 'ArrowUp':
+						event.preventDefault(), event.stopPropagation();
+						if (itemState.hoveredIndex >= 0) {
+							setFromHover(true);
+						}
+						break;
+
 					case 'ArrowDown':
 						event.preventDefault(), event.stopPropagation();
-						return setItemState(0, 0);
+						if (itemState.hoveredIndex >= 0) {
+							setFromHover();
+						} else {
+							setItemState(0, 0);
+						}
+						break;
 				}
 			}
 		}
@@ -232,7 +277,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'Enter':
 				case 'Space':
 					event.preventDefault(), event.stopPropagation();
-					return handleSelect(event, itemState.focusedItem, true);
+					return handleSelect(event, itemState.focusedIndex, true);
 
 				case 'Backspace':
 				case 'ArrowLeft':
@@ -240,24 +285,29 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					event.stopPropagation();
 					return inputRef?.current?.focus();
 
-				case 'ArrowDown':
+				/**
+				 * Same for the input handler, the conditions inside the
+				 * clauses allow users to set the new focus from
+				 * an eventual hovered item.
+				 *
+				 * Since we know that hoveredIndex is always set along with
+				 * focusedIndex, we are sure that the condition executes
+				 * also when no item was hovered (pure arrow navigation).
+				 */
+				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
-					if (itemState.focusedItem < suggestions.length - 1) {
-						_setItemState((prevState) => ({
-							hoveredItem: prevState.focusedItem + 1,
-							focusedItem: prevState.focusedItem + 1
-						}));
+					if (itemState.hoveredIndex >= 0) {
+						setFromHover(true);
+						if (itemState.hoveredIndex === 0) {
+							inputRef?.current?.focus();
+						}
 					}
 					break;
 
-				case 'ArrowUp':
+				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
-					_setItemState((prevState) => ({
-						hoveredItem: prevState.focusedItem - 1,
-						focusedItem: prevState.focusedItem - 1
-					}));
-					if (itemState.focusedItem === 0) {
-						inputRef?.current?.focus();
+					if (itemState.hoveredIndex < suggestions.length - 1) {
+						setFromHover();
 					}
 					break;
 			}
@@ -265,6 +315,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		/* User Events */
 
+		/**
+		 * User's focus/blur should be triggered only when the related
+		 * target is not a suggestion, this will ensure proper behavior
+		 * with user input validation or any conditionally rendered message.
+		 */
 		function handleExternal(
 			event: React.FocusEvent<HTMLInputElement>,
 			eventHandler: React.FocusEventHandler<HTMLInputElement>
@@ -357,8 +412,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 							<li
 								role="option"
 								ref={(li) => (liRefs.current[index] = li)}
-								onPointerMove={() => setItemState(undefined, index)}
-								onMouseMove={() => setItemState(undefined, index)}
+								onPointerMove={() => setItemState(-1, index)}
+								onMouseMove={() => setItemState(-1, index)}
 								onPointerLeave={() => setItemState()}
 								onMouseLeave={() => setItemState()}
 								onClick={(event) => handleSelect(event, index, false)}
@@ -366,8 +421,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 								key={domain}
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
-								aria-selected={index === itemState.focusedItem}
-								data-email-active={index === itemState.hoveredItem}
+								aria-selected={index === itemState.focusedIndex}
+								data-email-active={index === itemState.hoveredIndex}
 								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
 							>
