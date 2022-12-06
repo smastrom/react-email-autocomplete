@@ -228,34 +228,36 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		console.log(itemState);
 
 		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-			if (isOpen) {
-				switch (event.code) {
-					case 'Tab':
-					case 'Escape':
-						event.stopPropagation();
-						return clearResults();
+			switch (event.code) {
+				case 'Tab':
+				case 'Escape':
+					event.stopPropagation();
+					return clearResults();
 
-					/**
-					 * The conditions inside the following clauses
-					 * allow the user to 'resume' and set the new focus
-					 * from an eventual hovered item.
-					 */
-					case 'ArrowUp':
-						event.preventDefault(), event.stopPropagation();
-						if (itemState.hoveredIndex >= 0) {
-							setFromHover(true);
-						}
-						break;
+				/**
+				 * The conditions inside the following clauses
+				 * allow the user to 'resume' and set the new focus
+				 * from an eventual hovered item.
+				 *
+				 * They are triggered only the first time the user
+				 * uses the arrows if no suggestion has been previously
+				 * focused.
+				 */
+				case 'ArrowUp':
+					event.preventDefault(), event.stopPropagation();
+					if (itemState.hoveredIndex >= 0) {
+						setFromHover(true);
+					}
+					break;
 
-					case 'ArrowDown':
-						event.preventDefault(), event.stopPropagation();
-						if (itemState.hoveredIndex >= 0) {
-							setFromHover();
-						} else {
-							setItemState(0, 0);
-						}
-						break;
-				}
+				case 'ArrowDown':
+					event.preventDefault(), event.stopPropagation();
+					if (itemState.hoveredIndex >= 0) {
+						setFromHover();
+					} else {
+						setItemState(0, 0);
+					}
+					break;
 			}
 		}
 
@@ -351,13 +353,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			}
 		}
 
-		function getAriaControls() {
-			if (isOpen) {
-				return { 'aria-controls': listId };
-			}
-			return {};
-		}
-
 		function getWrapperClass() {
 			return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() || undefined };
 		}
@@ -395,7 +390,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					autoComplete="off"
 					aria-autocomplete="list"
 					aria-invalid={isInvalid}
-					{...getAriaControls()}
+					{...(isOpen ? { 'aria-controls': listId } : {})}
 					{...getClasses(Elements.Input)}
 					{...getEvents()}
 					{...userAttrs}

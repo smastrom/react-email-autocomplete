@@ -27,11 +27,11 @@ export function isFn(fn: unknown) {
 export function getEmailData(value: string, minChars: number) {
 	const [username] = value.split('@');
 	const breakpoint = value.indexOf('@');
-	const domain = breakpoint >= 0 ? value.slice(breakpoint + 1) : '';
+	const domain = breakpoint >= 0 ? value.slice(breakpoint + 1) : ''; // Domain is truthy only if typed @
 
 	const hasUsername = username.length >= minChars;
 	const hasAt = hasUsername && value.includes('@');
-	const hasDomain = hasUsername && domain.length >= 1; // Domain is truthy only if typed @
+	const hasDomain = hasUsername && domain.length >= 1;
 
 	return { username, domain, hasUsername, hasAt, hasDomain };
 }

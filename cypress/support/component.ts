@@ -7,3 +7,7 @@ export function getRandomInt(min: number, max: number) {
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min) + min);
 }
+
+export function getRandomIndex(length: number) {
+	return Math.floor(Math.random() * length);
+}

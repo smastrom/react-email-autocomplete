@@ -1,5 +1,5 @@
 import { Email } from './Email';
-import { getRandomInt } from '../cypress/support/component';
+import { getRandomIndex, getRandomInt } from '../cypress/support/component';
 import domains from '../src/domains.json';
 
 it('Should pass ARIA axe tests', () => {
@@ -81,7 +81,7 @@ it('Should hide suggestions if clearing', () => {
 	});
 });
 
-it('Should hide/show suggestions if exact match', () => {
+it('Should hide suggestions if exact match', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
 	cy.get('.WC').within(() => {
@@ -89,7 +89,7 @@ it('Should hide/show suggestions if exact match', () => {
 		cy.get('li').should('exist');
 		cy.get('input').clear().type('myusername@gmail.com');
 		cy.get('ul').should('not.exist');
-		cy.backSpace(1);
+		cy.get('input').type('{backspace}');
 		cy.get('ul').should('exist');
 	});
 });
@@ -122,7 +122,32 @@ it('Should hide suggestions if pressing escape key', () => {
 	cy.get('.dropdownClass').should('not.exist');
 });
 
-it("Should update suggestions' username on username change", () => {
+it('Should hide refineList suggestions if multiple @ in domain', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@gm@');
+		cy.get('ul').should('not.exist');
+	});
+});
+
+it('Should hide refineList suggestions if deleting username', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	const username = 'username';
+	const domain = '@gmail';
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type(`${username}${domain}`);
+		cy.get('ul').should('exist');
+		cy.get('input')
+			.type('{leftArrow}'.repeat(domain.length))
+			.type('{backspace}'.repeat(username.length));
+		cy.get('ul').should('not.exist');
+	});
+});
+
+it('Should update suggestions username on username change', () => {
 	const initialUsername = 'myusername';
 
 	it('Username', () => {
@@ -151,14 +176,11 @@ it('Should update input value on suggestion click', () => {
 	for (let i = 0; i < 10; i++) {
 		cy.get('.WC').within(() => {
 			cy.get('input').type('myusername@g');
-			cy.get('li')
-				.then((list) => {
-					return list[Math.floor(Math.random() * list.length)];
-				})
-				.then((randomLi) => {
-					randomLi.trigger('click');
-					cy.get('input').should('have.value', randomLi.text()).clear();
-				});
+			cy.get('li').then((list) => {
+				const randomIndex = getRandomIndex(list.length);
+				list.eq(randomIndex).trigger('click');
+				cy.get('input').should('have.value', list[randomIndex].textContent).clear();
+			});
 		});
 	}
 });
@@ -170,14 +192,14 @@ it('Should update input value on suggestion keydown', () => {
 		cy.get('.WC').within(() => {
 			cy.get('input').type('myusername@g');
 			cy.get('li').then((list) => {
-				const randomLiIndex = Math.floor(Math.random() * list.length);
-				cy.downArrow(randomLiIndex + 1);
+				const randomIndex = getRandomIndex(list.length);
+				cy.downArrow(randomIndex + 1);
 				cy.get('li')
-					.eq(randomLiIndex)
+					.eq(randomIndex)
 					.should('have.focus')
 					.and('have.attr', 'aria-selected', 'true')
 					.type('{enter}');
-				cy.get('input').should('have.value', list[randomLiIndex].innerText).clear();
+				cy.get('input').should('have.value', list[randomIndex].textContent).clear();
 			});
 		});
 	}
@@ -186,17 +208,60 @@ it('Should update input value on suggestion keydown', () => {
 it('Should keyboard-navigate trough suggestions and input', () => {
 	cy.mount(<Email refineList={domains} className="WC" />);
 
-	const initialValue = 'myusername@g';
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').then((list) => {
+			const randomIndex = getRandomIndex(list.length);
+			cy.downArrow(randomIndex + 1);
+			cy.get('li').eq(randomIndex).should('have.focus').and('have.attr', 'aria-selected', 'true');
+			cy.upArrow(randomIndex + 1);
+			cy.get('input').should('have.focus');
+		});
+	});
+});
+
+it('Should be able to set FIRST focused suggestion by resuming from hovered one', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
 
 	cy.get('.WC').within(() => {
-		cy.get('input').type(initialValue);
+		cy.get('input').type('myusername@g');
 		cy.get('li').then((list) => {
-			const randomLiIndex = Math.floor(Math.random() * list.length);
+			let randomIndex = getRandomIndex(list.length);
+			// Force to not get the first suggestion index
+			if (randomIndex === 0) {
+				randomIndex = 1;
+			}
+			cy.get('li').eq(randomIndex).realMouseMove(10, 10);
+			cy.get('input').type('{upArrow}');
+			cy.get('li')
+				.eq(randomIndex - 1)
+				.should('have.focus')
+				.and('have.attr', 'aria-selected', 'true');
+		});
+	});
+});
 
-			cy.downArrow(randomLiIndex + 1);
-			cy.get('li').eq(randomLiIndex).should('have.focus').and('have.attr', 'aria-selected', 'true');
-			cy.upArrow(randomLiIndex + 1);
-			cy.get('input').should('have.focus');
+it('Should be able to UPDATE focused suggestion by resuming from hovered one', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g').type('{downArrow}'.repeat(1)); // Focus 1st suggestion
+		cy.get('li').eq(0).should('have.focus').and('have.attr', 'aria-selected', 'true');
+		cy.get('li').eq(3).realMouseMove(10, 10); // Hover 4th suggestion
+		cy.upArrow(1);
+		cy.get('li').eq(2).should('have.focus').and('have.attr', 'aria-selected', 'true');
+	});
+});
+
+it('Should focus and update input value if pressing alphanumeric chars from a suggestion', () => {
+	cy.mount(<Email refineList={domains} className="WC" />);
+
+	cy.get('.WC').within(() => {
+		cy.get('input').type('myusername@g');
+		cy.get('li').then((list) => {
+			cy.get('input').type('{downArrow}'.repeat(getRandomIndex(list.length)));
+			cy.realType('mail');
+			cy.get('input').should('have.focus').and('have.value', 'myusername@gmail');
 		});
 	});
 });
@@ -211,7 +276,7 @@ it('Should focus and update input value if pressing backspace on a suggestion', 
 		cy.get('input').type(initialValue);
 		cy.get('li').then((list) => {
 			cy.downArrow(list.length);
-			cy.backSpace(charsToDel);
+			cy.realType('{backspace}'.repeat(charsToDel));
 			cy.get('input').should('have.focus').and('have.value', initialValue.slice(0, -charsToDel));
 		});
 	});
@@ -248,17 +313,14 @@ it('Should trigger user onBlur/onFocus only if related target is not a suggestio
 
 	cy.get('.WC').within(() => {
 		cy.get('input').focus().type('myusername@g');
-		cy.get('li')
-			.then((list) => {
-				return Math.floor(Math.random() * list.length);
-			})
-			.then((randomLiIndex) => {
-				for (let i = 0; i < 10; i++) {
-					cy.downArrow(randomLiIndex + 1);
-					cy.upArrow(randomLiIndex + 1);
-				}
-				cy.get('input').should('have.focus').blur();
-			});
+		cy.get('li').then((list) => {
+			const randomIndex = getRandomIndex(list.length);
+			for (let i = 0; i < 10; i++) {
+				cy.downArrow(randomIndex + 1);
+				cy.upArrow(randomIndex + 1);
+			}
+			cy.get('input').should('have.focus').blur();
+		});
 	});
 
 	cy.get('#CyFocusData')
