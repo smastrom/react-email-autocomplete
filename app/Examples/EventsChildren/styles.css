@@ -7,9 +7,9 @@
 	--invalidBackgroundColor: #ffeded;
 	--textColor: #475569;
 	color: var(--textColor);
-	min-width: 300px;
+	width: 300px;
+	max-width: 100%;
 	position: relative;
-	width: 100%;
 }
 
 .eventsInput {
@@ -25,30 +25,17 @@
 }
 
 .eventsInput:hover,
-.eventsInput:focus {
+.eventsInput:focus,
+.eventsInput[aria-expanded='true'] {
 	outline: none;
 	color: var(--textColor);
 	background-color: var(--backgroundColor);
 	border: 2px solid var(--accentColor);
 }
 
-.eventsInput::placeholder {
-	color: #999;
-}
-
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-
 .eventsDropdown {
 	width: 100%;
 	position: absolute;
-	list-style-type: none;
 	z-index: 999;
 	animation: fadeIn 200ms ease-in-out;
 	margin-top: 5px;
@@ -64,6 +51,7 @@
 	padding: 0.4em 0.6em;
 	border-radius: 6px;
 	background-color: transparent;
+	-webkit-tap-highlight-color: var(--transparentColor);
 	transition: color 100ms ease-in-out, background-color 100ms ease-in-out;
 }
 
@@ -83,6 +71,17 @@
 	font-weight: 600;
 }
 
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* Validity */
+
 .validInput {
 	border: 2px solid var(--validAccentColor);
 	color: var(--validAccentColor);
@@ -101,4 +100,8 @@
 	position: absolute;
 	right: 1em;
 	height: 100%;
+}
+
+.eventsInput:hover ~ svg {
+	display: none;
 }

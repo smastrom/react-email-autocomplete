@@ -33,6 +33,7 @@
 		"dev": "vite",
 		"preview": "vite preview",
 		"test": "yarn cypress run --component",
+		"test:unit": "vitest",
 		"test:gui": "yarn cypress open --component",
 		"prepare": "husky install"
 	},

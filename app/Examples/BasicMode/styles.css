@@ -4,14 +4,15 @@
 	--selectionColor: #f7f8ff;
 	--shadowColor: rgba(99, 99, 99, 0.2);
 	color: var(--textColor);
-	min-width: 300px;
+	width: 300px;
 	position: relative;
-	width: 100%;
+	max-width: 100%;
 }
 
 .basicInput {
 	width: 100%;
 	border: none;
+	border-radius: 0;
 	font-weight: 600;
 	padding: 0.4em 0.6em;
 	border-bottom: 2px solid #dedede;
@@ -43,7 +44,8 @@
 }
 
 .basicSuggestion {
-	padding: 5px 10px;
+	-webkit-tap-highlight-color: var(--transparentColor);
+	padding: 0.3em 0.6em;
 	cursor: pointer;
 }
 
@@ -56,5 +58,7 @@
 }
 
 .basicDomain {
+	font-weight: 600;
+	margin-left: 0.1em;
 	color: var(--accentColor);
 }

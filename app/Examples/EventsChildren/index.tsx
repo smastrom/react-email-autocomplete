@@ -1,13 +1,14 @@
 import { SVGAttributes, useLayoutEffect, useRef, useState } from 'react';
 import { Email, domains } from '../../../src';
 import { OnSelectData } from '../../../src/types';
+import { Section } from '../../Section';
 
 import './styles.css';
 
 enum Valididty {
 	IDLE,
 	VALID,
-	INVALID,
+	INVALID
 }
 
 function testEmail(value: string) {
@@ -18,7 +19,7 @@ const classes = {
 	wrapper: 'eventsWrapper',
 	dropdown: 'eventsDropdown',
 	suggestion: 'eventsSuggestion',
-	domain: 'eventsDomain',
+	domain: 'eventsDomain'
 };
 
 const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
@@ -64,14 +65,14 @@ export function EventsChildren() {
 	}
 
 	return (
-		<>
+		<Section name="With Events / Children" className="eventsSection">
 			<label htmlFor="eventsChildren">Email</label>
 			<Email
 				id="eventsChildren"
 				placeholder="Enter your email"
 				classNames={{
 					...classes,
-					input: `eventsInput ${getValidityClasses()}`,
+					input: `eventsInput ${getValidityClasses()}`
 				}}
 				ref={inputRef}
 				onBlur={handleBlur}
@@ -86,7 +87,7 @@ export function EventsChildren() {
 				{isValid && <ValidIcon />}
 				{isInvalid && <InvalidIcon />}
 			</Email>
-		</>
+		</Section>
 	);
 }
 
@@ -117,7 +118,7 @@ const invalidIconAttrs: SVGAttributes<SVGPathElement> = {
 	stroke: '#ff7272',
 	strokeLinecap: 'round',
 	strokeLinejoin: 'round',
-	strokeWidth: '3',
+	strokeWidth: '3'
 };
 
 const InvalidIcon = () => (

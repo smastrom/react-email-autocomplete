@@ -16,7 +16,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			/* Core - Required */
 			onChange: setEmail,
 			value: _email,
-			baseList,
+			baseList: _baseList,
 			/* Core - Optional */
 			refineList = [],
 			maxResults: _maxResults = 6,
@@ -50,6 +50,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		const isRefineMode = refineList?.length > 0;
 		const maxResults = getHonestValue(_maxResults, 8, 6);
 		const minChars = getHonestValue(_minChars, 8, 2);
+		const baseList = _baseList.slice(0, maxResults);
 
 		/* Refs */
 
@@ -224,8 +225,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}
 
 		/* Keyboard events */
-
-		console.log(itemState);
 
 		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
 			switch (event.code) {

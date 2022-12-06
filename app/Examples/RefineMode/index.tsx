@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Email } from '../../../src';
+import { Email, domains } from '../../../src';
+import { Section } from '../../Section';
 
 import './styles.css';
 
 const classes = {
-	wrapper: 'basicWrapper',
-	dropdown: 'basicDropdown',
-	input: 'basicInput',
-	suggestion: 'basicSuggestion',
-	domain: 'basicDomain'
+	wrapper: 'refineWrapper',
+	dropdown: 'refineDropdown',
+	input: 'refineInput',
+	suggestion: 'refineSuggestion',
+	domain: 'refineDomain'
 };
 
 const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
@@ -17,16 +18,19 @@ export function RefineMode() {
 	const [email, setEmail] = useState('');
 
 	return (
-		<>
-			<label htmlFor="basicChildren">Email</label>
+		<Section name="Refine Mode" className="refineSection">
+			<label htmlFor="refineMode">Email</label>
+
 			<Email
-				id="basicChildren"
+				id="refineMode"
 				placeholder="Enter your email"
 				classNames={classes}
+				maxResults={4}
 				baseList={baseList}
+				refineList={domains}
 				value={email}
 				onChange={setEmail}
-			></Email>
-		</>
+			/>
+		</Section>
 	);
 }

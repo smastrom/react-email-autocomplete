@@ -43,26 +43,8 @@ textarea {
 	padding: 0; /* 3 */
 }
 
-button,
-select {
-	text-transform: none;
-}
-
-button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
-	-webkit-appearance: button; /* 1 */
-	background-color: transparent; /* 2 */
-	background-image: none; /* 2 */
-}
-
-:-moz-focusring {
-	outline: auto;
-}
-
-:-moz-ui-invalid {
-	box-shadow: none;
+input::placeholder {
+	color: #999;
 }
 
 blockquote,
@@ -87,12 +69,6 @@ menu {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-}
-
-input::placeholder,
-textarea::placeholder {
-	opacity: 1; /* 1 */
-	color: #9ca3af; /* 2 */
 }
 
 button,
