@@ -5,7 +5,8 @@ import {
 	getHonestValue,
 	isFn,
 	useIsomorphicLayoutEffect,
-	alphanumericKeys
+	alphanumericKeys,
+	getEmailData
 } from './utils';
 import { Events, OnSelectData, Elements, Maybe, Email as Export, EmailProps } from './types';
 
@@ -46,7 +47,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 	) => {
 		/* User settings */
 
-		const isRefine = refineList?.length > 0;
+		const isRefineMode = refineList?.length > 0;
 		const maxResults = getHonestValue(_maxResults, 8, 6);
 		const minChars = getHonestValue(_minChars, 8, 2);
 
@@ -78,7 +79,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		const email = typeof _email !== 'string' ? '' : cleanValue(_email);
 		const [username] = email.split('@');
-		const isOpen = isTouched.current && suggestions.length > 0 && email.length >= minChars;
+		const isOpen = isTouched.current && suggestions.length > 0 && username.length >= minChars;
 
 		/* Callbacks */
 
@@ -131,27 +132,43 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* Value handlers */
 
 		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
+			/**
+			 * On first mount/change, suggestions are set to baseList,
+			 * as soon as the username is longer than minChars,
+			 * the dropdown is mounted as such domains should be
+			 * displayed without any further condition by both modes.
+			 *
+			 * We also want the dropdown to be mounted exclusively
+			 * when the user types so we set this ref to true.
+			 */
 			isTouched.current = true;
 
 			const cleanEmail = cleanValue(event.target.value);
-			const [_username, _domain] = cleanEmail.split('@');
-			const hasAt = _username.length >= minChars && cleanEmail.indexOf('@') >= 0;
-			const hasDomain = hasAt && _domain.length >= 1;
+			const { hasUsername, hasAt, hasDomain, _domain } = getEmailData(cleanEmail, minChars);
 
-			if (!isRefine) {
-				hasAt ? clearResults() : setSuggestions(baseList);
-			} else {
-				if (hasDomain) {
-					const _suggestions = refineList
-						.filter((_suggestion) => _suggestion.startsWith(_domain))
-						.slice(0, maxResults);
-					if (_suggestions.length > 0) {
-						_suggestions[0] === _domain ? clearResults() : setSuggestions(_suggestions);
-					} else {
-						clearResults();
-					}
+			if (hasUsername) {
+				if (!isRefineMode) {
+					hasAt ? clearResults() : setSuggestions(baseList);
 				} else {
-					setSuggestions(baseList);
+					if (hasDomain) {
+						const _suggestions = refineList
+							.filter((_suggestion) => _suggestion.startsWith(_domain))
+							.slice(0, maxResults);
+						if (_suggestions.length > 0) {
+							/**
+							 * We also want to close the dropdown if the user enters exactly
+							 * the same domain of the first suggestion.
+							 *
+							 * This will also unmount the dropdown after selecting a suggestion
+							 * or if pasting the email.
+							 */
+							_suggestions[0] === _domain ? clearResults() : setSuggestions(_suggestions);
+						} else {
+							clearResults();
+						}
+					} else {
+						setSuggestions(baseList);
+					}
 				}
 			}
 

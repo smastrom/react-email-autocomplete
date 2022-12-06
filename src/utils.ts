@@ -23,3 +23,15 @@ export function getHonestValue(value: unknown, maxValue: number, defaultValue: n
 export function isFn(fn: unknown) {
 	return typeof fn === 'function';
 }
+
+export function getEmailData(value: string, minChars: number) {
+	const [_username] = value.split('@');
+	const breakpoint = value.indexOf('@');
+	const _domain = breakpoint >= 0 ? value.slice(breakpoint + 1) : '';
+
+	const hasUsername = _username.length >= minChars;
+	const hasAt = hasUsername && value.includes('@');
+	const hasDomain = hasUsername && _domain.length >= 1; // Domain is truthy only if typed @
+
+	return { _username, _domain, hasUsername, hasAt, hasDomain };
+}
