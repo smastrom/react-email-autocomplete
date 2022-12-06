@@ -171,7 +171,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			isTouched.current = true;
 
 			const cleanEmail = cleanValue(event.target.value);
-			const { hasUsername, hasAt, hasDomain, _domain } = getEmailData(cleanEmail, minChars);
+			const { hasUsername, hasAt, hasDomain, domain: _domain } = getEmailData(cleanEmail, minChars);
 
 			if (hasUsername) {
 				if (!isRefineMode) {

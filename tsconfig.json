@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "ES6",
+		"target": "es2020",
 		"useDefineForClassFields": true,
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"allowJs": false,
@@ -8,12 +8,13 @@
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
-		"module": "ES6",
+		"module": "es2020",
 		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"types": ["vitest/importMeta"]
 	},
 	"include": ["app", "src", "cypress", "tests", "cypress/support/cypress.d.ts", "cypress-axe"]
 }

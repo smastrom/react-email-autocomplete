@@ -25,13 +25,55 @@ export function isFn(fn: unknown) {
 }
 
 export function getEmailData(value: string, minChars: number) {
-	const [_username] = value.split('@');
+	const [username] = value.split('@');
 	const breakpoint = value.indexOf('@');
-	const _domain = breakpoint >= 0 ? value.slice(breakpoint + 1) : '';
+	const domain = breakpoint >= 0 ? value.slice(breakpoint + 1) : '';
 
-	const hasUsername = _username.length >= minChars;
+	const hasUsername = username.length >= minChars;
 	const hasAt = hasUsername && value.includes('@');
-	const hasDomain = hasUsername && _domain.length >= 1; // Domain is truthy only if typed @
+	const hasDomain = hasUsername && domain.length >= 1; // Domain is truthy only if typed @
 
-	return { _username, _domain, hasUsername, hasAt, hasDomain };
+	return { username, domain, hasUsername, hasAt, hasDomain };
+}
+
+if (import.meta.vitest) {
+	const { it, expect, describe } = import.meta.vitest;
+
+	describe('Domain', () => {
+		it('Should return domain', () => {
+			const { domain } = getEmailData('username@gmail.com', 2);
+			expect(domain).toBe('gmail.com');
+
+			const { domain: domain2 } = getEmailData('username@g', 2);
+			expect(domain2).toBe('g');
+		});
+
+		it('Should return domain even if more @', () => {
+			const { domain } = getEmailData('username@ciao@', 2);
+			expect(domain).toBe('ciao@');
+		});
+
+		it('Should return empty string if no domain', () => {
+			const { domain } = getEmailData('username@', 2);
+			expect(domain).toBe('');
+
+			const { domain: domain2 } = getEmailData('username', 2);
+			expect(domain2).toBe('');
+		});
+	});
+
+	describe('hasDomain', () => {
+		it('Should return true', () => {
+			const { hasDomain } = getEmailData('username@gmail.com', 2);
+			expect(hasDomain).toBe(true);
+		});
+
+		it('Should return false', () => {
+			const { hasDomain } = getEmailData('username@', 2);
+			expect(hasDomain).toBe(false);
+
+			const { hasDomain: hasDomain2 } = getEmailData('username', 2);
+			expect(hasDomain2).toBe(false);
+		});
+	});
 }
