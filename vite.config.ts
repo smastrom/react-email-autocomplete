@@ -1,10 +1,8 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { terser } from 'rollup-plugin-terser';
 import Package from './package.json';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 export default defineConfig(({ command, mode }) => {
 	if (mode === 'app') {
 		return {

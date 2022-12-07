@@ -41,7 +41,7 @@
 		"build": "tsc && vite build && yarn declare",
 		"postbuild": "cpy src/types.d.ts dist --rename index.d.ts --flat && rimraf src/types.d.ts",
 		"build:app": "tsc && vite build --mode app",
-		"declare": "tsc src/types.ts --declaration --emitDeclarationOnly --jsx react-jsx",
+		"declare": "tsc src/types.ts --declaration --emitDeclarationOnly",
 		"dev": "vite",
 		"preview": "vite preview",
 		"test": "vitest",
