@@ -6,6 +6,18 @@
 	"bugs": {
 		"url": "https://github.com/smastrom/react-bella-email/issues"
 	},
+	"keywords": [
+		"react",
+		"react email",
+		"react autocomplete",
+		"react email autocomplete",
+		"react email component",
+		"email component",
+		"email autocomplete",
+		"email input",
+		"email suggestions",
+		"email autocomplete"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/smastrom/react-bella-email"
@@ -32,9 +44,9 @@
 		"declare": "tsc src/types.ts --declaration --emitDeclarationOnly --jsx react-jsx",
 		"dev": "vite",
 		"preview": "vite preview",
-		"test": "yarn cypress run --component",
-		"test:unit": "vitest",
-		"test:gui": "yarn cypress open --component",
+		"test": "vitest",
+		"test:ct": "yarn cypress run --component",
+		"test:ct:gui": "yarn cypress open --component",
 		"prepare": "husky install"
 	},
 	"lint-staged": {
