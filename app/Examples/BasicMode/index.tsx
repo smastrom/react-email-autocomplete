@@ -18,7 +18,7 @@ export function BasicMode() {
 	const [email, setEmail] = useState('');
 
 	return (
-		<Section name="Basic Mode" className="basicSection">
+		<Section name="Basic Mode" folderName="BasicMode" className="basicSection">
 			<label htmlFor="basicMode">Email</label>
 			<Email
 				id="basicMode"

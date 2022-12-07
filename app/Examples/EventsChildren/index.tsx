@@ -65,7 +65,7 @@ export function EventsChildren() {
 	}
 
 	return (
-		<Section name="With Events / Children" className="eventsSection">
+		<Section name="With Events / Children" folderName="EventsChildren" className="eventsSection">
 			<label htmlFor="eventsChildren">Email</label>
 			<Email
 				id="eventsChildren"

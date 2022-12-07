@@ -18,14 +18,13 @@ export function RefineMode() {
 	const [email, setEmail] = useState('');
 
 	return (
-		<Section name="Refine Mode" className="refineSection">
+		<Section name="Refine Mode" folderName="RefineMode" className="refineSection">
 			<label htmlFor="refineMode">Email</label>
 
 			<Email
 				id="refineMode"
 				placeholder="Enter your email"
 				classNames={classes}
-				// maxResults={4}
 				baseList={baseList}
 				refineList={domains}
 				value={email}

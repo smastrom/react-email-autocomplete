@@ -4,17 +4,18 @@ const path = 'https://github.com/smastrom/react-bella-email/tree/main/app/Exampl
 type Props = {
 	children: React.ReactNode;
 	name: string;
+	folderName: string;
 	className?: string;
 };
 
-export function Section({ children, name, className = '' }: Props) {
+export function Section({ children, name, folderName, className = '' }: Props) {
 	return (
 		<section className={`sectionWrapper ${className}`}>
 			<div className="sectionContainer">
 				<header>
 					<h1>{name}</h1>
 					<a
-						href={`${path}/${name.replaceAll(' ', '')}`}
+						href={`${path}/${folderName}`}
 						target="_blank"
 						aria-label="View Source"
 						className="codeLink"
