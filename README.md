@@ -9,7 +9,7 @@
 **React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **providing the best UX** with all the flexibility you'd expect from a native input:
 
 - Fully accessible with great keyboard controls
-- Completely unstyled and white labeled
+- Completely unstyled and white labeled (ships with zero CSS)
 - Forward most common event handlers and attributes
 - Controllable with React Hook Form
 
@@ -180,10 +180,10 @@ This package ships with **zero css**. Initial styles enough to see the component
 
 ### Focus/Hover styles
 
-Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-selected-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor is hovering it).
+Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-active-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor is hovering it).
 
 ```css
-.my-suggestion[data-selected-email='true'] {
+.my-suggestion[data-active-email='true'] {
   background-color: aliceblue;
 }
 
@@ -232,7 +232,7 @@ function App() {
 
 ### 2. Refine Mode
 
-Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, acts as an autocomplete refining suggestions according to an extended list of domains.
+Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it starts refining suggestions according to an extended list of domains.
 
 | Before typing `@`                                                                      | After typing `@`                                                                       |
 | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -285,7 +285,7 @@ export const lists = {
 };
 ```
 
-> :warning: Make sure to define the object list outside of your component, otherwise it will be recreated on every render causing an infinite loop.
+> :warning: Make sure to define the object outside of your component, otherwise it will be recreated on every render causing an infinite loop.
 
 <details><summary><strong>TypeScript</strong></summary>
 <br />
@@ -360,7 +360,7 @@ function App() {
 
 ## :8ball: onSelect callback
 
-If you need to invoke a callback, everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
+If you need to invoke a callback everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
 
 ```jsx
 import { Email, domains } from 'react-bella-email';
