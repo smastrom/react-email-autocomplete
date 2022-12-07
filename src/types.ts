@@ -6,7 +6,7 @@ import {
 	RefAttributes,
 	ForwardRefExoticComponent,
 	FormEventHandler,
-	ReactNode,
+	ReactNode
 } from 'react';
 
 export type Maybe<T> = T | null;
@@ -17,7 +17,7 @@ export enum Elements {
 	Dropdown = 'dropdown',
 	Suggestion = 'suggestion',
 	Username = 'username',
-	Domain = 'domain',
+	Domain = 'domain'
 }
 
 export type ClassNames = Partial<Record<Elements, string>>;
@@ -79,8 +79,18 @@ export type Attributes = Partial<
 
 export type EmailProps = Props & Events & Attributes;
 
-export declare const Email: ForwardRefExoticComponent<EmailProps & RefAttributes<HTMLInputElement>>;
-
 export type LocalizedList = {
 	default: string[];
 } & Record<string, string[]>;
+
+/** Controlled email input component.
+ * Read the documentation at: https://github.com/smastrom/react-bella-email. */
+export declare const Email: ForwardRefExoticComponent<EmailProps & RefAttributes<HTMLInputElement>>;
+
+/** List of ~160 world's most popular email providers.
+ * Meant to be used with `refineList` prop. */
+export declare const domains: string[];
+
+/** Hook to automatically inject localized lists according to user's browser locale.
+ * Read the documentation at: https://github.com/smastrom/react-bella-email. */
+export declare function useLocalizedList(lists: LocalizedList, appLocale?: string): string[];
