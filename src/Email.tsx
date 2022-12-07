@@ -72,7 +72,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		 * 'focusedIndex' is used to trigger suggestions focus and set
 		 * 'aria-selected' to 'true', it can only be set by keyboard events.
 		 * 'hoveredIndex' is used to keep track of both focused/hovered
-		 * suggestion in order to set 'data-selected-email="true"'.
+		 * suggestion in order to set 'data-active-email="true"'.
 		 *
 		 * When focusedIndex is set, hoveredIndex is set to the same value.
 		 * When hoveredIndex is set by pointer events, focusedIndex is set to -1.
@@ -412,7 +412,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
 								aria-selected={index === itemState.focusedIndex}
-								data-selected-email={index === itemState.hoveredIndex}
+								data-active-email={index === itemState.hoveredIndex}
 								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
 							>

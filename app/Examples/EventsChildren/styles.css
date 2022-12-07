@@ -61,7 +61,7 @@
 	outline: none;
 }
 
-.eventsSuggestion[data-selected-email='true'] {
+.eventsSuggestion[data-active-email='true'] {
 	outline: none;
 	background-color: white;
 	cursor: pointer;
