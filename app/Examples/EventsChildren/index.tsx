@@ -22,7 +22,7 @@ const classes = {
 	domain: 'eventsDomain'
 };
 
-const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'];
 
 export function EventsChildren() {
 	const inputRef = useRef<HTMLInputElement>(null);

@@ -3,6 +3,7 @@
 	--textColor: #475569;
 	--selectionColor: #f7f8ff;
 	--shadowColor: rgba(99, 99, 99, 0.2);
+	--transparentColor: rgba(0, 0, 0, 0);
 	color: var(--textColor);
 	width: 300px;
 	position: relative;
@@ -30,9 +31,6 @@
 	outline: none;
 }
 
-.basicInput::placeholder {
-}
-
 .basicDropdown {
 	width: 100%;
 	box-shadow: var(--shadowColor) 0px 2px 8px 0px;
@@ -53,7 +51,7 @@
 	outline: none;
 }
 
-.basicSuggestion[data-email-active='true'] {
+.basicSuggestion[data-selected-email='true'] {
 	background-color: var(--selectionColor);
 }
 

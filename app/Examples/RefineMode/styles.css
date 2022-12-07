@@ -67,13 +67,14 @@
 	border-radius: 0 0 8px 8px;
 }
 
-.refineSuggestion[data-email-active='true'] {
+.refineSuggestion[data-selected-email='true'] {
 	background-color: var(--accentColor);
 	color: white;
 	outline: none;
 }
 
 .refineUsername {
+	font-weight: 400;
 	padding-right: 0.1em;
 }
 

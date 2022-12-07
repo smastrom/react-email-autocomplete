@@ -12,7 +12,7 @@ const classes = {
 	domain: 'refineDomain'
 };
 
-const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'];
 
 export function RefineMode() {
 	const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ export function RefineMode() {
 				id="refineMode"
 				placeholder="Enter your email"
 				classNames={classes}
-				maxResults={4}
+				// maxResults={4}
 				baseList={baseList}
 				refineList={domains}
 				value={email}

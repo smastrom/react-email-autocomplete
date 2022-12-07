@@ -6,6 +6,7 @@
 	--invalidAccentColor: #ff7272;
 	--invalidBackgroundColor: #ffeded;
 	--textColor: #475569;
+	--transparentColor: rgba(0, 0, 0, 0);
 	color: var(--textColor);
 	width: 300px;
 	max-width: 100%;
@@ -17,7 +18,7 @@
 	background-color: var(--backgroundColor);
 	border: none;
 	font-weight: 600;
-	padding: 0.4em 0.6em;
+	padding: 0.4em 2em 0.4em 0.6em;
 	border-radius: 10px;
 	border: 2px solid transparent;
 	transition: border-color 100ms ease-in-out, background-color 100ms ease-in-out,
@@ -60,7 +61,7 @@
 	outline: none;
 }
 
-.eventsSuggestion[data-email-active='true'] {
+.eventsSuggestion[data-selected-email='true'] {
 	outline: none;
 	background-color: white;
 	cursor: pointer;

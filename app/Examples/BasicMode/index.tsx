@@ -12,7 +12,7 @@ const classes = {
 	domain: 'basicDomain'
 };
 
-const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'];
 
 export function BasicMode() {
 	const [email, setEmail] = useState('');

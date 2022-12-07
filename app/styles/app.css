@@ -1,16 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap');
 
 :root {
-	--padding: 30px;
 	--accentColor: #ec4899;
 	--textColor: #475569;
 	--headingsColor: #1f2937;
 }
 
 html {
-	font-family: sans-serif;
 	font-size: 100%;
-	font-weight: 400;
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -36,6 +33,10 @@ label {
 	font-weight: 600;
 	margin-bottom: 5px;
 	color: var(--textColor);
+}
+
+input::placeholder {
+	color: #999;
 }
 
 .header,
@@ -116,6 +117,7 @@ label {
 }
 
 .eventsSection {
+	/* 	background: url(https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png); */
 	border-top: 1px solid #dae3ec;
 	border-bottom: 1px solid #dae3ec;
 }
