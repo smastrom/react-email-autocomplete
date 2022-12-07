@@ -2,7 +2,7 @@
 
 ### The email input field that your users will love.
 
-[Demo and examples](https://react-bella-email.netlify.app) — [Stackblitz]()
+[Demo and examples](https://react-bella-email.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js)
 
 ![react-bella-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
 
@@ -13,7 +13,7 @@
 - Forward most common event handlers and attributes
 - Controllable with React Hook Form
 
-> :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly.
+> :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly (thanks to **@mailcheck**).
 
 <br />
 
@@ -108,7 +108,7 @@ const myClassNames: ClassNames = {
 
 </details>
 
-<details><summary><strong>Tailwind Intellisense for VSCode</strong></summary>
+<details><summary><strong>Tailwind Intellisense</strong></summary>
 <br />
 
 You can add a this property in VSCode's `settings.json` in order to enable autcomplete for any object property or variable ending with `ClassNames`.
@@ -180,7 +180,7 @@ This package ships with **zero css**. Initial styles enough to see the component
 
 ### Focus/Hover styles
 
-Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-active-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor is hovering it).
+Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-active-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor was hovering it).
 
 ```css
 .my-suggestion[data-active-email='true'] {
@@ -238,7 +238,7 @@ Acts like **Basic Mode** until users type `@` . Then as they start typing the do
 | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | ![react-bella-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-bella-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
 
-All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a curated [list]() of the ~160 most popular world domains (thanks to **@mailcheck**):
+All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a [curated list](https://github.com/smastrom/react-bella-email/blob/main/src/domains.json) of the ~160 most popular world domains that you can directly import and use (thanks to **@mailcheck**):
 
 ```jsx
 import { Email, domains } from 'react-bella-email';
@@ -273,7 +273,7 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Localization
 
-It is great to display different suggestions according to [browser's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
+It is great to display different suggestions according to [user's browser locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook to do exactly that.
 
 **1 - Create an object and define lists for each browser locale:**
 
