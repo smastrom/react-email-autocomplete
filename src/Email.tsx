@@ -72,7 +72,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		 * 'focusedIndex' is used to trigger suggestions focus and set
 		 * 'aria-selected' to 'true', it can only be set by keyboard events.
 		 * 'hoveredIndex' is used to keep track of both focused/hovered
-		 * suggestion in order to set 'data-email-active="true"'.
+		 * suggestion in order to set 'data-selected-email="true"'.
 		 *
 		 * When focusedIndex is set, hoveredIndex is set to the same value.
 		 * When hoveredIndex is set by pointer events, focusedIndex is set to -1.
@@ -90,10 +90,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}
 
 		function setFromHover(isDecrement = false) {
-			const factor = isDecrement ? -1 : 1;
+			const index = isDecrement ? -1 : 1;
 			_setItemState((prevState) => ({
-				hoveredIndex: prevState.hoveredIndex + factor,
-				focusedIndex: prevState.hoveredIndex + factor
+				hoveredIndex: prevState.hoveredIndex + index,
+				focusedIndex: prevState.hoveredIndex + index
 			}));
 		}
 
@@ -103,9 +103,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		const [username] = email.split('@');
 
 		/**
-		 * 'isOpen' conditionally renders the dropdown, we let the
-		 * results length decide if it should be mounted or not, avoiding
-		 * unnecessary states and effects.
+		 * 'isOpen' conditionally renders the dropdown, we simply let the
+		 * results length decide if it should be mounted or not.
 		 */
 		const isOpen = isTouched.current && suggestions.length > 0 && username.length >= minChars;
 
@@ -238,9 +237,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				 * allow the user to 'resume' and set the new focus
 				 * from an eventual hovered item.
 				 *
-				 * They are triggered only the first time the user
-				 * uses the arrows if no suggestion has been previously
-				 * focused.
 				 */
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
@@ -293,7 +289,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				 *
 				 * Since we know that hoveredIndex is always set along with
 				 * focusedIndex, we are sure that the condition executes
-				 * also when no item was hovered (pure arrow navigation).
+				 * also when no item was hovered.
 				 */
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
@@ -319,7 +315,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/**
 		 * User's focus/blur should be triggered only when the related
 		 * target is not a suggestion, this will ensure proper behavior
-		 * with user input validation or any conditionally rendered message.
+		 * with external input validation.
 		 */
 		function handleExternal(
 			event: React.FocusEvent<HTMLInputElement>,
@@ -416,7 +412,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
 								aria-selected={index === itemState.focusedIndex}
-								data-email-active={index === itemState.hoveredIndex}
+								data-selected-email={index === itemState.hoveredIndex}
 								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
 							>

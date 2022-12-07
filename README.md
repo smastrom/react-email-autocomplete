@@ -4,15 +4,13 @@
 
 [Demo and examples](https://react-bella-email.netlify.app) — [Stackblitz]()
 
-<br />
-
-![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
+![react-bella-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
 
 **React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **providing the best UX** with all the flexibility you'd expect from a native input:
 
 - Fully accessible with great keyboard controls
 - Completely unstyled and white labeled
-- Forward the most common event handlers and attributes
+- Forward most common event handlers and attributes
 - Controllable with React Hook Form
 
 > :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly.
@@ -182,10 +180,10 @@ This package ships with **zero css**. Initial styles enough to see the component
 
 ### Focus/Hover styles
 
-Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-email-active` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened in case the cursor is hovering it.
+Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-selected-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor is hovering it).
 
 ```css
-.my-suggestion[data-email-active='true'] {
+.my-suggestion[data-selected-email='true'] {
   background-color: aliceblue;
 }
 
@@ -202,7 +200,9 @@ Although you can target the pseudo classes `:hover` and `:focus`, it is recommen
 
 Once users start typing, it displays a list of _base_ suggestions and hides it once they type `@` . It already gives a nice UX and should be enough for the vast majority of websites:
 
-![react-bella-email](https://i.ibb.co/2hqKpY6/Schermata-2022-09-18-alle-15-18-35.png)
+| Before typing `@`                                                                      | After typing `@`                                                                       |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| ![react-bella-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-bella-email](https://i.ibb.co/ZgWCPkg/Screenshot-2022-12-07-alle-13-52-46.png) |
 
 ```jsx
 import { Email } from 'react-bella-email';
@@ -232,9 +232,11 @@ function App() {
 
 ### 2. Refine Mode
 
-Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it refines the suggestions according to an extended list of domains (autocomplete).
+Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, acts as an autocomplete refining suggestions according to an extended list of domains.
 
-![react-bella-email](https://i.ibb.co/6tBV0QL/Schermata-2022-09-18-alle-15-18-14.png)
+| Before typing `@`                                                                      | After typing `@`                                                                       |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| ![react-bella-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-bella-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
 
 All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a curated [list]() of the ~160 most popular world domains (thanks to **@mailcheck**):
 
@@ -271,7 +273,7 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Localization
 
-It is great to display different suggestions according to [user's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
+It is great to display different suggestions according to [browser's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook that does exactly that.
 
 **1 - Create an object and define lists for each browser locale:**
 
@@ -282,6 +284,8 @@ export const lists = {
   'it-CH': ['gmail.com', 'outlook.com', 'bluewin.ch', 'gmx.de', 'libero.it', 'sunrise.ch']
 };
 ```
+
+> :warning: Make sure to define the object list outside of your component, otherwise it will be recreated on every render causing an infinite loop.
 
 <details><summary><strong>TypeScript</strong></summary>
 <br />
@@ -297,9 +301,13 @@ export const lists: LocalizedList = {
 
 </details>
 
-You can specify [lang codes](https://www.localeplanet.com/icu/iso639.html) with or without country codes. In case you don't specify a country code (such as `it`), it will match browser locales such as `it`, `it-CH` and `it-IT` and so on.
+You can define [lang codes](https://www.localeplanet.com/icu/iso639.html) with or without country codes.
 
-Instead, if you specify `it-CH` it will match `it-CH` but not `it` or `it-IT`.
+If you define a language without country code (such as `it`), by default it will match browser locales such as `it`, `it-CH`, `it-IT` and so on.
+
+If you define `it-CH` it will match `it-CH` but not `it` or `it-IT`.
+
+If you define both `it-CH` and `it`, `it-CH` will match only `it-CH` and `it` will match `it`, `it-IT` and so on.
 
 **2 - Use the hook:**
 
@@ -352,7 +360,7 @@ function App() {
 
 ## :8ball: onSelect callback
 
-If you need to invoke a callback (e.g. server validation), everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
+If you need to invoke a callback, everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
 
 ```jsx
 import { Email, domains } from 'react-bella-email';
@@ -400,9 +408,9 @@ No special configuration needed, it just works. Just follow the official React H
 
 <br />
 
-## :keyboard: List keyboard controls
+## :keyboard: Keyboard controls
 
-- **↑ ↓** - Navigate through suggestions / input field
+- **↑ ↓** - Navigate through suggestions / input
 - **← →** - Move cursor and focus the input field while keeping list open
 - **Backspace / Alphanumeric keys** - Edit the input value and keep refining suggestions
 - **Enter / Space** - Confirm the suggestion
