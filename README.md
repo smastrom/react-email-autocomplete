@@ -1,28 +1,26 @@
-# :love_letter: React Bella Email
+# React Autocomplete Email
 
-### The email input field that your users will love.
+[Demo and examples](https://react-autocomplete-email.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js)
 
-[Demo and examples](https://react-bella-email.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js)
+![react-autocomplete-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
 
-![react-bella-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
+**React Autocomplete Email** is a tiny, unstyled, zero-dependency controlled component inspired by multiple european flight booking websites.
 
-**React Bella Email** is a tiny, zero-dependency controlled component that aims to replace the typical `<input type="email" />` of your form by **providing the best UX** with all the flexibility you'd expect from a native input:
-
-- Fully accessible with great keyboard controls
 - Completely unstyled and white labeled (ships with zero CSS)
+- Fully accessible with great keyboard controls
 - Forward most common event handlers and attributes
 - Controllable with React Hook Form
 
-> :bulb: **React Bella Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly (thanks to **@mailcheck**).
+> :bulb: **React Autocomplete Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly (thanks to **@mailcheck**).
 
 <br />
 
 ## :floppy_disk: Installation
 
 ```bash
-npm i -S react-bella-email
-# yarn add react-bella-email
-# pnpm add react-bella-email
+npm i -S react-autocomplete-email
+# yarn add react-autocomplete-email
+# pnpm add react-autocomplete-email
 ```
 
 <br />
@@ -98,7 +96,7 @@ function App() {
 <br />
 
 ```ts
-import type { ClassNames } from 'react-bella-email';
+import type { ClassNames } from 'react-autocomplete-email';
 
 const myClassNames: ClassNames = {
   wrapper: 'my-wrapper',
@@ -200,12 +198,12 @@ Although you can target the pseudo classes `:hover` and `:focus`, it is recommen
 
 Once users start typing, it displays a list of _base_ suggestions and hides it once they type `@` . It already gives a nice UX and should be enough for the vast majority of websites:
 
-| Before typing `@`                                                                      | After typing `@`                                                                       |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| ![react-bella-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-bella-email](https://i.ibb.co/ZgWCPkg/Screenshot-2022-12-07-alle-13-52-46.png) |
+| Before typing `@`                                                                             | After typing `@`                                                                              |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| ![react-autocomplete-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-autocomplete-email](https://i.ibb.co/ZgWCPkg/Screenshot-2022-12-07-alle-13-52-46.png) |
 
 ```jsx
-import { Email } from 'react-bella-email';
+import { Email } from 'react-autocomplete-email';
 
 const baseList = [
   'gmail.com',
@@ -234,14 +232,14 @@ function App() {
 
 Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it starts refining suggestions according to an extended list of domains.
 
-| Before typing `@`                                                                      | After typing `@`                                                                       |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| ![react-bella-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-bella-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
+| Before typing `@`                                                                             | After typing `@`                                                                              |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| ![react-autocomplete-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-autocomplete-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
 
-All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a [curated list](https://github.com/smastrom/react-bella-email/blob/main/src/domains.json) of the ~160 most popular world domains that you can directly import and use (thanks to **@mailcheck**):
+All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a [curated list](https://github.com/smastrom/react-autocomplete-email/blob/main/src/domains.json) of the ~160 most popular world domains that you can directly import and use (thanks to **@mailcheck**):
 
 ```jsx
-import { Email, domains } from 'react-bella-email';
+import { Email, domains } from 'react-autocomplete-email';
 
 const baseList = [
   'gmail.com',
@@ -273,7 +271,7 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Localization
 
-It is great to display different suggestions according to [user's browser locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Bella Email** includes a very simple hook to do exactly that.
+It is great to display different suggestions according to [user's browser locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Autocomplete Email** includes a very simple hook to do exactly that.
 
 **1 - Create an object and define lists for each browser locale:**
 
@@ -291,7 +289,7 @@ export const lists = {
 <br />
 
 ```ts
-import type { LocalizedList } from 'react-bella-email';
+import type { LocalizedList } from 'react-autocomplete-email';
 
 export const lists: LocalizedList = {
   default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
@@ -313,7 +311,7 @@ If you define both `it-CH` and `it`, `it-CH` will match only `it-CH` and `it` wi
 
 ```jsx
 import { lists } from './lists';
-import { Email, useLocalizedList } from 'react-bella-email';
+import { Email, useLocalizedList } from 'react-autocomplete-email';
 
 function App() {
   const baseList = useLocalizedList(lists);
@@ -337,7 +335,7 @@ If you prefer to keep the suggestions in line with your app locale instead of th
 ```jsx
 import lists from './lists';
 import { useRouter } from 'next/router';
-import { Email, useLocalizedList } from 'react-bella-email';
+import { Email, useLocalizedList } from 'react-autocomplete-email';
 
 function App() {
   const { locale } = useRouter();
@@ -363,7 +361,7 @@ function App() {
 If you need to invoke a callback everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
 
 ```jsx
-import { Email, domains } from 'react-bella-email';
+import { Email, domains } from 'react-autocomplete-email';
 
 function App() {
   const [email, setEmail] = useState('');

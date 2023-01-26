@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import Package from './package.json';
 
 export default defineConfig(({ command, mode }) => {

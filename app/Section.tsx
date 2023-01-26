@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-target-blank */
-const path = 'https://github.com/smastrom/react-bella-email/tree/main/app/Examples/';
+const path = 'https://github.com/smastrom/react-autocomplete-email/tree/main/app/Examples/';
 
 type Props = {
 	children: React.ReactNode;

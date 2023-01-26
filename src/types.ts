@@ -84,7 +84,7 @@ export type LocalizedList = {
 } & Record<string, string[]>;
 
 /** Controlled email input component.
- * Read the documentation at: https://github.com/smastrom/react-bella-email. */
+ * Read the documentation at: https://github.com/smastrom/react-autocomplete-email. */
 export declare const Email: ForwardRefExoticComponent<EmailProps & RefAttributes<HTMLInputElement>>;
 
 /** List of ~160 world's most popular email providers.
@@ -92,5 +92,5 @@ export declare const Email: ForwardRefExoticComponent<EmailProps & RefAttributes
 export declare const domains: string[];
 
 /** Hook to automatically inject localized lists according to user's browser locale.
- * Read the documentation at: https://github.com/smastrom/react-bella-email. */
+ * Read the documentation at: https://github.com/smastrom/react-autocomplete-email. */
 export declare function useLocalizedList(lists: LocalizedList, appLocale?: string): string[];
