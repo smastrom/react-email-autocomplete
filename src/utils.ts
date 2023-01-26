@@ -1,4 +1,4 @@
-import { useLayoutEffect, useEffect } from 'react';
+import { useLayoutEffect, useEffect, useRef } from 'react';
 
 export const useIsomorphicLayoutEffect =
 	typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -22,6 +22,41 @@ export function getHonestValue(value: unknown, maxValue: number, defaultValue: n
 
 export function isFn(fn: unknown) {
 	return typeof fn === 'function';
+}
+
+export function usePrevious<T>(value: T) {
+	const prevState = useRef<T>();
+	useLayoutEffect(() => {
+		prevState.current = value;
+	});
+	return prevState.current;
+}
+
+// Get the first parent that has overflow "auto" or "scroll"
+export function getScrollElement(target: HTMLElement) {
+	if (target.style.position === 'fixed') {
+		return document.documentElement;
+	}
+
+	let hasScroll = false;
+	let nextParent = target.parentElement;
+
+	while (!hasScroll) {
+		if (!nextParent || nextParent === document.documentElement) {
+			break;
+		}
+
+		const { overflow, overflowY } = getComputedStyle(nextParent);
+		hasScroll = /(auto|scroll)/.test(`${overflow}${overflowY}`);
+
+		if (hasScroll) {
+			break;
+		}
+
+		nextParent = nextParent.parentElement;
+	}
+
+	return nextParent;
 }
 
 export function getEmailData(value: string, minChars: number) {

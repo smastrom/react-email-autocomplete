@@ -1,4 +1,11 @@
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState
+} from 'react';
 import {
 	cleanValue,
 	getUniqueId,
@@ -6,9 +13,19 @@ import {
 	isFn,
 	useIsomorphicLayoutEffect,
 	alphanumericKeys,
-	getEmailData
+	getEmailData,
+	getScrollElement,
+	usePrevious
 } from './utils';
-import { Events, OnSelectData, Elements, Maybe, Email as Export, EmailProps } from './types';
+import {
+	Events,
+	OnSelectData,
+	Elements,
+	Maybe,
+	Email as Export,
+	EmailProps,
+	Placement
+} from './types';
 
 export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 	(
@@ -67,6 +84,8 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
+		const [placement, setPlacement] = useState<Placement>(Placement.Initial);
+		const prevPlacement = usePrevious(placement);
 
 		/**
 		 * 'focusedIndex' is used to trigger suggestions focus and set
@@ -89,8 +108,13 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			_setItemState({ focusedIndex, hoveredIndex });
 		}
 
-		function setFromHover(isDecrement = false) {
+		/**
+		 * This function 'resumes' focusing from an eventual hovered suggestion.
+		 * Index ordering doesn't mutate with placement.
+		 */
+		function setFromHovered({ isDecrement }: { isDecrement: boolean }) {
 			const index = isDecrement ? -1 : 1;
+
 			_setItemState((prevState) => ({
 				hoveredIndex: prevState.hoveredIndex + index,
 				focusedIndex: prevState.hoveredIndex + index
@@ -122,6 +146,72 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				uniqueId.current = getUniqueId();
 			}
 		}, []);
+
+		// We want to trigger below fn as soon as isOpen is true, then on scroll or resize
+		const triggerBeforeOpen = useRef(true);
+
+		// This moves the dropdown to the top if it's overflowing the viewport
+		useIsomorphicLayoutEffect(() => {
+			const scrollElement = getScrollElement(inputRef.current as HTMLElement);
+			const isWindowScroll = scrollElement === document.documentElement;
+			const scrollListener = isWindowScroll ? document : scrollElement;
+
+			function setDropdownPlacement() {
+				if (inputRef.current && dropdownRef.current && scrollElement) {
+					const availableVH = window.visualViewport?.height || 0;
+
+					const { bottom: scrollBottom } = scrollElement.getBoundingClientRect();
+					const { height: dropdownHeight } = dropdownRef.current.getBoundingClientRect();
+					const { bottom: inputBottom, height: inputHeight } =
+						inputRef.current.getBoundingClientRect();
+
+					// Use bottom as source of truth, as soon there's space, place it there
+					const isPlacementBottom =
+						(isWindowScroll ? availableVH : scrollBottom) - inputBottom >= dropdownHeight;
+
+					dropdownRef.current.style.removeProperty('top');
+
+					if (isPlacementBottom) {
+						setPlacement(Placement.Bottom);
+						dropdownRef.current.style.removeProperty('bottom');
+					} else {
+						setPlacement(Placement.Top);
+						dropdownRef.current.style.bottom = `${inputHeight ?? 0}px`;
+					}
+
+					triggerBeforeOpen.current = false;
+				}
+			}
+
+			if (isOpen) {
+				if (triggerBeforeOpen.current) {
+					setDropdownPlacement();
+				}
+				scrollListener?.addEventListener('scroll', setDropdownPlacement, { passive: true });
+				window.addEventListener('resize', setDropdownPlacement, { passive: true });
+			} else {
+				triggerBeforeOpen.current = true;
+			}
+
+			return () => {
+				scrollListener?.removeEventListener('scroll', setDropdownPlacement);
+				window.removeEventListener('resize', setDropdownPlacement);
+			};
+		}, [isOpen]);
+
+		useLayoutEffect(() => {
+			// Prevent first and useless re-renders
+			if (prevPlacement !== undefined && prevPlacement !== placement) {
+				if (prevPlacement === Placement.Initial) {
+					if (placement === Placement.Top) {
+						return setSuggestions((prevSugg) => [...prevSugg.reverse()]);
+					}
+					return; // Return if initial placement is bottom
+				}
+
+				return setSuggestions((prevSugg) => [...prevSugg.reverse()]); // From now on reverse when position changes
+			}
+		}, [placement, prevPlacement]);
 
 		useEffect(() => {
 			if (itemState.focusedIndex >= 0) {
@@ -236,21 +326,28 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				 * The conditions inside the following clauses
 				 * allow the user to 'resume' and set the new focus
 				 * from an eventual hovered item.
-				 *
 				 */
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
+
 					if (itemState.hoveredIndex >= 0) {
-						setFromHover(true);
+						setFromHovered({ isDecrement: true });
+					}
+
+					if (placement === Placement.Top && itemState.hoveredIndex < 0) {
+						setItemState(suggestions.length - 1, suggestions.length - 1); // Top placement specific
 					}
 					break;
 
 				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
+
 					if (itemState.hoveredIndex >= 0) {
-						setFromHover();
-					} else {
-						setItemState(0, 0);
+						setFromHovered({ isDecrement: false });
+					}
+
+					if (placement === Placement.Bottom && itemState.hoveredIndex < 0) {
+						setItemState(0, 0); // Bottom placement specific
 					}
 					break;
 			}
@@ -293,18 +390,28 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				 */
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
-					if (itemState.hoveredIndex >= 0) {
-						setFromHover(true);
-						if (itemState.hoveredIndex === 0) {
-							inputRef?.current?.focus();
-						}
+
+					if (placement === Placement.Top && itemState.hoveredIndex === 0) {
+						return;
+					}
+
+					setFromHovered({ isDecrement: true });
+
+					if (placement === Placement.Bottom && itemState.hoveredIndex === 0) {
+						inputRef?.current?.focus();
 					}
 					break;
 
 				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
+
 					if (itemState.hoveredIndex < suggestions.length - 1) {
-						setFromHover();
+						setFromHovered({ isDecrement: false });
+					}
+
+					if (placement === Placement.Top && itemState.hoveredIndex === suggestions.length - 1) {
+						setItemState(-1, -1);
+						inputRef?.current?.focus();
 					}
 					break;
 			}

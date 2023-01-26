@@ -20,6 +20,12 @@ export enum Elements {
 	Domain = 'domain'
 }
 
+export enum Placement {
+	Initial,
+	Top,
+	Bottom
+}
+
 export type ClassNames = Partial<Record<Elements, string>>;
 
 export type OnSelectData = {
