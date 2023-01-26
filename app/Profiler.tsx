@@ -15,7 +15,7 @@ type JSX = {
 };
 
 export const Profiler = ({ children }: JSX) => (
-	<ReactProfiler onRender={onRender} id="react-autocomplete-email">
+	<ReactProfiler onRender={onRender} id="react-email-autocomplete">
 		{children}
 	</ReactProfiler>
 );

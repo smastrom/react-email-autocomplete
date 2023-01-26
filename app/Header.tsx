@@ -3,9 +3,9 @@
 export function Header() {
 	return (
 		<header className="header">
-			<h1 className="title">React Autocomplete Email</h1>
+			<h1 className="title">React Email Autocomplete</h1>
 			<a
-				href="https://github.com/smastrom/react-autocomplete-email"
+				href="https://github.com/smastrom/react-email-autocomplete"
 				target="_blank"
 				aria-label="GitHub Repo"
 				className="githubLink"

@@ -1,29 +1,29 @@
-![npm](https://img.shields.io/npm/v/react-autocomplete-email?color=46c119) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/smastrom/react-autocomplete-email/tests.yml?branch=main&label=tests)
+![npm](https://img.shields.io/npm/v/@smastrom/react-email-autocomplete?color=46c119) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/smastrom/react-email-autocomplete/tests.yml?branch=main&label=tests)
 ![dependency-count](https://img.shields.io/badge/dependency%20count-0-success)
 
-# React Autocomplete Email
+# React Email Autocomplete
 
-[Demo and examples](https://react-autocomplete-email.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS SSR](https://stackblitz.com/edit/nextjs-6ttxsv?file=pages%2F_app.js)
+[Demo and examples](https://@smastrom/react-email-autocomplete.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS SSR](https://stackblitz.com/edit/nextjs-6ttxsv?file=pages%2F_app.js)
 
-![react-autocomplete-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
+![@smastrom/react-email-autocomplete](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
 
-**React Autocomplete Email** is an unstyled, zero-dependency controlled component inspired by multiple european flight booking websites. As soon as users start typing their email address, it will suggest the most common email providers.
+**React Email Autocomplete** is an unstyled, zero-dependency controlled component inspired by multiple european flight booking websites. As soon as users start typing their email address, it will suggest the most common email providers.
 
 - Completely unstyled and white labeled (ships with zero CSS)
 - Fully accessible with great keyboard controls
 - Forward most common event handlers and attributes
 - Controllable with React Hook Form
 
-> :bulb: **React Autocomplete Email** also ships with a curated list of ~160 world's most popular email providers to get started quicky (thanks to **@mailcheck**).
+> :bulb: **React Email Autocomplete** also ships with a curated list of ~160 world's most popular email providers to get started quicky (thanks to **@mailcheck**).
 
 <br />
 
 ## :floppy_disk: Installation
 
 ```bash
-npm i -S react-autocomplete-email
-# yarn add react-autocomplete-email
-# pnpm add react-autocomplete-email
+npm i -S @smastrom/react-email-autocomplete
+# yarn add @smastrom/react-email-autocomplete
+# pnpm add @smastrom/react-email-autocomplete
 ```
 
 <br />
@@ -100,7 +100,7 @@ function App() {
 <br />
 
 ```ts
-import type { ClassNames } from 'react-autocomplete-email';
+import type { ClassNames } from '@smastrom/react-email-autocomplete';
 
 const myClassNames: ClassNames = {
   wrapper: 'my-wrapper',
@@ -222,12 +222,12 @@ The feature can be disabled placing the dropdown always below the input field. S
 
 Once users start typing, it displays a list of _base_ suggestions and hides it once they type `@` . It already gives a nice UX and should be enough for the vast majority of websites:
 
-| Before typing `@`                                                                             | After typing `@`                                                                              |
-| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| ![react-autocomplete-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-autocomplete-email](https://i.ibb.co/ZgWCPkg/Screenshot-2022-12-07-alle-13-52-46.png) |
+| Before typing `@`                                                                                       | After typing `@`                                                                                        |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| ![@smastrom/react-email-autocomplete](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![@smastrom/react-email-autocomplete](https://i.ibb.co/ZgWCPkg/Screenshot-2022-12-07-alle-13-52-46.png) |
 
 ```jsx
-import { Email } from 'react-autocomplete-email';
+import { Email } from '@smastrom/react-email-autocomplete';
 
 const baseList = [
   'gmail.com',
@@ -256,14 +256,14 @@ function App() {
 
 Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it starts refining suggestions according to an extended list of domains.
 
-| Before typing `@`                                                                             | After typing `@`                                                                              |
-| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| ![react-autocomplete-email](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![react-autocomplete-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
+| Before typing `@`                                                                                       | After typing `@`                                                                                        |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| ![@smastrom/react-email-autocomplete](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![@smastrom/react-email-autocomplete](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
 
-All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a [curated list](https://github.com/smastrom/react-autocomplete-email/blob/main/src/domains.json) of the ~160 most popular world domains that you can directly import and use (thanks to **@mailcheck**):
+All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a [curated list](https://github.com/smastrom/@smastrom/react-email-autocomplete/blob/main/src/domains.json) of the ~160 most popular world domains that you can directly import and use (thanks to **@mailcheck**):
 
 ```jsx
-import { Email, domains } from 'react-autocomplete-email';
+import { Email, domains } from '@smastrom/react-email-autocomplete';
 
 const baseList = [
   'gmail.com',
@@ -295,7 +295,7 @@ Alternatively, you can create your own array of domains or [search]() for the on
 
 ## :globe_with_meridians: Localization
 
-It is great to display different suggestions according to [user's browser locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Autocomplete Email** includes a very simple hook to do exactly that.
+It is great to display different suggestions according to [user's browser locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Email Autocomplete** includes a very simple hook to do exactly that.
 
 **1 - Create an object and define lists for each browser locale:**
 
@@ -313,7 +313,7 @@ export const lists = {
 <br />
 
 ```ts
-import type { LocalizedList } from 'react-autocomplete-email';
+import type { LocalizedList } from '@smastrom/react-email-autocomplete';
 
 export const lists: LocalizedList = {
   default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
@@ -335,7 +335,7 @@ If you define both `it-CH` and `it`, `it-CH` will match only `it-CH` and `it` wi
 
 ```jsx
 import { lists } from './lists';
-import { Email, useLocalizedList } from 'react-autocomplete-email';
+import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete';
 
 function App() {
   const baseList = useLocalizedList(lists);
@@ -359,7 +359,7 @@ If you prefer to keep the suggestions in line with your app locale instead of th
 ```jsx
 import lists from './lists';
 import { useRouter } from 'next/router';
-import { Email, useLocalizedList } from 'react-autocomplete-email';
+import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete';
 
 function App() {
   const { locale } = useRouter();
@@ -385,7 +385,7 @@ function App() {
 If you need to invoke a callback everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
 
 ```jsx
-import { Email, domains } from 'react-autocomplete-email';
+import { Email, domains } from '@smastrom/react-email-autocomplete';
 
 function App() {
   const [email, setEmail] = useState('');

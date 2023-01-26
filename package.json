@@ -1,17 +1,18 @@
 {
-	"name": "react-autocomplete-email",
+	"name": "@smastrom/react-email-autocomplete",
 	"version": "0.9.4",
 	"private": false,
-	"homepage": "https://react-autocomplete-email.netlify.app",
+	"homepage": "https://react-email-autocomplete.netlify.app",
 	"bugs": {
-		"url": "https://github.com/smastrom/react-autocomplete-email/issues"
+		"url": "https://github.com/smastrom/react-email-autocomplete/issues"
 	},
 	"description": "Headless email input field with custom suggestions. Inspired by european flight booking websites.",
 	"keywords": [
 		"react",
 		"react-email",
+		"react-email-autocomplete",
 		"react-autocomplete",
-		"react-autocomplete-email",
+		"react-email-autocomplete",
 		"react-email-component",
 		"email-component",
 		"email-autocomplete",
@@ -21,7 +22,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/smastrom/react-autocomplete-email"
+		"url": "https://github.com/smastrom/react-email-autocomplete"
 	},
 	"license": "MIT",
 	"author": "Simone Mastromattei <smastrom@proton.me>",
