@@ -1,11 +1,4 @@
-import React, {
-	forwardRef,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState
-} from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import {
 	cleanValue,
 	getUniqueId,
@@ -44,6 +37,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			customPrefix = 'rbe_',
 			children,
 			wrapperId,
+			placement: _placement = 'auto',
 			/* User events */
 			onFocus: userOnFocus,
 			onBlur: userOnBlur,
@@ -68,6 +62,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		const maxResults = getHonestValue(_maxResults, 8, 6);
 		const minChars = getHonestValue(_minChars, 8, 2);
 		const baseList = _baseList.slice(0, maxResults);
+		const isAutoPlacement = _placement === 'auto';
 
 		/* Refs */
 
@@ -139,6 +134,10 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			setItemState();
 		}, []);
 
+		useEffect(() => {
+			console.log(placement);
+		}, [placement]);
+
 		/* Effects */
 
 		useIsomorphicLayoutEffect(() => {
@@ -152,11 +151,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		// This moves the dropdown to the top if it's overflowing the viewport
 		useIsomorphicLayoutEffect(() => {
-			const scrollElement = getScrollElement(inputRef.current as HTMLElement);
-			const isWindowScroll = scrollElement === document.documentElement;
-			const scrollListener = isWindowScroll ? document : scrollElement;
-
-			function setDropdownPlacement() {
+			function _setDropdownPlacement() {
 				if (inputRef.current && dropdownRef.current && scrollElement) {
 					const availableVH = window.visualViewport?.height || 0;
 
@@ -165,7 +160,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 					const { bottom: inputBottom, height: inputHeight } =
 						inputRef.current.getBoundingClientRect();
 
-					// Use bottom as source of truth, as soon there's space, place it there
+					// Use bottom as main condition, as soon there's space, place it there
 					const isPlacementBottom =
 						(isWindowScroll ? availableVH : scrollBottom) - inputBottom >= dropdownHeight;
 
@@ -183,8 +178,18 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				}
 			}
 
+			const scrollElement = getScrollElement(inputRef.current as HTMLElement);
+			const isWindowScroll = scrollElement === document.documentElement;
+			const scrollListener = isWindowScroll ? document : scrollElement;
+
+			const setDropdownPlacement = isAutoPlacement ? _setDropdownPlacement : () => {};
+
 			if (isOpen) {
 				if (triggerBeforeOpen.current) {
+					if (!isAutoPlacement) {
+						triggerBeforeOpen.current = false;
+						return setPlacement(Placement.Bottom);
+					}
 					setDropdownPlacement();
 				}
 				scrollListener?.addEventListener('scroll', setDropdownPlacement, { passive: true });
@@ -197,11 +202,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				scrollListener?.removeEventListener('scroll', setDropdownPlacement);
 				window.removeEventListener('resize', setDropdownPlacement);
 			};
-		}, [isOpen]);
+		}, [isOpen, isAutoPlacement]);
 
-		useLayoutEffect(() => {
+		useIsomorphicLayoutEffect(() => {
 			// Prevent first and useless re-renders
-			if (prevPlacement !== undefined && prevPlacement !== placement) {
+			if (isAutoPlacement && prevPlacement !== undefined && prevPlacement !== placement) {
 				if (prevPlacement === Placement.Initial) {
 					if (placement === Placement.Top) {
 						return setSuggestions((prevSugg) => [...prevSugg.reverse()]);
@@ -211,7 +216,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 				return setSuggestions((prevSugg) => [...prevSugg.reverse()]); // From now on reverse when position changes
 			}
-		}, [placement, prevPlacement]);
+		}, [placement, prevPlacement, isAutoPlacement]);
 
 		useEffect(() => {
 			if (itemState.focusedIndex >= 0) {
@@ -346,8 +351,12 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 						setFromHovered({ isDecrement: false });
 					}
 
-					if (placement === Placement.Bottom && itemState.hoveredIndex < 0) {
-						setItemState(0, 0); // Bottom placement specific
+					if (itemState.hoveredIndex < 0) {
+						/**
+						 * Focus always the first regardless of placement
+						 * This will give consistency for visually impaired users.
+						 */
+						setItemState(0, 0);
 					}
 					break;
 			}

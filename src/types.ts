@@ -66,6 +66,8 @@ export type Props = {
 	wrapperId?: string;
 	/** Validity state of the field for assistive technologies. */
 	isInvalid?: boolean;
+	/** Dropdown placement. */
+	placement?: 'auto' | 'bottom';
 	children?: ReactNode;
 };
 
