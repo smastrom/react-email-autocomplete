@@ -21,8 +21,8 @@ export default defineConfig(({ command, mode }) => {
 			lib: {
 				name: Package.name,
 				entry: 'src/index.ts',
-				formats: ['es', 'umd'],
-				fileName: (format) => (format === 'es' ? 'index.js' : 'index.umd.js')
+				formats: ['es', 'cjs'],
+				fileName: 'index'
 			},
 			rollupOptions: {
 				external: ['react', 'react/jsx-runtime'],

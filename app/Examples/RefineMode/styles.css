@@ -36,6 +36,7 @@
 	width: 100%;
 	animation: slideIn 200ms ease-out;
 	margin-top: 5px;
+	margin-bottom: 5px;
 	position: absolute;
 	z-index: 999;
 	border-radius: 10px;

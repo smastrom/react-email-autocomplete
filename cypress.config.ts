@@ -5,15 +5,16 @@ export default defineConfig({
 		specPattern: '**/*.cy.tsx',
 		devServer: {
 			framework: 'react',
-			bundler: 'vite',
+			bundler: 'vite'
 		},
+		video: false,
 		setupNodeEvents(on) {
 			on('task', {
 				log(message) {
 					console.log(message);
 					return null;
-				},
+				}
 			});
-		},
-	},
+		}
+	}
 });

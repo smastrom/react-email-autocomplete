@@ -205,7 +205,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		useIsomorphicLayoutEffect(() => {
 			if (dropdownRef.current) {
-				dropdownRef.current.dataset.placement = placement === Placement.Top ? 'top' : 'bottom';
+				dropdownRef.current.dataset.placement = isPlacementTop ? 'top' : 'bottom';
 			}
 
 			// Prevent first and useless re-renders
@@ -219,7 +219,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 				return setSuggestions((prevSugg) => [...prevSugg.reverse()]); // From now on reverse when position changes
 			}
-		}, [placement, prevPlacement, isAutoPlacement]);
+		}, [placement, prevPlacement, isAutoPlacement, isPlacementTop]);
 
 		useEffect(() => {
 			if (itemState.focusedIndex >= 0) {

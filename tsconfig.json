@@ -2,19 +2,19 @@
 	"compilerOptions": {
 		"target": "es2020",
 		"useDefineForClassFields": true,
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"lib": ["DOM", "DOM.Iterable", "ES2020"],
 		"allowJs": false,
 		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
-		"module": "es2020",
+		"module": "ES2020",
 		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
 		"jsx": "react-jsx",
-		"types": ["vitest/importMeta"]
+		"types": ["vitest/importMeta", "node"]
 	},
 	"include": ["app", "src", "cypress", "tests", "cypress/support/cypress.d.ts", "cypress-axe"]
 }

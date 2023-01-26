@@ -3,6 +3,8 @@ import { getRandomIndex, getRandomInt } from '../cypress/support/component';
 import domains from '../src/domains.json';
 
 it('Should pass ARIA axe tests', () => {
+	cy.log('Axe not supported on Firefox or Webkit');
+
 	cy.mount(<Email className="WC" />);
 	cy.get('.WC').within(() => {
 		cy.get('input').type('myuser');

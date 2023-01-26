@@ -4,14 +4,14 @@
 
 ![react-autocomplete-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
 
-**React Autocomplete Email** is a tiny, unstyled, zero-dependency controlled component inspired by multiple european flight booking websites.
+**React Autocomplete Email** is an unstyled, zero-dependency controlled component inspired by multiple european flight booking websites. As soon as users start typing their email address, it will suggest the most common email providers.
 
 - Completely unstyled and white labeled (ships with zero CSS)
 - Fully accessible with great keyboard controls
 - Forward most common event handlers and attributes
 - Controllable with React Hook Form
 
-> :bulb: **React Autocomplete Email** also ships with a curated list of ~160 world's most popular email providers in order to get started quickly (thanks to **@mailcheck**).
+> :bulb: **React Autocomplete Email** also ships with a curated list of ~160 world's most popular email providers to get started quicky (thanks to **@mailcheck**).
 
 <br />
 
@@ -36,6 +36,7 @@ npm i -S react-autocomplete-email
 | `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
 | `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
 | `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
+| `placement`    | Dropdown placement                                    | _auto_ \| _bottom_                     | `auto`    | :x:                |
 | `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
 | `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
 | `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
@@ -121,7 +122,7 @@ You can add a this property in VSCode's `settings.json` in order to enable autco
 
 </details>
 
-Or add a class to the wrapper `div` via `className` prop, and target any child:
+Or add a class to the wrapper `div` via `className` prop and target any child:
 
 ```css
 .my-wrapper {
@@ -190,6 +191,26 @@ Although you can target the pseudo classes `:hover` and `:focus`, it is recommen
 }
 ```
 
+### Dynamic Dropdown Position
+
+According to the available space, the dropdown will automatically be positioned above or below the input field.
+
+Do not play with `top` or `bottom` properties. Let the component handle it. Just define the positioning and the distance from the input field:
+
+```css
+.wrapper {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  margin-top: 5px; /* Distance when placed below */
+  margin-bottom: 5px; /* Distance when placed above */
+}
+```
+
+The feature can be disabled placing the dropdown always below the input field. Set the `placement` prop to `bottom`. Please note that the above CSS must be added anyway.
+
 <br />
 
 ## :dna: Modes
@@ -228,7 +249,7 @@ function App() {
 }
 ```
 
-### 2. Refine Mode
+### 2. Refine Mode (optional)
 
 Acts like **Basic Mode** until users type `@` . Then as they start typing the domain, it starts refining suggestions according to an extended list of domains.
 
@@ -283,7 +304,7 @@ export const lists = {
 };
 ```
 
-> :warning: Make sure to define the object outside of your component, otherwise it will be recreated on every render causing an infinite loop.
+> :warning: Make sure to define the object outside of your component, otherwise it will be recreated on every render causing an infinite loop. Alternatively you can wrap the object in a `useMemo` hook.
 
 <details><summary><strong>TypeScript</strong></summary>
 <br />
@@ -419,4 +440,4 @@ No special configuration needed, it just works. Just follow the official React H
 
 ## :dvd: License
 
-MIT Licensed. Copyright (c) Simone Mastromattei 2022.
+MIT

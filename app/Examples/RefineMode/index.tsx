@@ -20,16 +20,19 @@ export function RefineMode() {
 	return (
 		<Section name="Refine Mode" folderName="RefineMode" className="refineSection">
 			<label htmlFor="refineMode">Email</label>
-
-			<Email
-				id="refineMode"
-				placeholder="Enter your email"
-				classNames={classes}
-				baseList={baseList}
-				refineList={domains}
-				value={email}
-				onChange={setEmail}
-			/>
+			{/* <div style={{ height: 600, overflow: 'auto', width: '100%' }}> */}
+			<div /* style={{ height: 1200, display: 'flex', alignItems: 'center' }} */>
+				<Email
+					id="refineMode"
+					placeholder="Enter your email"
+					classNames={classes}
+					baseList={baseList}
+					refineList={domains}
+					value={email}
+					onChange={setEmail}
+				/>
+			</div>
+			{/* </div> */}
 		</Section>
 	);
 }
