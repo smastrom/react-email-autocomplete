@@ -1,11 +1,12 @@
 {
 	"name": "react-autocomplete-email",
-	"version": "0.9.6",
+	"version": "0.9.4",
 	"private": false,
 	"homepage": "https://react-autocomplete-email.netlify.app",
 	"bugs": {
 		"url": "https://github.com/smastrom/react-autocomplete-email/issues"
 	},
+	"description": "Headless email input field with custom suggestions. Inspired by european flight booking websites.",
 	"keywords": [
 		"react",
 		"react-email",

@@ -1,6 +1,9 @@
+![npm](https://img.shields.io/npm/v/react-autocomplete-email?color=46c119) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/smastrom/react-autocomplete-email/tests.yml?branch=main&label=tests)
+![dependency-count](https://img.shields.io/badge/dependency%20count-0-success)
+
 # React Autocomplete Email
 
-[Demo and examples](https://react-autocomplete-email.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js)
+[Demo and examples](https://react-autocomplete-email.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS SSR](https://stackblitz.com/edit/nextjs-6ttxsv?file=pages%2F_app.js)
 
 ![react-autocomplete-email](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
 
