@@ -76,11 +76,17 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		const dropdownRef = useRef<Maybe<HTMLUListElement>>(null);
 		const liRefs = useRef<Maybe<HTMLLIElement>[] | []>([]);
 
+		// Placement trigger
+		const placeBeforeOpen = useRef(true);
+
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
+
 		const [placement, setPlacement] = useState<Placement>(Placement.Initial);
 		const prevPlacement = usePrevious(placement);
+
+		const isPlacementTop = placement === Placement.Top;
 
 		/**
 		 * 'focusedIndex' is used to trigger suggestions focus and set
@@ -134,10 +140,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			setItemState();
 		}, []);
 
-		useEffect(() => {
-			console.log(placement);
-		}, [placement]);
-
 		/* Effects */
 
 		useIsomorphicLayoutEffect(() => {
@@ -145,9 +147,6 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				uniqueId.current = getUniqueId();
 			}
 		}, []);
-
-		// We want to trigger below fn as soon as isOpen is true, then on scroll or resize
-		const triggerBeforeOpen = useRef(true);
 
 		// This moves the dropdown to the top if it's overflowing the viewport
 		useIsomorphicLayoutEffect(() => {
@@ -174,7 +173,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 						dropdownRef.current.style.bottom = `${inputHeight ?? 0}px`;
 					}
 
-					triggerBeforeOpen.current = false;
+					placeBeforeOpen.current = false;
 				}
 			}
 
@@ -185,9 +184,9 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			const setDropdownPlacement = isAutoPlacement ? _setDropdownPlacement : () => {};
 
 			if (isOpen) {
-				if (triggerBeforeOpen.current) {
+				if (placeBeforeOpen.current) {
 					if (!isAutoPlacement) {
-						triggerBeforeOpen.current = false;
+						placeBeforeOpen.current = false;
 						return setPlacement(Placement.Bottom);
 					}
 					setDropdownPlacement();
@@ -195,7 +194,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				scrollListener?.addEventListener('scroll', setDropdownPlacement, { passive: true });
 				window.addEventListener('resize', setDropdownPlacement, { passive: true });
 			} else {
-				triggerBeforeOpen.current = true;
+				placeBeforeOpen.current = true;
 			}
 
 			return () => {
@@ -205,10 +204,14 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		}, [isOpen, isAutoPlacement]);
 
 		useIsomorphicLayoutEffect(() => {
+			if (dropdownRef.current) {
+				dropdownRef.current.dataset.placement = placement === Placement.Top ? 'top' : 'bottom';
+			}
+
 			// Prevent first and useless re-renders
 			if (isAutoPlacement && prevPlacement !== undefined && prevPlacement !== placement) {
 				if (prevPlacement === Placement.Initial) {
-					if (placement === Placement.Top) {
+					if (isPlacementTop) {
 						return setSuggestions((prevSugg) => [...prevSugg.reverse()]);
 					}
 					return; // Return if initial placement is bottom
@@ -339,7 +342,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 						setFromHovered({ isDecrement: true });
 					}
 
-					if (placement === Placement.Top && itemState.hoveredIndex < 0) {
+					if (isPlacementTop && itemState.hoveredIndex < 0) {
 						setItemState(suggestions.length - 1, suggestions.length - 1); // Top placement specific
 					}
 					break;
@@ -400,7 +403,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
 
-					if (placement === Placement.Top && itemState.hoveredIndex === 0) {
+					if (isPlacementTop && itemState.hoveredIndex === 0) {
 						return;
 					}
 
@@ -418,7 +421,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 						setFromHovered({ isDecrement: false });
 					}
 
-					if (placement === Placement.Top && itemState.hoveredIndex === suggestions.length - 1) {
+					if (isPlacementTop && itemState.hoveredIndex === suggestions.length - 1) {
 						setItemState(-1, -1);
 						inputRef?.current?.focus();
 					}
