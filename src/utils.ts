@@ -1,4 +1,4 @@
-import { useLayoutEffect, useEffect, useRef } from 'react';
+import { useLayoutEffect, useEffect } from 'react';
 
 export const useIsomorphicLayoutEffect =
 	typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -22,14 +22,6 @@ export function getHonestValue(value: unknown, maxValue: number, defaultValue: n
 
 export function isFn(fn: unknown) {
 	return typeof fn === 'function';
-}
-
-export function usePrevious<T>(value: T) {
-	const prevState = useRef<T>();
-	useLayoutEffect(() => {
-		prevState.current = value;
-	});
-	return prevState.current;
 }
 
 // Get the first parent that has overflow "auto" or "scroll"

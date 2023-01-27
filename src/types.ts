@@ -21,7 +21,6 @@ export enum Elements {
 }
 
 export enum Placement {
-	Initial,
 	Top,
 	Bottom
 }

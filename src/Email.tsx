@@ -7,8 +7,7 @@ import {
 	useIsomorphicLayoutEffect,
 	alphanumericKeys,
 	getEmailData,
-	getScrollElement,
-	usePrevious
+	getScrollElement
 } from './utils';
 import {
 	Events,
@@ -82,9 +81,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		/* State */
 
 		const [suggestions, setSuggestions] = useState(baseList);
-
-		const [placement, setPlacement] = useState<Placement>(Placement.Initial);
-		const prevPlacement = usePrevious(placement);
+		const [placement, setPlacement] = useState<Placement>(Placement.Bottom);
 
 		const isPlacementTop = placement === Placement.Top;
 
@@ -100,13 +97,13 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		 * Keyboard handlers are able to set the new focus by 'resuming' from
 		 * any eventual 'hoveredIndex' triggered by pointer events and viceversa.
 		 */
-		const [itemState, _setItemState] = useState({
+		const [itemIndex, _setItemIndex] = useState({
 			focusedIndex: -1,
 			hoveredIndex: -1
 		});
 
-		function setItemState(focusedIndex = -1, hoveredIndex = -1) {
-			_setItemState({ focusedIndex, hoveredIndex });
+		function setItemIndex(focusedIndex = -1, hoveredIndex = -1) {
+			_setItemIndex({ focusedIndex, hoveredIndex });
 		}
 
 		/**
@@ -116,7 +113,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 		function setFromHovered({ isDecrement }: { isDecrement: boolean }) {
 			const index = isDecrement ? -1 : 1;
 
-			_setItemState((prevState) => ({
+			_setItemIndex((prevState) => ({
 				hoveredIndex: prevState.hoveredIndex + index,
 				focusedIndex: prevState.hoveredIndex + index
 			}));
@@ -137,7 +134,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 		const clearResults = useCallback(() => {
 			setSuggestions([]);
-			setItemState();
+			setItemIndex();
 		}, []);
 
 		/* Effects */
@@ -185,17 +182,14 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 
 			if (isOpen) {
 				if (placeBeforeOpen.current) {
-					if (!isAutoPlacement) {
-						placeBeforeOpen.current = false;
-						return setPlacement(Placement.Bottom);
-					}
-					setDropdownPlacement();
+					isAutoPlacement ? setDropdownPlacement() : (placeBeforeOpen.current = false);
 				}
-				scrollListener?.addEventListener('scroll', setDropdownPlacement, { passive: true });
-				window.addEventListener('resize', setDropdownPlacement, { passive: true });
 			} else {
-				placeBeforeOpen.current = true;
+				placeBeforeOpen.current = isAutoPlacement;
 			}
+
+			scrollListener?.addEventListener('scroll', setDropdownPlacement, { passive: true });
+			window.addEventListener('resize', setDropdownPlacement, { passive: true });
 
 			return () => {
 				scrollListener?.removeEventListener('scroll', setDropdownPlacement);
@@ -203,29 +197,11 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			};
 		}, [isOpen, isAutoPlacement]);
 
-		useIsomorphicLayoutEffect(() => {
-			if (dropdownRef.current) {
-				dropdownRef.current.dataset.placement = isPlacementTop ? 'top' : 'bottom';
-			}
-
-			// Prevent first and useless re-renders
-			if (isAutoPlacement && prevPlacement !== undefined && prevPlacement !== placement) {
-				if (prevPlacement === Placement.Initial) {
-					if (isPlacementTop) {
-						return setSuggestions((prevSugg) => [...prevSugg.reverse()]);
-					}
-					return; // Return if initial placement is bottom
-				}
-
-				return setSuggestions((prevSugg) => [...prevSugg.reverse()]); // From now on reverse when position changes
-			}
-		}, [placement, prevPlacement, isAutoPlacement, isPlacementTop]);
-
 		useEffect(() => {
-			if (itemState.focusedIndex >= 0) {
-				liRefs?.current[itemState.focusedIndex]?.focus();
+			if (itemIndex.focusedIndex >= 0) {
+				liRefs?.current[itemIndex.focusedIndex]?.focus();
 			}
-		}, [itemState.focusedIndex]);
+		}, [itemIndex.focusedIndex]);
 
 		useEffect(() => {
 			function handleOutsideClick(event: MouseEvent) {
@@ -235,7 +211,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 			}
 
 			if (!isOpen) {
-				setItemState();
+				setItemIndex();
 			}
 
 			document.addEventListener('click', handleOutsideClick);
@@ -338,28 +314,28 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
 
-					if (itemState.hoveredIndex >= 0) {
+					if (itemIndex.hoveredIndex >= 0) {
 						setFromHovered({ isDecrement: true });
 					}
 
-					if (isPlacementTop && itemState.hoveredIndex < 0) {
-						setItemState(suggestions.length - 1, suggestions.length - 1); // Top placement specific
+					if (isPlacementTop && itemIndex.hoveredIndex < 0) {
+						setItemIndex(suggestions.length - 1, suggestions.length - 1); // Top placement specific
 					}
 					break;
 
 				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
 
-					if (itemState.hoveredIndex >= 0) {
+					if (itemIndex.hoveredIndex >= 0) {
 						setFromHovered({ isDecrement: false });
 					}
 
-					if (itemState.hoveredIndex < 0) {
+					if (itemIndex.hoveredIndex < 0) {
 						/**
 						 * Focus always the first regardless of placement
 						 * This will give consistency for visually impaired users.
 						 */
-						setItemState(0, 0);
+						setItemIndex(0, 0);
 					}
 					break;
 			}
@@ -370,6 +346,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				event.stopPropagation();
 				return inputRef?.current?.focus();
 			}
+
 			switch (event.code) {
 				case 'Tab':
 					event.stopPropagation();
@@ -383,7 +360,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'Enter':
 				case 'Space':
 					event.preventDefault(), event.stopPropagation();
-					return handleSelect(event, itemState.focusedIndex, true);
+					return handleSelect(event, itemIndex.focusedIndex, true);
 
 				case 'Backspace':
 				case 'ArrowLeft':
@@ -403,13 +380,13 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'ArrowUp':
 					event.preventDefault(), event.stopPropagation();
 
-					if (isPlacementTop && itemState.hoveredIndex === 0) {
+					if (isPlacementTop && itemIndex.hoveredIndex === 0) {
 						return;
 					}
 
 					setFromHovered({ isDecrement: true });
 
-					if (placement === Placement.Bottom && itemState.hoveredIndex === 0) {
+					if (placement === Placement.Bottom && itemIndex.hoveredIndex === 0) {
 						inputRef?.current?.focus();
 					}
 					break;
@@ -417,12 +394,12 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				case 'ArrowDown':
 					event.preventDefault(), event.stopPropagation();
 
-					if (itemState.hoveredIndex < suggestions.length - 1) {
+					if (itemIndex.hoveredIndex < suggestions.length - 1) {
 						setFromHovered({ isDecrement: false });
 					}
 
-					if (isPlacementTop && itemState.hoveredIndex === suggestions.length - 1) {
-						setItemState(-1, -1);
+					if (isPlacementTop && itemIndex.hoveredIndex === suggestions.length - 1) {
+						setItemIndex(-1, -1);
 						inputRef?.current?.focus();
 					}
 					break;
@@ -511,6 +488,7 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 				/>
 				{isOpen && (
 					<ul
+						data-placement={isPlacementTop ? 'top' : 'bottom'}
 						role="listbox"
 						aria-label="List"
 						ref={dropdownRef}
@@ -521,17 +499,17 @@ export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
 							<li
 								role="option"
 								ref={(li) => (liRefs.current[index] = li)}
-								onPointerMove={() => setItemState(-1, index)}
-								onMouseMove={() => setItemState(-1, index)}
-								onPointerLeave={() => setItemState()}
-								onMouseLeave={() => setItemState()}
+								onPointerMove={() => setItemIndex(-1, index)}
+								onMouseMove={() => setItemIndex(-1, index)}
+								onPointerLeave={() => setItemIndex()}
+								onMouseLeave={() => setItemIndex()}
 								onClick={(event) => handleSelect(event, index, false)}
 								onKeyDown={handleListKeyDown}
 								key={domain}
 								aria-posinset={index + 1}
 								aria-setsize={suggestions.length}
-								aria-selected={index === itemState.focusedIndex}
-								data-active-email={index === itemState.hoveredIndex}
+								aria-selected={index === itemIndex.focusedIndex}
+								data-active-email={index === itemIndex.hoveredIndex}
 								tabIndex={-1}
 								{...getClasses(Elements.Suggestion)}
 							>
