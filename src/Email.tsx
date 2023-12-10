@@ -22,9 +22,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
          className,
          classNames,
          onSelect = () => {},
-         customPrefix = 'rbe_',
          children,
-         wrapperId,
          activeDataAttr,
          /* User events */
          onFocus: userOnFocus,
@@ -32,8 +30,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
          onInput: userOnInput,
          onKeyDown: userOnKeyDown = () => {},
          /* ARIA */
-         isInvalid,
-         dropdownAriaLabel = 'List',
+         dropdownAriaLabel = 'Suggestions',
          /* HTML */
          ...inputAttrs
       }: EmailProps,
@@ -50,8 +47,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
 
       const isTouched = useRef(false)
 
-      const uniqueId = useId()
-      const listId = `${customPrefix}${uniqueId}`
+      const listId = useId()
 
       const wrapperRef = useRef<Maybe<HTMLDivElement>>(null)
       const inputRef = useRef<Maybe<HTMLInputElement>>(null)
@@ -388,7 +384,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
       }
 
       return (
-         <div ref={wrapperRef} id={wrapperId} {...getWrapperClass()}>
+         <div ref={wrapperRef} {...getWrapperClass()}>
             <input
                {...inputAttrs}
                ref={(input) => mergeRefs(input as HTMLInputElement)}
