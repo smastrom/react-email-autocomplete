@@ -1,447 +1,528 @@
-import React, { forwardRef, useCallback, useEffect, useId, useRef, useState } from 'react'
-import { flushSync } from 'react-dom'
-import { cleanValue, getHonestValue, isFn, alphanumericKeys, getEmailData } from './utils'
-import { Events, OnSelectData, Elements, Maybe, EmailProps } from './types'
-
-/**
- * Controlled email input component.
- *
- * Read the documentation at: https://github.com/smastrom/react-email-autocomplete.
- */
-export const Email = forwardRef<HTMLInputElement, EmailProps>(
-   (
-      {
-         /* Core - Required */
-         onChange: setEmail,
-         value: _email,
-         baseList: _baseList,
-         /* Core - Optional */
-         refineList = [],
-         maxResults: _maxResults = 6,
-         minChars: _minChars = 2,
-         className,
-         classNames,
-         onSelect = () => {},
-         customPrefix = 'rbe_',
-         children,
-         wrapperId,
-         activeDataAttr,
-         /* User events */
-         onFocus: userOnFocus,
-         onBlur: userOnBlur,
-         onInput: userOnInput,
-         onKeyDown: userOnKeyDown = () => {},
-         /* ARIA */
-         isInvalid,
-         dropdownAriaLabel = 'List',
-         /* HTML */
-         ...inputAttrs
-      }: EmailProps,
-      externalRef
-   ) => {
-      /* User settings */
-
-      const isRefineMode = refineList?.length > 0
-      const maxResults = getHonestValue(_maxResults, 8, 6)
-      const minChars = getHonestValue(_minChars, 8, 2)
-      const baseList = _baseList.slice(0, maxResults)
-
-      /* Refs */
-
-      const isTouched = useRef(false)
-
-      const uniqueId = useId()
-      const listId = `${customPrefix}${uniqueId}`
-
-      const wrapperRef = useRef<Maybe<HTMLDivElement>>(null)
-      const inputRef = useRef<Maybe<HTMLInputElement>>(null)
-      const dropdownRef = useRef<Maybe<HTMLUListElement>>(null)
-      const liRefs = useRef<Maybe<HTMLLIElement>[] | []>([])
-
-      /* State */
-
-      const [suggestions, setSuggestions] = useState(baseList)
-
-      /**
-       * 'focusedIndex' is used to trigger suggestions focus and set
-       * 'aria-selected' to 'true', it can only be set by keyboard events.
-       *
-       * 'hoveredIndex' is used to keep track of both focused/hovered
-       * suggestion in order to set 'data-active-email="true"'.
-       *
-       * When focusedIndex is set, hoveredIndex is set to the same value.
-       * When hoveredIndex is set by pointer events, focusedIndex is set to -1.
-       *
-       * Keyboard handlers are able to set the new focus by 'resuming' from
-       * any eventual 'hoveredIndex' triggered by pointer events and viceversa.
-       */
-      const [activeSuggestion, _setActiveSuggestion] = useState({
-         focusedIndex: -1,
-         hoveredIndex: -1,
-      })
-
-      function setActiveSuggestion(focusedIndex: number, hoveredIndex: number) {
-         _setActiveSuggestion({ focusedIndex, hoveredIndex })
-      }
-
-      /**
-       * Resumes keyboard focus from an eventual hovered suggestion.
-       */
-      function setActiveSuggestionFromHover({ isDecrement }: { isDecrement: boolean }) {
-         const i = isDecrement ? -1 : 1
-
-         _setActiveSuggestion((prevState) => ({
-            hoveredIndex: prevState.hoveredIndex + i,
-            focusedIndex: prevState.hoveredIndex + i,
-         }))
-      }
-
-      /*  Reactive helpers */
-
-      const email = typeof _email !== 'string' ? '' : cleanValue(_email)
-      const [username] = email.split('@')
-
-      /**
-       * 'isOpen' conditionally renders the dropdown, we simply let the
-       * results length decide if it should be mounted or not.
-       */
-      const isOpen = isTouched.current && suggestions.length > 0 && username.length >= minChars
-
-      /* Callbacks */
-
-      const clearResults = useCallback(() => {
-         setSuggestions([])
-         setActiveSuggestion(-1, -1)
-      }, [])
-
-      /* Effects */
-
-      useEffect(() => {
-         if (activeSuggestion.focusedIndex >= 0) {
-            liRefs?.current[activeSuggestion.focusedIndex]?.focus()
-         }
-      }, [activeSuggestion.focusedIndex])
-
-      useEffect(() => {
-         function handleOutsideClick(e: MouseEvent) {
-            if (isOpen && !wrapperRef.current?.contains(e.target as Node)) {
-               clearResults()
-            }
-         }
-
-         if (!isOpen) setActiveSuggestion(-1, -1)
-
-         document.addEventListener('click', handleOutsideClick)
-
-         return () => {
-            document.removeEventListener('click', handleOutsideClick)
-         }
-      }, [isOpen, clearResults])
-
-      /* Event utils */
-
-      function handleCursorFocus() {
-         if (inputRef.current) {
-            inputRef.current.setSelectionRange(email.length, email.length)
-            inputRef.current.focus()
-         }
-      }
-
-      /* Value handlers */
-
-      function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
-         /**
-          * On first mount/change, suggestions state is init with baseList.
-          * As soon as the username is longer than minChars, the dropdown
-          * is immediately mounted as such domains should be displayed
-          * without any further condition by both modes.
-          *
-          * We also want the dropdown to be mounted exclusively
-          * when users type so we set this ref to true.
-          */
-         isTouched.current = true
-
-         const cleanEmail = cleanValue(e.target.value)
-         const { hasUsername, hasAt, hasDomain, domain: _domain } = getEmailData(cleanEmail, minChars)
-
-         if (hasUsername) {
-            if (!isRefineMode) {
-               hasAt ? clearResults() : setSuggestions(baseList)
-            } else {
-               if (hasDomain) {
-                  const _suggestions = refineList
-                     .filter((_suggestion) => _suggestion.startsWith(_domain))
-                     .slice(0, maxResults)
-                  if (_suggestions.length > 0) {
-                     /**
-                      * We also want to close the dropdown if users type exactly
-                      * the same domain of the first/only suggestion.
-                      *
-                      * This will also unmount the dropdown after selecting a suggestion.
-                      */
-                     _suggestions[0] === _domain ? clearResults() : setSuggestions(_suggestions)
-                  } else {
-                     clearResults()
-                  }
-               } else {
-                  setSuggestions(baseList)
-               }
-            }
-         }
-
-         setEmail(cleanEmail)
-      }
-
-      function dispatchSelect(
-         value: OnSelectData['value'],
-         keyboard: OnSelectData['keyboard'],
-         position: OnSelectData['position']
-      ) {
-         onSelect({ value, keyboard, position })
-      }
-
-      function handleSelect(
-         e: React.MouseEvent<HTMLLIElement | HTMLInputElement> | React.KeyboardEvent<HTMLLIElement | HTMLInputElement>,
-         activeSuggestion: number,
-         { isKeyboard, isInput }: { isKeyboard: boolean; isInput: boolean } = { isKeyboard: false, isInput: false }
-      ) {
-         e.preventDefault()
-         e.stopPropagation()
-
-         flushSync(() => {
-            let selectedEmail = ''
-
-            if (isInput) {
-               selectedEmail = liRefs.current[activeSuggestion]?.textContent as string
-            } else {
-               selectedEmail = e.currentTarget.textContent as string
-            }
-
-            selectedEmail = cleanValue(selectedEmail)
-
-            setEmail(selectedEmail)
-            dispatchSelect(selectedEmail, isKeyboard, activeSuggestion + 1)
-            clearResults()
-         })
-
-         inputRef.current?.focus()
-      }
-
-      /* Keyboard events */
-
-      function handleInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-         switch (e.code) {
-            case 'Tab':
-            case 'Escape':
-               e.stopPropagation()
-               return clearResults()
-
-            /**
-             * The conditions inside the following clauses allow the user to 'resume' and set the new focus
-             * from an eventual hovered item.
-             *
-             * Since the input is focused when first hovering suggestions,
-             * we must handle here the beginning of 'resume-from-hovered' logic here.
-             */
-            case 'ArrowUp':
-               e.preventDefault()
-               e.stopPropagation()
-
-               if (activeSuggestion.hoveredIndex >= 0) setActiveSuggestionFromHover({ isDecrement: true })
-
-               break
-
-            case 'ArrowDown':
-               e.preventDefault()
-               e.stopPropagation()
-
-               if (activeSuggestion.hoveredIndex >= 0) setActiveSuggestionFromHover({ isDecrement: false })
-               if (activeSuggestion.hoveredIndex < 0) setActiveSuggestion(0, 0)
-
-               break
-
-            case 'Enter':
-               e.preventDefault()
-               e.stopPropagation()
-
-               if (activeSuggestion.hoveredIndex >= 0)
-                  handleSelect(e, activeSuggestion.hoveredIndex, {
-                     isKeyboard: true,
-                     isInput: true,
-                  })
-
-               break
-         }
-      }
-
-      function handleListKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
-         if (alphanumericKeys.test(e.key)) {
-            e.stopPropagation()
-            return inputRef?.current?.focus()
-         }
-
-         switch (e.code) {
-            case 'Tab':
-               e.stopPropagation()
-               return clearResults()
-
-            case 'Escape':
-               e.preventDefault()
-               e.stopPropagation()
-
-               clearResults()
-               return handleCursorFocus()
-
-            case 'Enter':
-            case 'Space':
-               e.preventDefault()
-               e.stopPropagation()
-
-               return handleSelect(e, activeSuggestion.focusedIndex, {
-                  isKeyboard: true,
-                  isInput: false,
-               })
-
-            case 'Backspace':
-            case 'ArrowLeft':
-            case 'ArrowRight':
-               e.stopPropagation()
-               return inputRef?.current?.focus()
-
-            /**
-             * Same for the input handler, the conditions inside the
-             * clauses allow users to set the new focus from
-             * an eventual hovered item.
-             *
-             * Since we know that hoveredIndex is always set along with
-             * focusedIndex, we are sure that the condition executes
-             * also when no item was hovered using the pointer.
-             */
-            case 'ArrowUp':
-               e.preventDefault()
-               e.stopPropagation()
-
-               setActiveSuggestionFromHover({ isDecrement: true })
-
-               if (activeSuggestion.hoveredIndex === 0) inputRef?.current?.focus()
-
-               break
-
-            case 'ArrowDown':
-               e.preventDefault()
-               e.stopPropagation()
-
-               if (activeSuggestion.hoveredIndex < suggestions.length - 1)
-                  setActiveSuggestionFromHover({ isDecrement: false })
-               if (activeSuggestion.hoveredIndex === suggestions.length - 1) setActiveSuggestion(0, 0)
-
-               break
-         }
-      }
-
-      /* User Events */
-
-      /**
-       * User's focus/blur should be triggered only when the related
-       * target is not a suggestion, this will ensure proper behavior
-       * with external input validation.
-       */
-      function handleExternal(
-         e: React.FocusEvent<HTMLInputElement>,
-         eventHandler: React.FocusEventHandler<HTMLInputElement>
-      ) {
-         const isInternal = liRefs.current.some((li) => li === e.relatedTarget)
-         if (!isInternal || e.relatedTarget == null) eventHandler(e)
-      }
-
-      function getEvents(): Events {
-         return {
-            onKeyDown(e) {
-               handleInputKeyDown(e)
-               userOnKeyDown(e)
-            },
-            ...(isFn(userOnInput) ? { onInput: userOnInput } : {}),
-            ...(isFn(userOnBlur) ? { onBlur: (e) => handleExternal(e, userOnBlur!) } : {}),
-            ...(isFn(userOnFocus) ? { onFocus: (e) => handleExternal(e, userOnFocus!) } : {}),
-         }
-      }
-
-      /* Props */
-
-      function mergeRefs(inputElement: HTMLInputElement) {
-         inputRef.current = inputElement
-         if (externalRef) {
-            // eslint-disable-next-line no-extra-semi
-            ;(externalRef as React.MutableRefObject<Maybe<HTMLInputElement>>).current = inputElement
-         }
-      }
-
-      function getWrapperClass() {
-         return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() || undefined }
-      }
-
-      function getClasses(elementName: Elements) {
-         if (classNames?.[elementName]) {
-            return { className: classNames[elementName] }
-         }
-         return {}
-      }
-
-      return (
-         <div ref={wrapperRef} id={wrapperId} {...getWrapperClass()}>
-            <input
-               {...inputAttrs}
-               ref={(input) => mergeRefs(input as HTMLInputElement)}
-               onChange={(e) => handleEmailChange(e)}
-               aria-expanded={isOpen}
-               value={email}
-               type="text"
-               role="combobox"
-               autoComplete="off"
-               aria-autocomplete="list"
-               aria-invalid={isInvalid}
-               {...(isOpen ? { 'aria-controls': listId } : {})}
-               {...getClasses(Elements.Input)}
-               {...getEvents()}
-            />
-            {isOpen && (
-               <ul
-                  role="listbox"
-                  aria-label={dropdownAriaLabel}
-                  ref={dropdownRef}
-                  id={listId}
-                  {...getClasses(Elements.Dropdown)}
-               >
-                  {suggestions.map((domain, i) => (
-                     <li
-                        role="option"
-                        ref={(li) => (liRefs.current[i] = li)}
-                        onPointerMove={() => setActiveSuggestion(-1, i)}
-                        onMouseMove={() => setActiveSuggestion(-1, i)}
-                        onPointerLeave={() => setActiveSuggestion(-1, -1)}
-                        onMouseLeave={() => setActiveSuggestion(-1, -1)}
-                        onClick={(e) => handleSelect(e, i, { isKeyboard: false, isInput: false })}
-                        onKeyDown={handleListKeyDown}
-                        key={domain}
-                        aria-posinset={i + 1}
-                        aria-setsize={suggestions.length}
-                        aria-selected={i === activeSuggestion.focusedIndex}
-                        tabIndex={-1}
-                        {...getClasses(Elements.Suggestion)}
-                        {...{
-                           [activeDataAttr ? activeDataAttr : 'data-active-email']: i === activeSuggestion.hoveredIndex,
-                        }}
-                     >
-                        <span {...getClasses(Elements.Username)}>{username}</span>
-                        <span {...getClasses(Elements.Domain)}>@{domain}</span>
-                     </li>
-                  ))}
-               </ul>
-            )}
-            {children}
-         </div>
-      )
-   }
-)
-
-Email.displayName = 'Email'
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import {
+	cleanValue,
+	getUniqueId,
+	getHonestValue,
+	isFn,
+	useIsomorphicLayoutEffect,
+	alphanumericKeys,
+	getEmailData,
+	getScrollElement
+} from './utils';
+import {
+	Events,
+	OnSelectData,
+	Elements,
+	Maybe,
+	Email as Export,
+	EmailProps,
+	Placement
+} from './types';
+
+export const Email: typeof Export = forwardRef<HTMLInputElement, EmailProps>(
+	(
+		{
+			/* Core - Required */
+			onChange: setEmail,
+			value: _email,
+			baseList: _baseList,
+			/* Core - Optional */
+			refineList = [],
+			maxResults: _maxResults = 6,
+			minChars: _minChars = 2,
+			className,
+			classNames,
+			onSelect = () => {},
+			customPrefix = 'rbe_',
+			children,
+			wrapperId,
+			placement: _placement = 'auto',
+			/* User events */
+			onFocus: userOnFocus,
+			onBlur: userOnBlur,
+			onInput: userOnInput,
+			onKeyDown: userOnKeyDown = () => {},
+			/* HTML attributes */
+			id,
+			name,
+			placeholder,
+			readOnly,
+			disabled,
+			required,
+			pattern,
+			/* ARIA */
+			isInvalid
+		},
+		externalRef
+	) => {
+		/* User settings */
+
+		const isRefineMode = refineList?.length > 0;
+		const maxResults = getHonestValue(_maxResults, 8, 6);
+		const minChars = getHonestValue(_minChars, 8, 2);
+		const baseList = _baseList.slice(0, maxResults);
+		const isAutoPlacement = _placement === 'auto';
+
+		/* Refs */
+
+		const isTouched = useRef(false);
+
+		const uniqueId = useRef<string>('');
+		const listId = `${customPrefix}${uniqueId.current}`;
+
+		const wrapperRef = useRef<Maybe<HTMLDivElement>>(null);
+		const inputRef = useRef<Maybe<HTMLInputElement>>(null);
+		const dropdownRef = useRef<Maybe<HTMLUListElement>>(null);
+		const liRefs = useRef<Maybe<HTMLLIElement>[] | []>([]);
+
+		// Placement trigger
+		const placeBeforeOpen = useRef(true);
+
+		/* State */
+
+		const [suggestions, setSuggestions] = useState(baseList);
+		const [placement, setPlacement] = useState<Placement>(Placement.Bottom);
+
+		const isPlacementTop = placement === Placement.Top;
+
+		/**
+		 * 'focusedIndex' is used to trigger suggestions focus and set
+		 * 'aria-selected' to 'true', it can only be set by keyboard events.
+		 * 'hoveredIndex' is used to keep track of both focused/hovered
+		 * suggestion in order to set 'data-active-email="true"'.
+		 *
+		 * When focusedIndex is set, hoveredIndex is set to the same value.
+		 * When hoveredIndex is set by pointer events, focusedIndex is set to -1.
+		 *
+		 * Keyboard handlers are able to set the new focus by 'resuming' from
+		 * any eventual 'hoveredIndex' triggered by pointer events and viceversa.
+		 */
+		const [itemIndex, _setItemIndex] = useState({
+			focusedIndex: -1,
+			hoveredIndex: -1
+		});
+
+		function setItemIndex(focusedIndex = -1, hoveredIndex = -1) {
+			_setItemIndex({ focusedIndex, hoveredIndex });
+		}
+
+		/**
+		 * This function 'resumes' focusing from an eventual hovered suggestion.
+		 * Index ordering doesn't mutate with placement.
+		 */
+		function setFromHovered({ isDecrement }: { isDecrement: boolean }) {
+			const index = isDecrement ? -1 : 1;
+
+			_setItemIndex((prevState) => ({
+				hoveredIndex: prevState.hoveredIndex + index,
+				focusedIndex: prevState.hoveredIndex + index
+			}));
+		}
+
+		/*  Reactive helpers */
+
+		const email = typeof _email !== 'string' ? '' : cleanValue(_email);
+		const [username] = email.split('@');
+
+		/**
+		 * 'isOpen' conditionally renders the dropdown, we simply let the
+		 * results length decide if it should be mounted or not.
+		 */
+		const isOpen = isTouched.current && suggestions.length > 0 && username.length >= minChars;
+
+		/* Callbacks */
+
+		const clearResults = useCallback(() => {
+			setSuggestions([]);
+			setItemIndex();
+		}, []);
+
+		/* Effects */
+
+		useIsomorphicLayoutEffect(() => {
+			if (!uniqueId.current) {
+				uniqueId.current = getUniqueId();
+			}
+		}, []);
+
+		// This moves the dropdown to the top if it's overflowing the viewport
+		useIsomorphicLayoutEffect(() => {
+			function _setDropdownPlacement() {
+				if (inputRef.current && dropdownRef.current && scrollElement) {
+					const availableVH = window.visualViewport?.height || 0;
+
+					const { bottom: scrollBottom } = scrollElement.getBoundingClientRect();
+					const { height: dropdownHeight } = dropdownRef.current.getBoundingClientRect();
+					const { bottom: inputBottom, height: inputHeight } =
+						inputRef.current.getBoundingClientRect();
+
+					// Use bottom as main condition, as soon there's space, place it there
+					const isPlacementBottom =
+						(isWindowScroll ? availableVH : scrollBottom) - inputBottom >= dropdownHeight;
+
+					dropdownRef.current.style.removeProperty('top');
+
+					if (isPlacementBottom) {
+						setPlacement(Placement.Bottom);
+						dropdownRef.current.style.removeProperty('bottom');
+					} else {
+						setPlacement(Placement.Top);
+						dropdownRef.current.style.bottom = `${inputHeight ?? 0}px`;
+					}
+
+					placeBeforeOpen.current = false;
+				}
+			}
+
+			const scrollElement = getScrollElement(inputRef.current as HTMLElement);
+			const isWindowScroll = scrollElement === document.documentElement;
+			const scrollListener = isWindowScroll ? document : scrollElement;
+
+			const setDropdownPlacement = isAutoPlacement ? _setDropdownPlacement : () => {};
+
+			if (isOpen) {
+				if (placeBeforeOpen.current) {
+					isAutoPlacement ? setDropdownPlacement() : (placeBeforeOpen.current = false);
+				}
+			} else {
+				placeBeforeOpen.current = isAutoPlacement;
+			}
+
+			scrollListener?.addEventListener('scroll', setDropdownPlacement, { passive: true });
+			window.addEventListener('resize', setDropdownPlacement, { passive: true });
+
+			return () => {
+				scrollListener?.removeEventListener('scroll', setDropdownPlacement);
+				window.removeEventListener('resize', setDropdownPlacement);
+			};
+		}, [isOpen, isAutoPlacement]);
+
+		useEffect(() => {
+			if (itemIndex.focusedIndex >= 0) {
+				liRefs?.current[itemIndex.focusedIndex]?.focus();
+			}
+		}, [itemIndex.focusedIndex]);
+
+		useEffect(() => {
+			function handleOutsideClick(event: MouseEvent) {
+				if (isOpen && !wrapperRef.current?.contains(event.target as Node)) {
+					clearResults();
+				}
+			}
+
+			if (!isOpen) {
+				setItemIndex();
+			}
+
+			document.addEventListener('click', handleOutsideClick);
+
+			return () => {
+				document.removeEventListener('click', handleOutsideClick);
+			};
+		}, [isOpen, clearResults]);
+
+		/* Event utils */
+
+		function handleCursorFocus() {
+			if (inputRef.current) {
+				inputRef.current.setSelectionRange(email.length, email.length);
+				inputRef.current.focus();
+			}
+		}
+
+		/* Value handlers */
+
+		function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
+			/**
+			 * On first mount/change, suggestions state is init with baseList.
+			 * As soon as the username is longer than minChars, the dropdown
+			 * is immediately mounted as such domains should be displayed
+			 * without any further condition by both modes.
+			 *
+			 * We also want the dropdown to be mounted exclusively
+			 * when users type so we set this ref to true.
+			 */
+			isTouched.current = true;
+
+			const cleanEmail = cleanValue(event.target.value);
+			const { hasUsername, hasAt, hasDomain, domain: _domain } = getEmailData(cleanEmail, minChars);
+
+			if (hasUsername) {
+				if (!isRefineMode) {
+					hasAt ? clearResults() : setSuggestions(baseList);
+				} else {
+					if (hasDomain) {
+						const _suggestions = refineList
+							.filter((_suggestion) => _suggestion.startsWith(_domain))
+							.slice(0, maxResults);
+						if (_suggestions.length > 0) {
+							/**
+							 * We also want to close the dropdown if users type exactly
+							 * the same domain of the first/only suggestion.
+							 *
+							 * This will also unmount the dropdown after selecting a suggestion.
+							 */
+							_suggestions[0] === _domain ? clearResults() : setSuggestions(_suggestions);
+						} else {
+							clearResults();
+						}
+					} else {
+						setSuggestions(baseList);
+					}
+				}
+			}
+
+			setEmail(cleanEmail);
+		}
+
+		function dispatchSelect(
+			value: OnSelectData['value'],
+			keyboard: OnSelectData['keyboard'],
+			position: OnSelectData['position']
+		) {
+			onSelect({ value, keyboard, position });
+		}
+
+		function handleSelect(
+			event: React.MouseEvent<HTMLLIElement> | React.KeyboardEvent<HTMLLIElement>,
+			itemIndex: number,
+			isKeyboard: boolean
+		) {
+			event.preventDefault(), event.stopPropagation();
+			const selectedEmail = cleanValue(event.currentTarget.textContent as string);
+			setEmail(selectedEmail);
+			clearResults();
+			requestAnimationFrame(() => {
+				dispatchSelect(selectedEmail, isKeyboard, itemIndex + 1);
+			});
+		}
+
+		/* Keyboard events */
+
+		function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+			switch (event.code) {
+				case 'Tab':
+				case 'Escape':
+					event.stopPropagation();
+					return clearResults();
+
+				/**
+				 * The conditions inside the following clauses
+				 * allow the user to 'resume' and set the new focus
+				 * from an eventual hovered item.
+				 */
+				case 'ArrowUp':
+					event.preventDefault(), event.stopPropagation();
+
+					if (itemIndex.hoveredIndex >= 0) {
+						setFromHovered({ isDecrement: true });
+					}
+
+					if (isPlacementTop && itemIndex.hoveredIndex < 0) {
+						setItemIndex(suggestions.length - 1, suggestions.length - 1); // Top placement specific
+					}
+					break;
+
+				case 'ArrowDown':
+					event.preventDefault(), event.stopPropagation();
+
+					if (itemIndex.hoveredIndex >= 0) {
+						setFromHovered({ isDecrement: false });
+					}
+
+					if (itemIndex.hoveredIndex < 0) {
+						/**
+						 * Focus always the first regardless of placement
+						 * This will give consistency for visually impaired users.
+						 */
+						setItemIndex(0, 0);
+					}
+					break;
+			}
+		}
+
+		function handleListKeyDown(event: React.KeyboardEvent<HTMLLIElement>) {
+			if (alphanumericKeys.test(event.key)) {
+				event.stopPropagation();
+				return inputRef?.current?.focus();
+			}
+
+			switch (event.code) {
+				case 'Tab':
+					event.stopPropagation();
+					return clearResults();
+
+				case 'Escape':
+					event.preventDefault(), event.stopPropagation();
+					clearResults();
+					return handleCursorFocus();
+
+				case 'Enter':
+				case 'Space':
+					event.preventDefault(), event.stopPropagation();
+					return handleSelect(event, itemIndex.focusedIndex, true);
+
+				case 'Backspace':
+				case 'ArrowLeft':
+				case 'ArrowRight':
+					event.stopPropagation();
+					return inputRef?.current?.focus();
+
+				/**
+				 * Same for the input handler, the conditions inside the
+				 * clauses allow users to set the new focus from
+				 * an eventual hovered item.
+				 *
+				 * Since we know that hoveredIndex is always set along with
+				 * focusedIndex, we are sure that the condition executes
+				 * also when no item was hovered.
+				 */
+				case 'ArrowUp':
+					event.preventDefault(), event.stopPropagation();
+
+					if (isPlacementTop && itemIndex.hoveredIndex === 0) {
+						return;
+					}
+
+					setFromHovered({ isDecrement: true });
+
+					if (placement === Placement.Bottom && itemIndex.hoveredIndex === 0) {
+						inputRef?.current?.focus();
+					}
+					break;
+
+				case 'ArrowDown':
+					event.preventDefault(), event.stopPropagation();
+
+					if (itemIndex.hoveredIndex < suggestions.length - 1) {
+						setFromHovered({ isDecrement: false });
+					}
+
+					if (isPlacementTop && itemIndex.hoveredIndex === suggestions.length - 1) {
+						setItemIndex(-1, -1);
+						inputRef?.current?.focus();
+					}
+					break;
+			}
+		}
+
+		/* User Events */
+
+		/**
+		 * User's focus/blur should be triggered only when the related
+		 * target is not a suggestion, this will ensure proper behavior
+		 * with external input validation.
+		 */
+		function handleExternal(
+			event: React.FocusEvent<HTMLInputElement>,
+			eventHandler: React.FocusEventHandler<HTMLInputElement>
+		) {
+			const isInternal = liRefs.current.some((li) => li === event.relatedTarget);
+			if (!isInternal || event.relatedTarget == null) {
+				eventHandler(event);
+			}
+		}
+
+		function getEvents(): Events {
+			return {
+				onKeyDown: (event) => {
+					handleInputKeyDown(event);
+					userOnKeyDown(event);
+				},
+				...(isFn(userOnInput) ? { onInput: userOnInput } : {}),
+				...(isFn(userOnBlur) ? { onBlur: (event) => handleExternal(event, userOnBlur!) } : {}),
+				...(isFn(userOnFocus) ? { onFocus: (event) => handleExternal(event, userOnFocus!) } : {})
+			};
+		}
+
+		/* Props */
+
+		function mergeRefs(inputElement: HTMLInputElement) {
+			inputRef.current = inputElement;
+			if (externalRef) {
+				(externalRef as React.MutableRefObject<Maybe<HTMLInputElement>>).current = inputElement;
+			}
+		}
+
+		function getWrapperClass() {
+			return { className: `${className || ''} ${classNames?.wrapper || ''}`.trim() || undefined };
+		}
+
+		function getClasses(elementName: Elements) {
+			if (classNames?.[elementName]) {
+				return {
+					className: classNames[elementName]
+				};
+			}
+			return {};
+		}
+
+		/*  HTML Attributes */
+
+		const userAttrs = {
+			id,
+			name,
+			placeholder,
+			readOnly,
+			required,
+			disabled,
+			pattern
+		};
+
+		return (
+			<div ref={wrapperRef} id={wrapperId} {...getWrapperClass()}>
+				<input
+					ref={(input) => mergeRefs(input as HTMLInputElement)}
+					onChange={(event) => handleEmailChange(event)}
+					aria-expanded={isOpen}
+					value={email}
+					type="text"
+					role="combobox"
+					autoComplete="off"
+					aria-autocomplete="list"
+					aria-invalid={isInvalid}
+					{...(isOpen ? { 'aria-controls': listId } : {})}
+					{...getClasses(Elements.Input)}
+					{...getEvents()}
+					{...userAttrs}
+				/>
+				{isOpen && (
+					<ul
+						data-placement={isPlacementTop ? 'top' : 'bottom'}
+						role="listbox"
+						aria-label="List"
+						ref={dropdownRef}
+						id={listId}
+						{...getClasses(Elements.Dropdown)}
+					>
+						{suggestions.map((domain, index) => (
+							<li
+								role="option"
+								ref={(li) => (liRefs.current[index] = li)}
+								onPointerMove={() => setItemIndex(-1, index)}
+								onMouseMove={() => setItemIndex(-1, index)}
+								onPointerLeave={() => setItemIndex()}
+								onMouseLeave={() => setItemIndex()}
+								onClick={(event) => handleSelect(event, index, false)}
+								onKeyDown={handleListKeyDown}
+								key={domain}
+								aria-posinset={index + 1}
+								aria-setsize={suggestions.length}
+								aria-selected={index === itemIndex.focusedIndex}
+								data-active-email={index === itemIndex.hoveredIndex}
+								tabIndex={-1}
+								{...getClasses(Elements.Suggestion)}
+							>
+								<span {...getClasses(Elements.Username)}>{username}</span>
+								<span {...getClasses(Elements.Domain)}>@{domain}</span>
+							</li>
+						))}
+					</ul>
+				)}
+				{children}
+			</div>
+		);
+	}
+);
+
+Email.displayName = 'Email';

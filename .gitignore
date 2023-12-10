@@ -1,15 +1,10 @@
+yarn-error.log*
 node_modules
 dist
-
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
-
 cypress/downloads
 cypress/videos
-cypress/screenshots
-
 *.tgz
 .eslintcache
-
-pnpm-lock.yaml
