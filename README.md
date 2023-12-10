@@ -15,7 +15,7 @@
 - Fully accessible with superlative keyboard controls
 - Forward any event and attribute to the `<input />` element or control it with React Hook Form
 
-[Demo and examples](https://@smastrom/react-email-autocomplete.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS](https://stackblitz.com/edit/nextjs-6ttxsv?file=pages%2F_app.js)
+[Demo and examples](https://@smastrom/react-email-autocomplete.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS](https://stackblitz.com/edit/stackblitz-starters-f36nmm?file=app%2Fpage.tsx)
 
 <br />
 
@@ -74,7 +74,7 @@ function App() {
 <details><summary><strong>NextJS App Router</strong></summary>
 <br />
 
-`src/components/Email.tsx`
+`components/Email.tsx`
 
 ```tsx
 'use client'
@@ -407,7 +407,7 @@ function App() {
 
 Or with NextJS App router:
 
-`src/components/Email.tsx`
+`components/Email.tsx`
 
 ```tsx
 'use client'
@@ -416,7 +416,7 @@ import {
   Email as EmailAutocomplete,
   useLocalizedList,
 } from '@smastrom/react-email-autocomplete'
-import { emailProviders } from '@/src/static/locales'
+import { emailProviders } from '@/static/locales'
 
 export function Email({ lang }: { lang: string }) {
   const baseList = useLocalizedList(emailProviders, lang)
