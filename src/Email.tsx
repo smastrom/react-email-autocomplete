@@ -128,10 +128,12 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
 
          if (!isOpen) setActiveSuggestion(-1, -1)
 
-         document.addEventListener('click', handleOutsideClick)
+         document.addEventListener('mousedown', handleOutsideClick)
+         window.addEventListener('blur', clearResults)
 
          return () => {
-            document.removeEventListener('click', handleOutsideClick)
+            document.removeEventListener('mousedown', handleOutsideClick)
+            window.removeEventListener('blur', clearResults)
          }
       }, [isOpen, clearResults])
 
