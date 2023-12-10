@@ -55,17 +55,17 @@ export type Props = {
    placement?: 'auto' | 'bottom'
    /** Custom prefix for dropdown unique ID.
     *
-    * @deprecated Since version 1.1.0 it is generated automatically.
+    * @deprecated Since version 1.2.0 it is generated automatically.
     */
    customPrefix?: string
    /** DOM ID of the wrapper element.
     *
-    * @deprecated Since version 1.1.0
+    * @deprecated Since version 1.2.0
     */
    wrapperId?: string
    /** Input field validity state for assistive technologies.
     *
-    * @deprecated Since version 1.1.0. Use `aria-invalid` instead.
+    * @deprecated Since version 1.2.0. Use `aria-invalid` instead.
     */
    isInvalid?: boolean
 }

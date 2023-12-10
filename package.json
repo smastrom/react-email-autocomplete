@@ -1,6 +1,6 @@
 {
    "name": "@smastrom/react-email-autocomplete",
-   "version": "1.0.0",
+   "version": "1.2.0",
    "private": false,
    "homepage": "https://react-email-autocomplete.netlify.app",
    "bugs": {
