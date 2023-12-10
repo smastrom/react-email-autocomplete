@@ -62,7 +62,8 @@
 }
 
 .eventsSuggestion:hover,
-.eventsSuggestion:focus {
+.eventsSuggestion:focus,
+.eventsSuggestion:focus-visible {
    outline: none;
 }
 

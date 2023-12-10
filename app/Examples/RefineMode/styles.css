@@ -78,6 +78,12 @@
    outline: none;
 }
 
+.refineSuggestion:hover,
+.refineSuggestion:focus,
+.refineSuggestion:focus-visible {
+   outline: none;
+}
+
 .refineUsername {
    font-weight: 400;
    padding-right: 0.1em;

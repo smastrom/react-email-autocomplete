@@ -50,7 +50,9 @@
    cursor: pointer;
 }
 
-.basicSuggestion:focus {
+.basicSuggestion:hover,
+.basicSuggestion:focus,
+.basicSuggestion:focus-visible {
    outline: none;
 }
 
