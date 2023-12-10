@@ -1,64 +1,35 @@
+# React Email Autocomplete
+
 ![npm](https://img.shields.io/npm/v/@smastrom/react-email-autocomplete?color=46c119) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/smastrom/react-email-autocomplete/tests.yml?branch=main&label=tests)
 ![dependency-count](https://img.shields.io/badge/dependency%20count-0-success)
 
-# React Email Autocomplete
+| Before typing `@`                                                                                       | After typing `@` (optional)                                                                             |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| ![@smastrom/react-email-autocomplete](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![@smastrom/react-email-autocomplete](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
 
-[Demo and examples](https://@smastrom/react-email-autocomplete.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS SSR](https://stackblitz.com/edit/nextjs-6ttxsv?file=pages%2F_app.js)
+<br />
 
-![@smastrom/react-email-autocomplete](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png)
-
-**React Email Autocomplete** is an unstyled, zero-dependency controlled component inspired by multiple european flight booking websites. As soon as users start typing their email address, it will suggest the most common email providers.
+**React Email Autocomplete** is an unstyled, zero-dependency component inspired by some european flight booking websites. As soon as users start typing their email address, it will suggest the most common email providers.
 
 - Completely unstyled and white labeled (ships with zero CSS)
-- Fully accessible with great keyboard controls
-- Forward most common event handlers and attributes
-- Controllable with React Hook Form
+- Fully accessible with superlative keyboard controls
+- Forward any event and attribute to the `<input />` element or control it with React Hook Form
 
-> :bulb: **React Email Autocomplete** also ships with a curated list of ~160 world's most popular email providers to get started quicky (thanks to **@mailcheck**).
+[Demo and examples](https://@smastrom/react-email-autocomplete.netlify.app) — [Stackblitz](https://stackblitz.com/edit/react-4kufqv?file=src/App.js) — [NextJS](https://stackblitz.com/edit/nextjs-6ttxsv?file=pages%2F_app.js)
 
 <br />
 
 ## :floppy_disk: Installation
 
 ```bash
-npm i -S @smastrom/react-email-autocomplete
-# yarn add @smastrom/react-email-autocomplete
-# pnpm add @smastrom/react-email-autocomplete
+pnpm add @smastrom/react-email-autocomplete
+# npm i @smastrom/react-email-autocomplete
+# yarn add @smastrom/react-email-autocomplete
 ```
 
 <br />
 
-## :cyclone: Props
-
-| Prop           | Description                                           | Type                                   | Default   | Required           |
-| -------------- | ----------------------------------------------------- | -------------------------------------- | --------- | ------------------ |
-| `value`        | State or portion of state to hold the email           | _string_                               | undefined | :white_check_mark: |
-| `onChange`     | State setter or custom dispatcher to update the email | _OnChange_                             | undefined | :white_check_mark: |
-| `baseList`     | Domains to suggest while typing the username          | _string[]_                             | undefined | :white_check_mark: |
-| `refineList`   | Domains to refine suggestions after typing `@`        | _string[]_                             | []        | :x:                |
-| `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
-| `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
-| `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
-| `placement`    | Dropdown placement                                    | _auto_ \| _bottom_                     | `auto`    | :x:                |
-| `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
-| `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
-| `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
-| `customPrefix` | Custom prefix for dropdown unique ID                  | _string_                               | `rbe_`    | :x:                |
-| `isInvalid`    | Value of `aria-invalid`                               | _boolean_                              | undefined | :x:                |
-
-### Are also available:
-
-- Events: `onBlur`, `onFocus`, `onInput` and `onKeyDown`.
-
-- Attributes: `id`, `name`, `placeholder`, `required`, `disabled`, `readOnly` and `pattern`.
-
-- React's `ref`.
-
-> :bulb: They are all forwarded to the `<input />` element.
-
-<br />
-
-## :art: Styling
+## :art: Usage / Styling
 
 The component renders a single `div` with a very simple structure:
 
@@ -70,42 +41,100 @@ Wrapper — div
         └──[username - span:first-of-type] [@domain.com - span:last-of-type]
 ```
 
-You can either specify `classNames` for any element you'd like to style:
+Specify `classNames` for each element you'd like to style:
 
 ```jsx
-const myClassNames = {
+import { Email } from '@smastrom/react-email-autocomplete'
+
+const classNames = {
   wrapper: 'my-wrapper',
   input: 'my-input',
   dropdown: 'my-dropdown',
   suggestion: 'my-suggestion',
   username: 'my-username',
-  domain: 'my-domain'
-};
+  domain: 'my-domain',
+}
+
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com']
 
 function App() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('')
 
   return (
     <Email
-      classNames={myClassNames}
+      classNames={classNames}
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
-  );
+  )
 }
 ```
+
+<details><summary><strong>NextJS App Router</strong></summary>
+<br />
+
+`src/components/Email.tsx`
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { Email as EmailAutocomplete } from '@smastrom/react-email-autocomplete'
+
+const classNames = {
+  wrapper: 'my-wrapper',
+  input: 'my-input',
+  dropdown: 'my-dropdown',
+  suggestion: 'my-suggestion',
+  username: 'my-username',
+  domain: 'my-domain',
+}
+
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com']
+
+export function Email() {
+  const [email, setEmail] = useState('')
+
+  return (
+    <EmailAutocomplete
+      classNames={classNames}
+      baseList={baseList}
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
+      value={email}
+    />
+  )
+}
+```
+
+`app/page.tsx`
+
+```tsx
+import { Email } from '@/components/Email'
+
+export default function Home() {
+  return (
+    <main>
+      {/* ... */}
+      <Email />
+      {/* ... */}
+    </main>
+  )
+}
+```
+
+</details>
 
 <details><summary><strong>TypeScript</strong></summary>
 <br />
 
 ```ts
-import type { ClassNames } from '@smastrom/react-email-autocomplete';
+import type { ClassNames } from '@smastrom/react-email-autocomplete'
 
 const myClassNames: ClassNames = {
   wrapper: 'my-wrapper',
-  input: 'my-input'
-};
+  input: 'my-input',
+}
 ```
 
 </details>
@@ -124,24 +153,6 @@ You can add a this property in VSCode's `settings.json` in order to enable autco
 ```
 
 </details>
-
-Or add a class to the wrapper `div` via `className` prop and target any child:
-
-```css
-.my-wrapper {
-  /* Wrapper */
-}
-
-.my-wrapper input {
-  /* Input field */
-}
-
-.my-wrapper li > span:first-of-type {
-  /* Username */
-}
-
-/* ... */
-```
 
 <details><summary><strong>Basic styles</strong></summary>
 
@@ -182,7 +193,7 @@ This package ships with **zero css**. Initial styles enough to see the component
 
 ### Focus/Hover styles
 
-Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-active-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor was hovering it).
+Although you can target the pseudo classes `:hover` and `:focus`, it is recommended instead to target the attribute `data-active-email` in order to avoid `:hover` styles to be applied to a suggestion as soon as the dropdown is opened (in case the cursor is hovering it).
 
 ```css
 .my-suggestion[data-active-email='true'] {
@@ -194,27 +205,25 @@ Although you can target the pseudo classes `:hover` and `:focus`, it is recommen
 }
 ```
 
-### Dynamic Dropdown Position
+The attribute name can also be customized via `activeDataAttr` prop:
 
-According to the available space, the dropdown will automatically be positioned above or below the input field.
-
-Do not play with `top` or `bottom` properties. Let the component handle it. Just define the positioning and the distance from the input field:
-
-```css
-.wrapper {
-  position: relative;
-}
-
-.dropdown {
-  position: absolute;
-  margin-top: 5px; /* Distance when placed below */
-  margin-bottom: 5px; /* Distance when placed above */
-}
+```jsx
+<Email
+  activeDataAttr="data-custom-attr"
+  classNames={{
+    ...classNames,
+    suggestion: 'my-suggestion',
+  }}
+  baseList={baseList}
+  value={email}
+/>
 ```
 
-The feature can be disabled placing the dropdown always below the input field. Set the `placement` prop to `bottom`. Please note that the above CSS must be added anyway.
-
-<br />
+```css
+.my-suggestion[data-custom-attr='true'] {
+  background-color: aliceblue;
+}
+```
 
 ## :dna: Modes
 
@@ -227,7 +236,7 @@ Once users start typing, it displays a list of _base_ suggestions and hides it o
 | ![@smastrom/react-email-autocomplete](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![@smastrom/react-email-autocomplete](https://i.ibb.co/ZgWCPkg/Screenshot-2022-12-07-alle-13-52-46.png) |
 
 ```jsx
-import { Email } from '@smastrom/react-email-autocomplete';
+import { Email } from '@smastrom/react-email-autocomplete'
 
 const baseList = [
   'gmail.com',
@@ -235,20 +244,19 @@ const baseList = [
   'hotmail.com',
   'aol.com',
   'msn.com',
-  'proton.me'
-];
+  'proton.me',
+]
 
 function App() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('')
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
-  );
+  )
 }
 ```
 
@@ -263,7 +271,7 @@ Acts like **Basic Mode** until users type `@` . Then as they start typing the do
 All you have to do is to provide a second array of domains to `refineList` prop. This package ships with a [curated list](https://github.com/smastrom/@smastrom/react-email-autocomplete/blob/main/src/domains.json) of the ~160 most popular world domains that you can directly import and use (thanks to **@mailcheck**):
 
 ```jsx
-import { Email, domains } from '@smastrom/react-email-autocomplete';
+import { Email, domains } from '@smastrom/react-email-autocomplete'
 
 const baseList = [
   'gmail.com',
@@ -271,110 +279,175 @@ const baseList = [
   'hotmail.com',
   'aol.com',
   'msn.com',
-  'proton.me'
-];
+  'proton.me',
+]
 
 function App() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('')
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       refineList={domains}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
-  );
+  )
 }
 ```
 
-Alternatively, you can create your own array of domains or [search]() for the one that more suits your audience.
+Alternatively, you can use your own array of domains or [search]() for the one that best suits your audience.
 
 <br />
 
 ## :globe_with_meridians: Localization
 
-It is great to display different suggestions according to [user's browser locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language). **React Email Autocomplete** includes a very simple hook to do exactly that.
+This package ships with an optional hook that simplifies managing different lists of domains according to the [browser's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language).
 
 **1 - Create an object and define lists for each browser locale:**
 
 ```js
-export const lists = {
-  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
-  it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com'],
-  'it-CH': ['gmail.com', 'outlook.com', 'bluewin.ch', 'gmx.de', 'libero.it', 'sunrise.ch']
-};
+export const emailProviders = {
+  default: [
+    'gmail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'aol.com',
+    // ...
+  ],
+  it: [
+    'gmail.com',
+    'yahoo.com',
+    'yahoo.it',
+    'tiscali.it',
+    // ...
+  ],
+  'it-CH': [
+    'gmail.com',
+    'outlook.com',
+    'bluewin.ch',
+    'gmx.de',
+    // ...
+  ],
+}
 ```
-
-> :warning: Make sure to define the object outside of your component, otherwise it will be recreated on every render causing an infinite loop. Alternatively you can wrap the object in a `useMemo` hook.
 
 <details><summary><strong>TypeScript</strong></summary>
 <br />
 
 ```ts
-import type { LocalizedList } from '@smastrom/react-email-autocomplete';
+import type { LocalizedList } from '@smastrom/react-email-autocomplete'
 
-export const lists: LocalizedList = {
-  default: ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com', 'proton.me'], // Required
-  it: ['gmail.com', 'yahoo.com', 'yahoo.it', 'tiscali.it', 'libero.it', 'outlook.com']
-};
+export const emailProviders: LocalizedList = {
+  default: [
+    'gmail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'aol.com',
+    // ...
+  ],
+  // ...
+}
 ```
 
 </details>
 
-You can define [lang codes](https://www.localeplanet.com/icu/iso639.html) with or without country codes.
+You may define [lang codes](https://www.localeplanet.com/icu/iso639.html) with or without country codes.
 
-If you define a language without country code (such as `it`), by default it will match browser locales such as `it`, `it-CH`, `it-IT` and so on.
+For languages without country code (such as `it`), by default it will match all browser locales beginning with it such as `it`, `it-CH`, `it-IT` and so on.
 
-If you define `it-CH` it will match `it-CH` but not `it` or `it-IT`.
+For languages with country code (`it-CH`) it will match `it-CH` but not `it` or `it-IT`.
 
 If you define both `it-CH` and `it`, `it-CH` will match only `it-CH` and `it` will match `it`, `it-IT` and so on.
 
 **2 - Use the hook:**
 
 ```jsx
-import { lists } from './lists';
-import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete';
+import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete'
+import { emailProviders } from '@/src/static/locales'
 
 function App() {
-  const baseList = useLocalizedList(lists);
-  const [email, setEmail] = useState('');
+  const baseList = useLocalizedList(emailProviders)
+  const [email, setEmail] = useState('')
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
-  );
+  )
 }
 ```
 
-### Usage with internationalization frameworks
+### Usage with internationalization frameworks or SSR
 
-If you prefer to keep the suggestions in line with your app locale instead of the browser's one, you can directly pass the locale string as second argument:
+To manually set the locale, pass its code as second argument:
 
 ```jsx
-import lists from './lists';
-import { useRouter } from 'next/router';
-import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete';
+import { useRouter } from 'next/router'
+import { emailProviders } from '@/src/static/locales'
+import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete'
 
 function App() {
-  const { locale } = useRouter();
-  const baseList = useLocalizedList(lists, locale);
+  const { locale } = useRouter()
+  const baseList = useLocalizedList(emailProviders, locale)
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('')
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
-  );
+  )
+}
+```
+
+Or with NextJS App router:
+
+`src/components/Email.tsx`
+
+```tsx
+'use client'
+
+import {
+  Email as EmailAutocomplete,
+  useLocalizedList,
+} from '@smastrom/react-email-autocomplete'
+import { emailProviders } from '@/src/static/locales'
+
+export function Email({ lang }: { lang: string }) {
+  const baseList = useLocalizedList(emailProviders, lang)
+  const [email, setEmail] = useState('')
+
+  return (
+    <EmailAutocomplete
+      classNames={classNames}
+      baseList={baseList}
+      onChange={setEmail}
+      value={email}
+    />
+  )
+}
+```
+
+`app/page.tsx`
+
+```tsx
+import { Email } from '@/components/Email'
+import { headers } from 'next/headers'
+
+export default function Home() {
+  const headersList = headers()
+  const lang = headersList.get('accept-language')?.split(',')[0]
+
+  return (
+    <main>
+      <Email lang={lang} />
+    </main>
+  )
 }
 ```
 
@@ -382,28 +455,26 @@ function App() {
 
 ## :8ball: onSelect callback
 
-If you need to invoke a callback everytime a suggestion is selected (either with mouse or keyboard), you can do that by passing a function to `onSelect` prop:
+To invoke a callback everytime a suggestion is selected (either with mouse or keyboard), pass a callback to `onSelect` prop:
 
 ```jsx
-import { Email, domains } from '@smastrom/react-email-autocomplete';
+import { Email } from '@smastrom/react-email-autocomplete'
+
+function handleSelect(data) {
+  console.log(data) // { value: 'johndoe@gmail.com', keyboard: true, position: 0 }
+}
 
 function App() {
-  const [email, setEmail] = useState('');
-
-  function handleSelect({ value, keyboard, position }) {
-    console.log(value, keyboard, position);
-  }
+  const [email, setEmail] = useState('')
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
-      refineList={domains}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       onSelect={handleSelect}
       value={email}
     />
-  );
+  )
 }
 ```
 
@@ -412,21 +483,36 @@ function App() {
 
 ```ts
 type OnSelectData = {
-  value: string;
-  keyboard: boolean;
-  position: number;
-};
+  value: string
+  keyboard: boolean
+  position: number
+}
 
-type OnSelect = (object: OnSelectData) => void | Promise<void>;
+type OnSelect = (object: OnSelectData) => void | Promise<void>
 ```
 
 </details>
 
 <br />
 
-## React Hook Form
+## :cyclone: Props
 
-No special configuration needed, it just works. Just follow the official React Hook Form's [Controller documentation](https://react-hook-form.com/api/usecontroller/controller).
+| Prop           | Description                                           | Type                                   | Default   | Required           |
+| -------------- | ----------------------------------------------------- | -------------------------------------- | --------- | ------------------ |
+| `value`        | State or portion of state that holds the email value  | _string_                               | undefined | :white_check_mark: |
+| `onChange`     | State setter or custom dispatcher to update the email | _OnChange_                             | undefined | :white_check_mark: |
+| `baseList`     | Domains to suggest while typing the username          | _string[]_                             | undefined | :white_check_mark: |
+| `refineList`   | Domains to refine suggestions after typing `@`        | _string[]_                             | []        | :x:                |
+| `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
+| `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
+| `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
+| `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
+| `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
+| `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
+| `customPrefix` | Custom prefix for dropdown unique ID                  | _string_                               | `rbe_`    | :x:                |
+| `isInvalid`    | Value of `aria-invalid`                               | _boolean_                              | undefined | :x:                |
+
+:bulb: React's `ref` and any other `HTMLInputElement` attribute can be passed as prop to the component and it will be forwarded to the input element.
 
 <br />
 
@@ -438,6 +524,12 @@ No special configuration needed, it just works. Just follow the official React H
 - **Enter / Space** - Confirm the suggestion
 - **Escape** - Close the list and focus the input field
 - **Tab / Shift + Tab** - Close the list and go to next/prev focusable input
+
+<br />
+
+## React Hook Form
+
+No special configuration needed, it just works. Just follow the official React Hook Form's [Controller documentation](https://react-hook-form.com/api/usecontroller/controller).
 
 <br />
 

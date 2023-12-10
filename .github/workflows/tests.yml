@@ -1,22 +1,28 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+   pull_request:
+   push:
+   workflow_call:
 
 jobs:
-  cypress-run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-      - name: Install dependencies
-        run: yarn
-      - name: Install Linux Webkit deps
-        run: npx playwright install-deps webkit
-      - name: Cypress Chrome
-        uses: cypress-io/github-action@v5
-        with:
-          install: false
-          component: true
-          browser: chrome
+   cypress-run:
+      runs-on: ubuntu-latest
+      steps:
+         - uses: actions/checkout@v3
+         - name: Install Node.js
+           uses: actions/setup-node@v3
+           with:
+              node-version: 20
+         - uses: pnpm/action-setup@v2
+           name: Install pnpm
+           with:
+              version: 8
+              run_install: true
+         - name: Test with Cypress
+           uses: cypress-io/github-action@v5
+           with:
+              env: CI=true
+              component: true
+              install: true
+              browser: chrome

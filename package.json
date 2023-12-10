@@ -1,81 +1,84 @@
 {
-	"name": "@smastrom/react-email-autocomplete",
-	"version": "0.9.4",
-	"private": false,
-	"homepage": "https://react-email-autocomplete.netlify.app",
-	"bugs": {
-		"url": "https://github.com/smastrom/react-email-autocomplete/issues"
-	},
-	"description": "Headless email input field with custom suggestions. Inspired by european flight booking websites.",
-	"keywords": [
-		"react",
-		"react-email",
-		"react-email-autocomplete",
-		"react-autocomplete",
-		"react-email-autocomplete",
-		"react-email-component",
-		"email-component",
-		"email-autocomplete",
-		"email-input",
-		"email-suggestions",
-		"email-autocomplete"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/smastrom/react-email-autocomplete"
-	},
-	"license": "MIT",
-	"author": "Simone Mastromattei <smastrom@proton.me>",
-	"main": "dist/index.js",
-	"module": "dist/index.mjs",
-	"types": "dist/index.d.ts",
-	"files": [
-		"dist/*"
-	],
-	"scripts": {
-		"build": "tsc && vite build && yarn declare",
-		"postbuild": "cpy src/types.d.ts dist --rename index.d.ts --flat && rimraf src/types.d.ts",
-		"build:app": "tsc && vite build --mode app",
-		"declare": "tsc src/types.ts --declaration --emitDeclarationOnly",
-		"dev": "vite",
-		"preview": "vite preview",
-		"test:unit": "vitest",
-		"test": "cypress run --component",
-		"test:gui": "cypress open --component",
-		"prepare": "husky install"
-	},
-	"lint-staged": {
-		"*.{ts,tsx}": "eslint --cache --fix",
-		"*.{ts,tsx,css,json,md}": "prettier --write"
-	},
-	"devDependencies": {
-		"@rollup/plugin-terser": "^0.4.0",
-		"@types/node": "^18.11.18",
-		"@types/react": "^18.0.27",
-		"@types/react-dom": "^18.0.10",
-		"@typescript-eslint/eslint-plugin": "^5.49.0",
-		"@typescript-eslint/parser": "^5.49.0",
-		"@vitejs/plugin-react": "^3.0.1",
-		"axe-core": "^4.6.3",
-		"cpy-cli": "^4.2.0",
-		"cypress": "^12.4.0",
-		"cypress-axe": "^1.3.0",
-		"cypress-real-events": "^1.7.6",
-		"eslint": "^8.32.0",
-		"eslint-plugin-react": "^7.32.1",
-		"eslint-plugin-react-hooks": "^4.6.0",
-		"husky": "^8.0.3",
-		"lint-staged": "^13.1.0",
-		"prettier": "^2.8.3",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"rimraf": "^4.1.2",
-		"typescript": "^4.9.4",
-		"vite": "^4.0.4",
-		"vitest": "^0.28.2"
-	},
-	"peerDependencies": {
-		"react": ">=17",
-		"react-dom": ">=17"
-	}
+   "name": "@smastrom/react-email-autocomplete",
+   "version": "1.0.0",
+   "private": false,
+   "homepage": "https://react-email-autocomplete.netlify.app",
+   "bugs": {
+      "url": "https://github.com/smastrom/react-email-autocomplete/issues"
+   },
+   "description": "Headless email input field with custom suggestions. Inspired by european flight booking websites.",
+   "keywords": [
+      "react",
+      "react-email",
+      "react-email-autocomplete",
+      "react-autocomplete",
+      "react-email-autocomplete",
+      "react-email-component",
+      "email-component",
+      "email-autocomplete",
+      "email-input",
+      "email-suggestions",
+      "email-autocomplete"
+   ],
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/smastrom/react-email-autocomplete"
+   },
+   "license": "MIT",
+   "author": "Simone Mastromattei <smastrom@proton.me>",
+   "main": "dist/index.js",
+   "module": "dist/index.mjs",
+   "types": "dist/index.d.ts",
+   "files": [
+      "dist/*"
+   ],
+   "exports": {
+      ".": {
+         "import": "./dist/index.mjs",
+         "require": "./dist/index.js",
+         "types": "./dist/index.d.ts"
+      }
+   },
+   "scripts": {
+      "build": "tsc && vite build",
+      "build:app": "tsc && vite build --mode app",
+      "dev": "vite",
+      "preview": "vite preview",
+      "test:unit": "vitest",
+      "test": "cypress run --component --browser chrome",
+      "test:gui": "cypress open --component",
+      "prepare": "husky install"
+   },
+   "lint-staged": {
+      "*.{ts,tsx}": "eslint --cache --fix",
+      "*.{ts,tsx,css,json,md}": "prettier --write"
+   },
+   "devDependencies": {
+      "@types/node": "^20.10.4",
+      "@types/react": "^18.2.43",
+      "@types/react-dom": "^18.2.17",
+      "@typescript-eslint/eslint-plugin": "^6.13.2",
+      "@typescript-eslint/parser": "^6.13.2",
+      "@vitejs/plugin-react": "^4.2.1",
+      "axe-core": "^4.8.2",
+      "cypress": "^13.6.1",
+      "cypress-axe": "^1.5.0",
+      "cypress-real-events": "^1.11.0",
+      "eslint": "^8.55.0",
+      "eslint-plugin-react": "^7.33.2",
+      "eslint-plugin-react-hooks": "^4.6.0",
+      "husky": "^8.0.3",
+      "lint-staged": "^15.2.0",
+      "prettier": "^3.1.0",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "typescript": "^5.3.3",
+      "vite": "^5.0.7",
+      "vite-plugin-dts": "^3.6.4",
+      "vitest": "^1.0.4"
+   },
+   "peerDependencies": {
+      "react": ">=18",
+      "react-dom": ">=18"
+   }
 }
