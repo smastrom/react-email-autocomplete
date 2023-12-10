@@ -11,3 +11,5 @@ cypress/screenshots
 
 *.tgz
 .eslintcache
+
+pnpm-lock.yaml
