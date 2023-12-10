@@ -22,6 +22,7 @@ jobs:
          - name: Test with Cypress
            uses: cypress-io/github-action@v5
            with:
+              env: CI=true
               component: true
               install: true
               browser: chrome
