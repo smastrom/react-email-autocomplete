@@ -29,7 +29,7 @@ pnpm add @smastrom/react-email-autocomplete
 
 <br />
 
-## :art: Styling
+## :art: Usage / Styling
 
 The component renders a single `div` with a very simple structure:
 
@@ -70,6 +70,60 @@ function App() {
   )
 }
 ```
+
+<details><summary><strong>NextJS App Router</strong></summary>
+<br />
+
+`src/components/Email.tsx`
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { Email as EmailAutocomplete } from '@smastrom/react-email-autocomplete'
+
+const classNames = {
+  wrapper: 'my-wrapper',
+  input: 'my-input',
+  dropdown: 'my-dropdown',
+  suggestion: 'my-suggestion',
+  username: 'my-username',
+  domain: 'my-domain',
+}
+
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com']
+
+export function Email() {
+  const [email, setEmail] = useState('')
+
+  return (
+    <EmailAutocomplete
+      classNames={classNames}
+      baseList={baseList}
+      onChange={setEmail} // or (newValue) => customSetter(newValue)
+      value={email}
+    />
+  )
+}
+```
+
+`app/page.tsx`
+
+```tsx
+import { Email } from '@/components/Email'
+
+export default function Home() {
+  return (
+    <main>
+      {/* ... */}
+      <Email />
+      {/* ... */}
+    </main>
+  )
+}
+```
+
+</details>
 
 <details><summary><strong>TypeScript</strong></summary>
 <br />
@@ -198,7 +252,6 @@ function App() {
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
@@ -234,7 +287,6 @@ function App() {
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       refineList={domains}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
@@ -250,12 +302,12 @@ Alternatively, you can use your own array of domains or [search]() for the one t
 
 ## :globe_with_meridians: Localization
 
-This package ships with an optional hook that allows to localize suggestions according to the [browser's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language).
+This package ships with an optional hook that simplifies managing different lists of domains according to the [browser's locale](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language).
 
 **1 - Create an object and define lists for each browser locale:**
 
 ```js
-export const lists = {
+export const emailProviders = {
   default: [
     'gmail.com',
     'yahoo.com',
@@ -286,7 +338,7 @@ export const lists = {
 ```ts
 import type { LocalizedList } from '@smastrom/react-email-autocomplete'
 
-export const lists: LocalizedList = {
+export const emailProviders: LocalizedList = {
   default: [
     'gmail.com',
     'yahoo.com',
@@ -311,16 +363,15 @@ If you define both `it-CH` and `it`, `it-CH` will match only `it-CH` and `it` wi
 **2 - Use the hook:**
 
 ```jsx
-import { lists } from './lists'
 import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete'
+import { emailProviders } from '@/src/static/locales'
 
 function App() {
-  const baseList = useLocalizedList(lists)
+  const baseList = useLocalizedList(emailProviders)
   const [email, setEmail] = useState('')
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
@@ -331,16 +382,16 @@ function App() {
 
 ### Usage with internationalization frameworks or SSR
 
-To manually set the locale, pass the code as second argument:
+To manually set the locale, pass its code as second argument:
 
 ```jsx
-import lists from './lists'
 import { useRouter } from 'next/router'
+import { emailProviders } from '@/src/static/locales'
 import { Email, useLocalizedList } from '@smastrom/react-email-autocomplete'
 
 function App() {
   const { locale } = useRouter()
-  const baseList = useLocalizedList(lists, locale)
+  const baseList = useLocalizedList(emailProviders, locale)
 
   const [email, setEmail] = useState('')
 
@@ -350,6 +401,52 @@ function App() {
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       value={email}
     />
+  )
+}
+```
+
+Or with NextJS App router:
+
+`src/components/Email.tsx`
+
+```tsx
+'use client'
+
+import {
+  Email as EmailAutocomplete,
+  useLocalizedList,
+} from '@smastrom/react-email-autocomplete'
+import { emailProviders } from '@/src/static/locales'
+
+export function Email({ lang }: { lang: string }) {
+  const baseList = useLocalizedList(emailProviders, lang)
+  const [email, setEmail] = useState('')
+
+  return (
+    <EmailAutocomplete
+      classNames={classNames}
+      baseList={baseList}
+      onChange={setEmail}
+      value={email}
+    />
+  )
+}
+```
+
+`app/page.tsx`
+
+```tsx
+import { Email } from '@/components/Email'
+import { headers } from 'next/headers'
+
+export default function Home() {
+  const headersList = headers()
+  const lang = headersList.get('accept-language')?.split(',')[0]
+
+  return (
+    <main>
+      <Email lang={lang} />
+    </main>
   )
 }
 ```
@@ -372,7 +469,6 @@ function App() {
 
   return (
     <Email
-      className="my-wrapper"
       baseList={baseList}
       onChange={setEmail} // or (newValue) => customSetter(newValue)
       onSelect={handleSelect}
