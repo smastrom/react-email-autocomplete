@@ -39,9 +39,7 @@ export function EventsChildren() {
    }
 
    function handleBlur() {
-      if (email.length > 0) {
-         setValidity(getValidity(email))
-      }
+      if (email.length > 0) setValidity(getValidity(email))
    }
 
    function handleSelect({ value }: OnSelectData) {
@@ -56,11 +54,8 @@ export function EventsChildren() {
    const isInvalid = validity === Valididty.INVALID
 
    function getValidityClasses() {
-      if (isValid) {
-         return 'validInput'
-      } else if (isInvalid) {
-         return 'invalidInput'
-      }
+      if (isValid) return 'validInput'
+      if (isInvalid) return 'invalidInput'
       return ''
    }
 
@@ -80,7 +75,7 @@ export function EventsChildren() {
             onSelect={handleSelect}
             baseList={baseList}
             refineList={domains}
-            isInvalid={isInvalid}
+            aria-invalid={isInvalid}
             value={email}
             onChange={setEmail}
          >

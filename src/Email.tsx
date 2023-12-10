@@ -22,9 +22,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
          className,
          classNames,
          onSelect = () => {},
-         customPrefix = 'rbe_',
          children,
-         wrapperId,
          activeDataAttr,
          /* User events */
          onFocus: userOnFocus,
@@ -32,8 +30,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
          onInput: userOnInput,
          onKeyDown: userOnKeyDown = () => {},
          /* ARIA */
-         isInvalid,
-         dropdownAriaLabel = 'List',
+         dropdownAriaLabel = 'Suggestions',
          /* HTML */
          ...inputAttrs
       }: EmailProps,
@@ -50,8 +47,7 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
 
       const isTouched = useRef(false)
 
-      const uniqueId = useId()
-      const listId = `${customPrefix}${uniqueId}`
+      const listId = useId()
 
       const wrapperRef = useRef<Maybe<HTMLDivElement>>(null)
       const inputRef = useRef<Maybe<HTMLInputElement>>(null)
@@ -60,11 +56,12 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
 
       /* State */
 
+      const [inputType, setInputType] = useState<'text' | 'email'>('email')
       const [suggestions, setSuggestions] = useState(baseList)
 
       /**
-       * 'focusedIndex' is used to trigger suggestions focus and set
-       * 'aria-selected' to 'true', it can only be set by keyboard events.
+       * 'focusedIndex' is used to trigger suggestions focus
+       * and can only be set by keyboard events.
        *
        * 'hoveredIndex' is used to keep track of both focused/hovered
        * suggestion in order to set 'data-active-email="true"'.
@@ -131,10 +128,12 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
 
          if (!isOpen) setActiveSuggestion(-1, -1)
 
-         document.addEventListener('click', handleOutsideClick)
+         document.addEventListener('mousedown', handleOutsideClick)
+         window.addEventListener('blur', clearResults)
 
          return () => {
-            document.removeEventListener('click', handleOutsideClick)
+            document.removeEventListener('mousedown', handleOutsideClick)
+            window.removeEventListener('blur', clearResults)
          }
       }, [isOpen, clearResults])
 
@@ -142,7 +141,16 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
 
       function handleCursorFocus() {
          if (inputRef.current) {
+            flushSync(() => {
+               setInputType('text')
+            })
+
             inputRef.current.setSelectionRange(email.length, email.length)
+
+            flushSync(() => {
+               setInputType('email')
+            })
+
             inputRef.current.focus()
          }
       }
@@ -388,18 +396,17 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
       }
 
       return (
-         <div ref={wrapperRef} id={wrapperId} {...getWrapperClass()}>
+         <div ref={wrapperRef} {...getWrapperClass()}>
             <input
                {...inputAttrs}
                ref={(input) => mergeRefs(input as HTMLInputElement)}
                onChange={(e) => handleEmailChange(e)}
                aria-expanded={isOpen}
                value={email}
-               type="text"
-               role="combobox"
+               type={inputType}
+               role={suggestions.length > 0 ? 'combobox' : ''}
                autoComplete="off"
                aria-autocomplete="list"
-               aria-invalid={isInvalid}
                {...(isOpen ? { 'aria-controls': listId } : {})}
                {...getClasses(Elements.Input)}
                {...getEvents()}
@@ -417,16 +424,15 @@ export const Email = forwardRef<HTMLInputElement, EmailProps>(
                         role="option"
                         ref={(li) => (liRefs.current[i] = li)}
                         onPointerMove={() => setActiveSuggestion(-1, i)}
-                        onMouseMove={() => setActiveSuggestion(-1, i)}
                         onPointerLeave={() => setActiveSuggestion(-1, -1)}
-                        onMouseLeave={() => setActiveSuggestion(-1, -1)}
                         onClick={(e) => handleSelect(e, i, { isKeyboard: false, isInput: false })}
                         onKeyDown={handleListKeyDown}
                         key={domain}
                         aria-posinset={i + 1}
                         aria-setsize={suggestions.length}
-                        aria-selected={i === activeSuggestion.focusedIndex}
                         tabIndex={-1}
+                        // This must always be false as no option can be already selected
+                        aria-selected="false"
                         {...getClasses(Elements.Suggestion)}
                         {...{
                            [activeDataAttr ? activeDataAttr : 'data-active-email']: i === activeSuggestion.hoveredIndex,

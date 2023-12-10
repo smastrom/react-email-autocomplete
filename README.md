@@ -200,7 +200,9 @@ Although you can target the pseudo classes `:hover` and `:focus`, it is recommen
   background-color: aliceblue;
 }
 
-.my-suggestion:focus {
+.my-suggestion:hover,
+.my-suggestion:focus,
+.my-suggestion:focus-visible {
   outline: none;
 }
 ```
@@ -497,20 +499,19 @@ type OnSelect = (object: OnSelectData) => void | Promise<void>
 
 ## :cyclone: Props
 
-| Prop           | Description                                           | Type                                   | Default   | Required           |
-| -------------- | ----------------------------------------------------- | -------------------------------------- | --------- | ------------------ |
-| `value`        | State or portion of state that holds the email value  | _string_                               | undefined | :white_check_mark: |
-| `onChange`     | State setter or custom dispatcher to update the email | _OnChange_                             | undefined | :white_check_mark: |
-| `baseList`     | Domains to suggest while typing the username          | _string[]_                             | undefined | :white_check_mark: |
-| `refineList`   | Domains to refine suggestions after typing `@`        | _string[]_                             | []        | :x:                |
-| `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
-| `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
-| `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
-| `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
-| `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
-| `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
-| `customPrefix` | Custom prefix for dropdown unique ID                  | _string_                               | `rbe_`    | :x:                |
-| `isInvalid`    | Value of `aria-invalid`                               | _boolean_                              | undefined | :x:                |
+| Prop                | Description                                           | Type                                   | Default             | Required           |
+| ------------------- | ----------------------------------------------------- | -------------------------------------- | ------------------- | ------------------ |
+| `value`             | State or portion of state that holds the email value  | _string_                               | undefined           | :white_check_mark: |
+| `onChange`          | State setter or custom dispatcher to update the email | _OnChange_                             | undefined           | :white_check_mark: |
+| `baseList`          | Domains to suggest while typing the username          | _string[]_                             | undefined           | :white_check_mark: |
+| `refineList`        | Domains to refine suggestions after typing `@`        | _string[]_                             | []                  | :x:                |
+| `onSelect`          | Custom callback on suggestion select                  | _OnSelect_                             | () => {}            | :x:                |
+| `minChars`          | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2                   | :x:                |
+| `maxResults`        | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6                   | :x:                |
+| `classNames`        | Class names for each element                          | _ClassNames_                           | undefined           | :x:                |
+| `className`         | Class name of the root element                        | _string_                               | undefined           | :x:                |
+| `activeDataAttr`    | Attribute name to set on focused/hovered suggestion   | _string_                               | `data-active-email` | :x:                |
+| `dropdownAriaLabel` | Aria label for the dropdown list                      | _string_                               | `Suggestions`       | :x:                |
 
 :bulb: React's `ref` and any other `HTMLInputElement` attribute can be passed as prop to the component and it will be forwarded to the input element.
 

@@ -191,7 +191,7 @@ it('Should update input value on suggestion keydown', () => {
          cy.get('li').then((list) => {
             const randomIndex = getRandomIndex(list.length)
             cy.downArrow(randomIndex + 1)
-            cy.get('li').eq(randomIndex).should('have.focus').and('have.attr', 'aria-selected', 'true').type('{enter}')
+            cy.get('li').eq(randomIndex).should('have.focus').type('{enter}')
             cy.get('input').should('have.value', list[randomIndex].textContent).clear()
          })
       })
@@ -206,7 +206,7 @@ it('Should keyboard-navigate trough suggestions and input', () => {
       cy.get('li').then((list) => {
          const randomIndex = getRandomIndex(list.length)
          cy.downArrow(randomIndex + 1)
-         cy.get('li').eq(randomIndex).should('have.focus').and('have.attr', 'aria-selected', 'true')
+         cy.get('li').eq(randomIndex).should('have.focus')
          cy.upArrow(randomIndex + 1)
          cy.get('input').should('have.focus')
       })
@@ -230,7 +230,6 @@ it('Should set previous focused suggestion by resuming from hovered one', () => 
          cy.get('li')
             .eq(randomIndex - 1)
             .should('have.focus')
-            .and('have.attr', 'aria-selected', 'true')
       })
    })
 })
@@ -239,11 +238,13 @@ it('Should update focused suggestion by resuming from hovered one', () => {
    cy.mount(<Email refineList={domains} />)
 
    cy.withinRoot(() => {
-      cy.get('input').type('myusername@g').type('{downArrow}'.repeat(1)) // Focus 1st suggestion
-      cy.get('li').eq(0).should('have.focus').and('have.attr', 'aria-selected', 'true')
+      cy.get('input').type('myusername@g')
+
+      cy.downArrow(1) // Focus 1st suggestion
+      cy.get('li').eq(0).should('have.focus')
       cy.get('li').eq(3).realMouseMove(10, 10) // Hover 4th suggestion
       cy.upArrow(1)
-      cy.get('li').eq(2).should('have.focus').and('have.attr', 'aria-selected', 'true')
+      cy.get('li').eq(2).should('have.focus')
    })
 })
 
@@ -255,30 +256,49 @@ it('Should focus first suggestion if pressing arrow down on last one', () => {
       cy.downArrow(1)
       cy.get('li').then((list) => {
          cy.downArrow(list.length)
-         cy.get('li').eq(0).should('have.focus').and('have.attr', 'aria-selected', 'true')
+         cy.get('li').eq(0).should('have.focus')
       })
    })
 })
 
-/**
- * This test for some reason fails on CI because of 'cypress-real-events' package
- *
- * CypressError: `cy.type()` cannot accept an empty string. You need to actually type something.
- */
-if (!Cypress.env('CI')) {
-   it('Should focus and update input value if pressing alphanumeric chars from a suggestion', () => {
-      cy.mount(<Email refineList={domains} />)
+it('Should focus and update input value if pressing alphanumeric chars from a suggestion', () => {
+   cy.mount(<Email refineList={domains} />)
 
-      cy.withinRoot(() => {
-         cy.get('input').type('myusername@g')
-         cy.get('li').then((list) => {
-            cy.get('input').type('{downArrow}'.repeat(getRandomIndex(list.length)))
-            cy.realType('mail')
-            cy.get('input').should('have.focus').and('have.value', 'myusername@gmail')
-         })
+   cy.withinRoot(() => {
+      cy.get('input').type('myusername@g')
+      cy.get('li').then((list) => {
+         cy.downArrow(getRandomIndex(list.length))
+         cy.realType('mail')
+         cy.get('input').should('have.focus').and('have.value', 'myusername@gmail')
       })
    })
-}
+})
+
+it('Should focus and update input value if pressing @ from a suggestion', () => {
+   cy.mount(<Email refineList={domains} />)
+
+   cy.withinRoot(() => {
+      cy.get('input').type('myusern')
+      cy.get('li').then((list) => {
+         cy.downArrow(getRandomIndex(list.length))
+         cy.realType('@gm')
+         cy.get('input').should('have.focus').and('have.value', 'myusern@gm')
+      })
+   })
+})
+
+it('Should focus and update input value if pressing . from a suggestion', () => {
+   cy.mount(<Email refineList={domains} />)
+
+   cy.withinRoot(() => {
+      cy.get('input').type('myusern')
+      cy.get('li').then((list) => {
+         cy.downArrow(getRandomIndex(list.length))
+         cy.realType('.')
+         cy.get('input').should('have.focus').and('have.value', 'myusern.')
+      })
+   })
+})
 
 it('Should focus and update input value if pressing backspace on a suggestion', () => {
    cy.mount(<Email refineList={domains} />)
@@ -358,16 +378,6 @@ it('Should forward HTML attributes to input element', () => {
    })
 })
 
-it('Should add custom prefix to dropdown id', () => {
-   const prefix = 'MyPrefix_'
-   cy.mount(<Email customPrefix={prefix} />)
-
-   cy.withinRoot(() => {
-      cy.get('input').type('myuser')
-      cy.get('ul').invoke('attr', 'id').should('contain', prefix)
-   })
-})
-
 it('Should forward props to dropdown', () => {
    cy.mount(<Email dropdownAriaLabel="foo" />)
    cy.get('input').type('myusername')
@@ -377,22 +387,10 @@ it('Should forward props to dropdown', () => {
    })
 })
 
-it('Should set id to wrapper', () => {
-   cy.mount(<Email wrapperId="myId" />)
-   cy.get('input').type('myusername')
-
-   cy.get('.Root').should('have.attr', 'id', 'myId')
-})
-
-it('Should set invalid state via props', () => {
-   cy.mount(<Email isInvalid />)
-
-   cy.get('input').type('myusername').should('have.attr', 'aria-invalid', 'true')
-})
-
 it('Should set custom active data attribute', () => {
    cy.mount(<Email activeDataAttr="data-custom" />)
-   cy.get('input').type('myusername').type('{downArrow}')
+   cy.get('input').type('myusername')
+   cy.downArrow(1)
 
    cy.withinRoot(() => {
       cy.get('li').eq(0).should('have.attr', 'data-custom', 'true')

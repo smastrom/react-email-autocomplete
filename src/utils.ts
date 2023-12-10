@@ -1,4 +1,4 @@
-export const alphanumericKeys = /^[a-z0-9]$/i
+export const alphanumericKeys = /^[a-z0-9@.]$/i
 
 export function cleanValue(value: string) {
    return value.replace(/\s+/g, '').toLowerCase()

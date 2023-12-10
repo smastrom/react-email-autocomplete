@@ -43,12 +43,6 @@ export type Props = {
    classNames?: ClassNames
    /** Class name of the wrapper element. */
    className?: string
-   /** Custom prefix for dropdown unique ID. */
-   customPrefix?: string
-   /** DOM ID of the wrapper element. */
-   wrapperId?: string
-   /** Validity state of the field for assistive technologies. */
-   isInvalid?: boolean
    /** Dropdown `aria-label` value */
    dropdownAriaLabel?: string
    /** Value of the `data-` attribute to be set on the focuesed/hovered suggestion. Defaults to `data-active-email`. */
@@ -56,9 +50,24 @@ export type Props = {
    children?: React.ReactNode
    /** Dropdown placement.
     *
-    * @deprecated Since version 0.9.8 dropdown is always placed below the input.
+    * @deprecated Since version 1.0.0 dropdown is always placed below the input.
     */
    placement?: 'auto' | 'bottom'
+   /** Custom prefix for dropdown unique ID.
+    *
+    * @deprecated Since version 1.2.0 it is generated automatically.
+    */
+   customPrefix?: string
+   /** DOM ID of the wrapper element.
+    *
+    * @deprecated Since version 1.2.0
+    */
+   wrapperId?: string
+   /** Input field validity state for assistive technologies.
+    *
+    * @deprecated Since version 1.2.0. Use `aria-invalid` instead.
+    */
+   isInvalid?: boolean
 }
 
 export type Events = {
@@ -68,19 +77,19 @@ export type Events = {
    onInput?: React.FormEventHandler<HTMLInputElement>
 }
 
+export type InternalInputProps =
+   | 'ref'
+   | 'aria-expanded'
+   | 'type'
+   | 'role'
+   | 'autoComplete'
+   | 'aria-autocomplete'
+   | 'aria-controls'
+
 export type EmailProps = Props &
    Events &
-   Partial<
-      Omit<
-         React.HTMLProps<HTMLInputElement>,
-         'onChange' | 'value' | 'onSelect' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'onInput' | 'ref' | 'className'
-      >
-   >
+   Partial<Omit<React.HTMLProps<HTMLInputElement>, keyof Props | keyof Events | InternalInputProps>>
 
 export type LocalizedList = {
    default: string[]
 } & Record<string, string[]>
-
-/** List of ~160 world's most popular email providers.
- * Meant to be used with `refineList` prop. */
-export declare const domains: string[]
