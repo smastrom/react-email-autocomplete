@@ -274,6 +274,32 @@ it('Should focus and update input value if pressing alphanumeric chars from a su
    })
 })
 
+it('Should focus and update input value if pressing @ from a suggestion', () => {
+   cy.mount(<Email refineList={domains} />)
+
+   cy.withinRoot(() => {
+      cy.get('input').type('myusern')
+      cy.get('li').then((list) => {
+         cy.downArrow(getRandomIndex(list.length))
+         cy.realType('@gm')
+         cy.get('input').should('have.focus').and('have.value', 'myusern@gm')
+      })
+   })
+})
+
+it('Should focus and update input value if pressing . from a suggestion', () => {
+   cy.mount(<Email refineList={domains} />)
+
+   cy.withinRoot(() => {
+      cy.get('input').type('myusern')
+      cy.get('li').then((list) => {
+         cy.downArrow(getRandomIndex(list.length))
+         cy.realType('.')
+         cy.get('input').should('have.focus').and('have.value', 'myusern.')
+      })
+   })
+})
+
 it('Should focus and update input value if pressing backspace on a suggestion', () => {
    cy.mount(<Email refineList={domains} />)
 
