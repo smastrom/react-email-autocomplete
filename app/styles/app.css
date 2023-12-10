@@ -1,146 +1,153 @@
 @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap');
 
 :root {
-	--accentColor: #ec4899;
-	--textColor: #475569;
-	--headingsColor: #1f2937;
+   --accentColor: #ec4899;
+   --textColor: #475569;
+   --headingsColor: #1f2937;
 }
 
 html {
-	font-size: 100%;
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-text-size-adjust: 100%;
-	color: var(--textColor);
-	font-family: Titillium Web, Avenir, Helvetica, Arial, sans-serif;
+   font-size: 100%;
+   font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   -webkit-text-size-adjust: 100%;
+   color: var(--textColor);
+   font-family:
+      Titillium Web,
+      Avenir,
+      Helvetica,
+      Arial,
+      sans-serif;
 }
 
 #root {
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-	display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   align-items: center;
+   display: flex;
 }
 
 svg {
-	transition: fill 150ms ease-out, stroke 150ms ease-out;
+   transition:
+      fill 150ms ease-out,
+      stroke 150ms ease-out;
 }
 
 label {
-	font-size: 0.875rem;
-	font-weight: 600;
-	margin-bottom: 5px;
-	color: var(--textColor);
+   font-size: 0.875rem;
+   font-weight: 600;
+   margin-bottom: 5px;
+   color: var(--textColor);
 }
 
 input::placeholder {
-	color: #999;
+   color: #999;
 }
 
 .header,
 .footer {
-	padding: 20px;
-	width: 460px;
-	max-width: 100%;
+   padding: 20px;
+   width: 460px;
+   max-width: 100%;
 }
 
 .header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
 }
 
 @media (max-width: 810px) {
-	.footer {
-		margin-bottom: 140px;
-	}
+   .footer {
+      margin-bottom: 140px;
+   }
 }
 
 .title {
-	line-height: 1.125;
-	font-size: 1.5rem;
-	color: var(--headingsColor);
+   line-height: 1.125;
+   font-size: 1.5rem;
+   color: var(--headingsColor);
 }
 
 .profileLink {
-	color: var(--accentColor);
-	font-weight: 600;
+   color: var(--accentColor);
+   font-weight: 600;
 }
 
 .profileLink:hover {
-	text-decoration: underline;
+   text-decoration: underline;
 }
 
 .sectionWrapper {
-	width: 100%;
-	justify-content: center;
-	display: flex;
-	min-height: 200px;
+   width: 100%;
+   justify-content: center;
+   display: flex;
+   min-height: 200px;
 }
 
 .sectionContainer {
-	padding: 0 20px 20px;
-	justify-content: space-around;
-	max-width: 100%;
-	width: 460px;
-	display: flex;
-	flex-direction: column;
+   padding: 0 20px 20px;
+   justify-content: space-around;
+   max-width: 100%;
+   width: 460px;
+   display: flex;
+   flex-direction: column;
 }
 
 .sectionContainer header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
 }
 
 .sectionContainer header h1 {
-	font-size: 1.25rem;
-	color: var(--headingsColor);
+   font-size: 1.25rem;
+   color: var(--headingsColor);
 }
 
 .fieldWrapper {
-	display: flex;
-	flex-direction: column;
-	width: 300px;
-	max-width: 100%;
+   display: flex;
+   flex-direction: column;
+   width: 300px;
+   max-width: 100%;
 }
 
 .basicSection {
-	border-top: 1px solid #dae3ec;
-	background-color: #f8fafc;
+   border-top: 1px solid #dae3ec;
+   background-color: #f8fafc;
 }
 
 .refineSection {
-	border-top: 1px solid #dae3ec;
+   border-top: 1px solid #dae3ec;
 }
 
 .eventsSection {
-	/* 	background: url(https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png); */
-	border-top: 1px solid #dae3ec;
-	border-bottom: 1px solid #dae3ec;
+   /* 	background: url(https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png); */
+   border-top: 1px solid #dae3ec;
+   border-bottom: 1px solid #dae3ec;
 }
 
 .codeLink {
-	width: 30px;
+   width: 30px;
 }
 
 .githubLink svg {
-	width: 30px;
-	height: 30px;
-	fill: var(--textColor);
+   width: 30px;
+   height: 30px;
+   fill: var(--textColor);
 }
 
 .codeLink:hover svg {
-	stroke: var(--accentColor);
+   stroke: var(--accentColor);
 }
 
 .githubLink:hover svg {
-	fill: var(--accentColor);
+   fill: var(--accentColor);
 }
 
 .codeIcon {
-	margin: auto;
-	display: flex;
+   margin: auto;
+   display: flex;
 }

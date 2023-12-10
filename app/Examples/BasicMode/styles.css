@@ -1,63 +1,65 @@
 .basicWrapper {
-	--accentColor: #0062ff;
-	--textColor: #475569;
-	--selectionColor: #f7f8ff;
-	--shadowColor: rgba(99, 99, 99, 0.2);
-	--transparentColor: rgba(0, 0, 0, 0);
-	color: var(--textColor);
-	width: 300px;
-	position: relative;
-	max-width: 100%;
+   --accentColor: #0062ff;
+   --textColor: #475569;
+   --selectionColor: #f7f8ff;
+   --shadowColor: rgba(99, 99, 99, 0.2);
+   --transparentColor: rgba(0, 0, 0, 0);
+   color: var(--textColor);
+   width: 300px;
+   position: relative;
+   max-width: 100%;
 }
 
 .basicInput {
-	width: 100%;
-	border: none;
-	border-radius: 0;
-	font-weight: 600;
-	padding: 0.4em 0.6em;
-	border-bottom: 2px solid #dedede;
-	transition: border-color 100ms ease-in-out, background-color 100ms ease-in-out,
-		color 100ms ease-in-out;
+   width: 100%;
+   border: none;
+   border-radius: 0;
+   font-weight: 600;
+   padding: 0.4em 0.6em;
+   border-bottom: 2px solid #dedede;
+   transition:
+      border-color 100ms ease-in-out,
+      background-color 100ms ease-in-out,
+      color 100ms ease-in-out;
 }
 
 .basicInput[aria-expanded='true'],
 .basicInput:hover,
 .basicInput:focus {
-	border-bottom: 2px solid var(--accentColor);
+   border-bottom: 2px solid var(--accentColor);
 }
 
 .basicInput:focus {
-	outline: none;
+   outline: none;
 }
 
 .basicDropdown {
-	width: 100%;
-	box-shadow: var(--shadowColor) 0px 2px 8px 0px;
-	position: absolute;
-	list-style-type: none;
-	background-color: white;
-	z-index: 999;
-	margin-top: 0;
-	margin-bottom: 0;
+   width: 100%;
+   box-shadow: var(--shadowColor) 0px 2px 8px 0px;
+   position: absolute;
+   list-style-type: none;
+   background-color: white;
+   z-index: 999;
+   margin-top: 0;
+   margin-bottom: 0;
 }
 
 .basicSuggestion {
-	-webkit-tap-highlight-color: var(--transparentColor);
-	padding: 0.3em 0.6em;
-	cursor: pointer;
+   -webkit-tap-highlight-color: var(--transparentColor);
+   padding: 0.3em 0.6em;
+   cursor: pointer;
 }
 
 .basicSuggestion:focus {
-	outline: none;
+   outline: none;
 }
 
 .basicSuggestion[data-active-email='true'] {
-	background-color: var(--selectionColor);
+   background-color: var(--selectionColor);
 }
 
 .basicDomain {
-	font-weight: 600;
-	margin-left: 0.1em;
-	color: var(--accentColor);
+   font-weight: 600;
+   margin-left: 0.1em;
+   color: var(--accentColor);
 }

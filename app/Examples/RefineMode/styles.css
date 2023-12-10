@@ -1,96 +1,100 @@
 .refineWrapper {
-	--borderColor: #d5dde7;
-	--borderAltColor: #e2e8f0;
-	--accentColor: #ec4899;
-	--accentAltColor: #fbcfe8;
-	--textColor: #475569;
-	--borderColor: #cbd5e1;
-	--transparentColor: rgba(0, 0, 0, 0);
-	color: var(--textColor);
-	width: 300px;
-	position: relative;
-	max-width: 100%;
+   --borderColor: #d5dde7;
+   --borderAltColor: #e2e8f0;
+   --accentColor: #ec4899;
+   --accentAltColor: #fbcfe8;
+   --textColor: #475569;
+   --borderColor: #cbd5e1;
+   --transparentColor: rgba(0, 0, 0, 0);
+   color: var(--textColor);
+   width: 300px;
+   position: relative;
+   max-width: 100%;
 }
 
 .refineInput {
-	font-weight: 600;
-	width: 100%;
-	padding: 0.4em 0.6em;
-	border: 2px solid var(--borderColor);
-	border-radius: 10px;
-	transition: border 100ms ease-out, box-shadow 100ms ease-out;
+   font-weight: 600;
+   width: 100%;
+   padding: 0.4em 0.6em;
+   border: 2px solid var(--borderColor);
+   border-radius: 10px;
+   transition:
+      border 100ms ease-out,
+      box-shadow 100ms ease-out;
 }
 
 .refineInput:hover,
 .refineInput[aria-expanded='true'] {
-	border: 2px solid var(--accentColor);
+   border: 2px solid var(--accentColor);
 }
 
 .refineInput:focus {
-	border: 2px solid var(--accentColor);
-	box-shadow: 0px 0px 0px 3px var(--accentAltColor);
-	outline: none;
+   border: 2px solid var(--accentColor);
+   box-shadow: 0px 0px 0px 3px var(--accentAltColor);
+   outline: none;
 }
 
 .refineDropdown {
-	width: 100%;
-	animation: slideIn 200ms ease-out;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	position: absolute;
-	z-index: 999;
-	border-radius: 10px;
-	border: 2px solid var(--borderColor);
-	background-color: white;
+   width: 100%;
+   animation: slideIn 200ms ease-out;
+   margin-top: 5px;
+   margin-bottom: 5px;
+   position: absolute;
+   z-index: 999;
+   border-radius: 10px;
+   border: 2px solid var(--borderColor);
+   background-color: white;
 }
 
 .refineSuggestion {
-	width: 100%;
-	cursor: pointer;
-	user-select: none;
-	-webkit-tap-highlight-color: var(--transparentColor);
-	overflow: hidden;
-	padding: 0.4em 0.6em;
-	border-bottom: 1px solid var(--borderAltColor);
-	transition: background-color 50ms ease-out, color 50ms ease-out;
+   width: 100%;
+   cursor: pointer;
+   user-select: none;
+   -webkit-tap-highlight-color: var(--transparentColor);
+   overflow: hidden;
+   padding: 0.4em 0.6em;
+   border-bottom: 1px solid var(--borderAltColor);
+   transition:
+      background-color 50ms ease-out,
+      color 50ms ease-out;
 }
 
 .refineSuggestion:only-child {
-	border-radius: 8px !important;
+   border-radius: 8px !important;
 }
 
 .refineSuggestion:first-of-type {
-	border-radius: 8px 8px 0 0;
+   border-radius: 8px 8px 0 0;
 }
 
 .refineSuggestion:last-of-type {
-	border-bottom: 0;
-	border-radius: 0 0 8px 8px;
+   border-bottom: 0;
+   border-radius: 0 0 8px 8px;
 }
 
 .refineSuggestion[data-active-email='true'] {
-	background-color: var(--accentColor);
-	color: white;
-	outline: none;
+   background-color: var(--accentColor);
+   color: white;
+   outline: none;
 }
 
 .refineUsername {
-	font-weight: 400;
-	padding-right: 0.1em;
+   font-weight: 400;
+   padding-right: 0.1em;
 }
 
 .refineDomain {
-	font-weight: 600;
+   font-weight: 600;
 }
 
 @keyframes slideIn {
-	0% {
-		opacity: 0;
-		transform: translateY(-20px);
-	}
+   0% {
+      opacity: 0;
+      transform: translateY(-20px);
+   }
 
-	100% {
-		opacity: 1;
-		transform: translateY(0px);
-	}
+   100% {
+      opacity: 1;
+      transform: translateY(0px);
+   }
 }

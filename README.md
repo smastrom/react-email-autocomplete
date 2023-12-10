@@ -3,7 +3,7 @@
 ![npm](https://img.shields.io/npm/v/@smastrom/react-email-autocomplete?color=46c119) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/smastrom/react-email-autocomplete/tests.yml?branch=main&label=tests)
 ![dependency-count](https://img.shields.io/badge/dependency%20count-0-success)
 
-| Before typing `@`                                                                                       | After typing `@`                                                                                        |
+| Before typing `@`                                                                                       | After typing `@` (optional)                                                                             |
 | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | ![@smastrom/react-email-autocomplete](https://i.ibb.co/SNTkHJQ/Screenshot-2022-12-07-alle-13-50-59.png) | ![@smastrom/react-email-autocomplete](https://i.ibb.co/DWQBQw7/Screenshot-2022-12-07-alle-13-54-23.png) |
 
