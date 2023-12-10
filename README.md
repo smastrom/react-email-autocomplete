@@ -29,27 +29,6 @@ pnpm add @smastrom/react-email-autocomplete
 
 <br />
 
-## :cyclone: Props
-
-| Prop           | Description                                           | Type                                   | Default   | Required           |
-| -------------- | ----------------------------------------------------- | -------------------------------------- | --------- | ------------------ |
-| `value`        | State or portion of state that holds the email value  | _string_                               | undefined | :white_check_mark: |
-| `onChange`     | State setter or custom dispatcher to update the email | _OnChange_                             | undefined | :white_check_mark: |
-| `baseList`     | Domains to suggest while typing the username          | _string[]_                             | undefined | :white_check_mark: |
-| `refineList`   | Domains to refine suggestions after typing `@`        | _string[]_                             | []        | :x:                |
-| `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
-| `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
-| `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
-| `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
-| `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
-| `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
-| `customPrefix` | Custom prefix for dropdown unique ID                  | _string_                               | `rbe_`    | :x:                |
-| `isInvalid`    | Value of `aria-invalid`                               | _boolean_                              | undefined | :x:                |
-
-:bulb: React's `ref` and any other `HTMLInputElement` attribute can be passed as prop to the component and it will be forwarded to the input element.
-
-<br />
-
 ## :art: Styling
 
 The component renders a single `div` with a very simple structure:
@@ -65,6 +44,8 @@ Wrapper — div
 Specify `classNames` for each element you'd like to style:
 
 ```jsx
+import { Email } from '@smastrom/react-email-autocomplete'
+
 const classNames = {
   wrapper: 'my-wrapper',
   input: 'my-input',
@@ -73,6 +54,8 @@ const classNames = {
   username: 'my-username',
   domain: 'my-domain',
 }
+
+const baseList = ['gmail.com', 'yahoo.com', 'hotmail.com', 'aol.com', 'msn.com']
 
 function App() {
   const [email, setEmail] = useState('')
@@ -416,9 +399,24 @@ type OnSelect = (object: OnSelectData) => void | Promise<void>
 
 <br />
 
-## React Hook Form
+## :cyclone: Props
 
-No special configuration needed, it just works. Just follow the official React Hook Form's [Controller documentation](https://react-hook-form.com/api/usecontroller/controller).
+| Prop           | Description                                           | Type                                   | Default   | Required           |
+| -------------- | ----------------------------------------------------- | -------------------------------------- | --------- | ------------------ |
+| `value`        | State or portion of state that holds the email value  | _string_                               | undefined | :white_check_mark: |
+| `onChange`     | State setter or custom dispatcher to update the email | _OnChange_                             | undefined | :white_check_mark: |
+| `baseList`     | Domains to suggest while typing the username          | _string[]_                             | undefined | :white_check_mark: |
+| `refineList`   | Domains to refine suggestions after typing `@`        | _string[]_                             | []        | :x:                |
+| `onSelect`     | Custom callback on suggestion select                  | _OnSelect_                             | () => {}  | :x:                |
+| `minChars`     | Minimum chars required to display suggestions         | _1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_ | 2         | :x:                |
+| `maxResults`   | Maximum number of suggestions to display              | _2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8_      | 6         | :x:                |
+| `classNames`   | Class names for each element                          | _ClassNames_                           | undefined | :x:                |
+| `className`    | Class name of the wrapper element                     | _string_                               | undefined | :x:                |
+| `wrapperId`    | DOM ID of the wrapper element                         | _string_                               | undefined | :x:                |
+| `customPrefix` | Custom prefix for dropdown unique ID                  | _string_                               | `rbe_`    | :x:                |
+| `isInvalid`    | Value of `aria-invalid`                               | _boolean_                              | undefined | :x:                |
+
+:bulb: React's `ref` and any other `HTMLInputElement` attribute can be passed as prop to the component and it will be forwarded to the input element.
 
 <br />
 
@@ -430,6 +428,12 @@ No special configuration needed, it just works. Just follow the official React H
 - **Enter / Space** - Confirm the suggestion
 - **Escape** - Close the list and focus the input field
 - **Tab / Shift + Tab** - Close the list and go to next/prev focusable input
+
+<br />
+
+## React Hook Form
+
+No special configuration needed, it just works. Just follow the official React Hook Form's [Controller documentation](https://react-hook-form.com/api/usecontroller/controller).
 
 <br />
 
